@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>simran shah — work in progress</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      font-family: 'Press Start 2P', monospace;
+      background-image: url('bg.jpeg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    /* dark overlay so text stays readable */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.35);
+      z-index: 0;
+    }
+
+    canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .container {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 100;
+      text-align: center;
+    }
+
+    .status {
+      display: inline-block;
+      font-size: 0.6rem;
+      color: #cbbb54;
+      padding: 0.6rem 1.2rem;
+      border: 2px solid #cbbb54;
+      box-shadow: 4px 4px 0px #616536, -2px -2px 0px #8e914e;
+      letter-spacing: 0.12em;
+      animation: flicker 4s step-end infinite;
+    }
+
+    @keyframes flicker {
+      0%,94%,100% { opacity:1; }
+      95% { opacity:0.3; }
+      97% { opacity:1; }
+      98% { opacity:0.2; }
+      99% { opacity:1; }
+    }
+
+    .footer {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.45rem;
+      letter-spacing: 0.1em;
+      color: #a9c18a;
+      z-index: 100;
+    }
+
+    .footer a { color: #cbbb54; text-decoration: none; }
+    .footer a:hover { color: #ffffff; }
+  </style>
+</head>
+<body>
+
+  <canvas id="c"></canvas>
+
+  <div class="container">
+    <span class="status">WORK IN PROGRESS</span>
+  </div>
+
+  <p class="footer">
+    <a href="https://www.linkedin.com/in/simrancs1998/" target="_blank">LinkedIn</a>
+  </p>
+
+  <script>
+    const canvas = document.getElementById('c');
+    const ctx = canvas.getContext('2d');
+    let W, H;
+
+    function resize() {
+      W = canvas.width = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+    }
+
+    function rf(a, b) { return Math.random() * (b - a) + a; }
+
+    let flies = [];
+    function initFlies() {
+      flies = [];
+      for (let i = 0; i < 35; i++) {
+        flies.push({
+          x: rf(0, W),
+          y: rf(H * 0.2, H * 0.85),
+          vx: rf(-0.3, 0.3),
+          vy: rf(-0.25, -0.04),
+          alpha: rf(0.1, 0.8),
+          dir: Math.random() > 0.5 ? 1 : -1,
+          spd: rf(0.005, 0.018),
+          col: Math.random() > 0.5 ? '#cbbb54' : '#72aa83'
+        });
+      }
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+
+      flies.forEach(f => {
+        f.x += f.vx;
+        f.y += f.vy;
+        f.alpha += f.dir * f.spd;
+        if (f.alpha > 0.9) f.dir = -1;
+        if (f.alpha < 0.05) f.dir = 1;
+        if (f.y < H * 0.1) { f.y = H * 0.85; f.x = rf(0, W); }
+        if (f.x < -10 || f.x > W + 10) f.x = rf(0, W);
+
+        ctx.save();
+        ctx.globalAlpha = f.alpha;
+        ctx.fillStyle = f.col;
+        ctx.beginPath();
+        ctx.arc(f.x, f.y, 1.8, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      });
+
+      requestAnimationFrame(draw);
+    }
+
+    resize();
+    initFlies();
+    draw();
+    window.addEventListener('resize', () => { resize(); initFlies(); });
+  </script>
+
+</body>
+</html>
