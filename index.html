@@ -7,23 +7,38 @@
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      background: #0a1210;
       overflow: hidden;
       font-family: 'Press Start 2P', monospace;
+      background-image: url('bg.jpeg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
     }
+
+    /* dark overlay so text stays readable */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.35);
+      z-index: 0;
+    }
+
     canvas {
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
       pointer-events: none;
-      z-index: 0;
+      z-index: 1;
     }
+
     .container {
       position: fixed;
       top: 50%;
@@ -32,6 +47,7 @@
       z-index: 100;
       text-align: center;
     }
+
     .status {
       display: inline-block;
       font-size: 0.6rem;
@@ -42,6 +58,7 @@
       letter-spacing: 0.12em;
       animation: flicker 4s step-end infinite;
     }
+
     @keyframes flicker {
       0%,94%,100% { opacity:1; }
       95% { opacity:0.3; }
@@ -49,6 +66,7 @@
       98% { opacity:0.2; }
       99% { opacity:1; }
     }
+
     .footer {
       position: fixed;
       bottom: 1.5rem;
@@ -56,18 +74,22 @@
       transform: translateX(-50%);
       font-size: 0.45rem;
       letter-spacing: 0.1em;
-      color: #558166;
+      color: #a9c18a;
       z-index: 100;
     }
-    .footer a { color: #72aa83; text-decoration: none; }
-    .footer a:hover { color: #cbbb54; }
+
+    .footer a { color: #cbbb54; text-decoration: none; }
+    .footer a:hover { color: #ffffff; }
   </style>
 </head>
 <body>
+
   <canvas id="c"></canvas>
+
   <div class="container">
     <span class="status">WORK IN PROGRESS</span>
   </div>
+
   <p class="footer">
     <a href="https://www.linkedin.com/in/simrancs1998/" target="_blank">LinkedIn</a>
   </p>
@@ -83,28 +105,16 @@
     }
 
     function rf(a, b) { return Math.random() * (b - a) + a; }
-    function ri(a, b) { return Math.floor(rf(a, b)); }
-
-    let stars = [];
-    function initStars() {
-      stars = [];
-      for (let i = 0; i < 90; i++) {
-        stars.push({
-          x: rf(0, W), y: rf(0, H * 0.68),
-          r: Math.random() > 0.8 ? 1.5 : 0.8,
-          phase: rf(0, Math.PI * 2),
-          speed: rf(0.008, 0.03)
-        });
-      }
-    }
 
     let flies = [];
     function initFlies() {
       flies = [];
-      for (let i = 0; i < 22; i++) {
+      for (let i = 0; i < 35; i++) {
         flies.push({
-          x: rf(0, W), y: rf(H * 0.45, H * 0.78),
-          vx: rf(-0.3, 0.3), vy: rf(-0.2, -0.04),
+          x: rf(0, W),
+          y: rf(H * 0.2, H * 0.85),
+          vx: rf(-0.3, 0.3),
+          vy: rf(-0.25, -0.04),
           alpha: rf(0.1, 0.8),
           dir: Math.random() > 0.5 ? 1 : -1,
           spd: rf(0.005, 0.018),
@@ -113,274 +123,35 @@
       }
     }
 
-    function circ(x, y, r, color, alpha) {
-      ctx.save();
-      if (alpha !== undefined) ctx.globalAlpha = alpha;
-      ctx.fillStyle = color;
-      ctx.beginPath();
-      ctx.arc(x, y, r, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
-    }
-
-    function drawSky() {
-      let g = ctx.createLinearGradient(0, 0, 0, H);
-      g.addColorStop(0,    '#060e0b');
-      g.addColorStop(0.5,  '#0d1a14');
-      g.addColorStop(0.72, '#192623');
-      g.addColorStop(1,    '#1e2e22');
-      ctx.fillStyle = g;
-      ctx.fillRect(0, 0, W, H);
-    }
-
-    function drawAtmosphericLight(groundY) {
-      // soft light breaking through the centre background
-      let g = ctx.createRadialGradient(W/2, groundY * 0.6, 0, W/2, groundY * 0.6, W * 0.35);
-      g.addColorStop(0,   'rgba(120,170,130,0.10)');
-      g.addColorStop(0.6, 'rgba(60,100,75,0.04)');
-      g.addColorStop(1,   'rgba(0,0,0,0)');
-      ctx.fillStyle = g;
-      ctx.fillRect(0, 0, W, H);
-    }
-
-    function drawSpires(cx, baseY) {
-      ctx.save();
-      ctx.globalAlpha = 0.28;
-      const sp = [
-        {x: cx-18, h: 55, w: 6},
-        {x: cx-7,  h: 78, w: 9},
-        {x: cx+3,  h: 62, w: 7},
-        {x: cx+14, h: 44, w: 5},
-      ];
-      sp.forEach(s => {
-        ctx.fillStyle = '#2b3e32';
-        ctx.fillRect(s.x, baseY - s.h, s.w, s.h);
-        ctx.beginPath();
-        ctx.moveTo(s.x, baseY - s.h);
-        ctx.lineTo(s.x + s.w / 2, baseY - s.h - 18);
-        ctx.lineTo(s.x + s.w, baseY - s.h);
-        ctx.fill();
-        ctx.fillStyle = '#0a1210';
-        ctx.fillRect(s.x + 1, baseY - s.h * 0.55, 2, 6);
-      });
-      ctx.strokeStyle = '#2b3e32';
-      ctx.lineWidth = 4;
-      ctx.beginPath();
-      ctx.moveTo(cx - 18, baseY - 28);
-      ctx.quadraticCurveTo(cx, baseY - 46, cx + 19, baseY - 28);
-      ctx.stroke();
-      ctx.restore();
-    }
-
-    // Slender mid-ground tree with organic canopy
-    function drawSlenderTree(x, groundY, h, r, dark, mid, light) {
-      // trunk
-      ctx.fillStyle = '#1a1008';
-      ctx.fillRect(x - 3, groundY - h, 5, h);
-      // canopy — layered organic circles
-      circ(x,            groundY - h - r*0.1, r,        dark);
-      circ(x - r*0.4,    groundY - h - r*0.5, r*0.65,   mid);
-      circ(x + r*0.35,   groundY - h - r*0.55, r*0.6,   mid);
-      circ(x,            groundY - h - r*1.0,  r*0.45,  light);
-      circ(x - r*0.15,   groundY - h - r*1.3,  r*0.28,  light);
-    }
-
-    // Massive foreground ancient tree
-    function drawAncientTree(x, groundY, trunkW, trunkH, cr) {
-      // trunk with gradient
-      let tg = ctx.createLinearGradient(x - trunkW/2, 0, x + trunkW/2, 0);
-      tg.addColorStop(0,   '#0a0806');
-      tg.addColorStop(0.25,'#1a1008');
-      tg.addColorStop(0.65,'#251508');
-      tg.addColorStop(1,   '#1a1008');
-      ctx.fillStyle = tg;
-      ctx.fillRect(x - trunkW/2, groundY - trunkH, trunkW, trunkH);
-
-      // root flares
-      for (let i = 1; i <= 7; i++) {
-        ctx.fillStyle = '#1a1008';
-        ctx.fillRect(x - trunkW/2 - i*4, groundY - i*5, 5, i*5);
-        ctx.fillRect(x + trunkW/2 + i*4 - 5, groundY - i*5, 5, i*5);
-      }
-
-      // hanging moss tendrils
-      ctx.fillStyle = '#2b3e32';
-      for (let i = -trunkW/2 + 2; i < trunkW/2; i += 5) {
-        const ty = groundY - trunkH + trunkH * 0.3 + Math.sin(i * 0.4) * 12;
-        const tlen = 10 + Math.abs(Math.sin(i * 0.7)) * 20;
-        ctx.fillRect(x + i, ty, 2, tlen);
-      }
-
-      // deep dark base canopy
-      circ(x,            groundY - trunkH,          cr,       '#131f18');
-      // layered canopy
-      circ(x - cr*0.55,  groundY - trunkH - cr*0.4, cr*0.82,  '#192623');
-      circ(x + cr*0.45,  groundY - trunkH - cr*0.45,cr*0.78,  '#1e2d22');
-      circ(x,            groundY - trunkH - cr*0.85, cr*0.62,  '#2b3e32');
-      circ(x - cr*0.25,  groundY - trunkH - cr*1.1,  cr*0.5,   '#385c4b');
-      circ(x + cr*0.2,   groundY - trunkH - cr*1.2,  cr*0.45,  '#385c4b');
-      circ(x,            groundY - trunkH - cr*1.5,  cr*0.32,  '#558166');
-      circ(x,            groundY - trunkH - cr*1.72, cr*0.18,  '#72aa83');
-    }
-
-    function drawRoad(groundY) {
-      const vx = W / 2;
-      const vy = groundY - H * 0.14; // vanish point higher up
-      ctx.save();
-      // road trapezoid — narrow at top, wide at bottom
-      ctx.beginPath();
-      ctx.moveTo(vx - 8,    vy);
-      ctx.lineTo(vx + 8,    vy);
-      ctx.lineTo(W * 0.7,   groundY + 2);
-      ctx.lineTo(W * 0.3,   groundY + 2);
-      ctx.closePath();
-      let rg = ctx.createLinearGradient(0, vy, 0, groundY);
-      rg.addColorStop(0,   '#221208');
-      rg.addColorStop(0.4, '#2a1a0a');
-      rg.addColorStop(1,   '#3a2210');
-      ctx.fillStyle = rg;
-      ctx.fill();
-      // puddle
-      ctx.globalAlpha = 0.2;
-      ctx.fillStyle = '#2a4030';
-      ctx.beginPath();
-      ctx.ellipse(W/2, groundY - 8, W*0.06, 4, 0, 0, Math.PI*2);
-      ctx.fill();
-      ctx.restore();
-    }
-
-    function drawGround(groundY) {
-      let gg = ctx.createLinearGradient(0, groundY, 0, H);
-      gg.addColorStop(0, '#192623');
-      gg.addColorStop(1, '#0d1a14');
-      ctx.fillStyle = gg;
-      ctx.fillRect(0, groundY, W, H - groundY);
-      // grass tufts
-      for (let x = 0; x < W; x += 3) {
-        const gh = 3 + Math.abs(Math.sin(x * 0.45)) * 6;
-        ctx.fillStyle = x % 6 === 0 ? '#558166' : '#385c4b';
-        ctx.fillRect(x, groundY - gh, 2, gh + 1);
-      }
-    }
-
-    function drawFigures(groundY) {
-      const sc = H / 420;
-      const fH = 30 * sc;
-      // figure 1 — left, dark cloak
-      const f1x = W * 0.43;
-      ctx.fillStyle = '#140c05';
-      ctx.beginPath();
-      ctx.ellipse(f1x, groundY - fH*0.87, fH*0.12, fH*0.14, 0, 0, Math.PI*2);
-      ctx.fill();
-      ctx.beginPath();
-      ctx.moveTo(f1x - fH*0.24, groundY - fH*0.73);
-      ctx.lineTo(f1x + fH*0.2,  groundY - fH*0.73);
-      ctx.lineTo(f1x + fH*0.26, groundY);
-      ctx.lineTo(f1x - fH*0.28, groundY);
-      ctx.closePath();
-      ctx.fillStyle = '#140c05';
-      ctx.fill();
-      ctx.strokeStyle = '#251508';
-      ctx.lineWidth = 1;
-      ctx.stroke();
-
-      // figure 2 — right, armoured
-      const f2x = W * 0.49;
-      ctx.fillStyle = '#1e1208';
-      ctx.beginPath();
-      ctx.ellipse(f2x, groundY - fH*0.92, fH*0.11, fH*0.13, 0, 0, Math.PI*2);
-      ctx.fill();
-      // helmet glint
-      ctx.fillStyle = '#4a5e52';
-      ctx.fillRect(f2x - fH*0.08, groundY - fH*0.97, fH*0.16, fH*0.07);
-      // cloak
-      ctx.fillStyle = '#2e1a08';
-      ctx.beginPath();
-      ctx.moveTo(f2x - fH*0.17, groundY - fH*0.78);
-      ctx.lineTo(f2x + fH*0.22, groundY - fH*0.78);
-      ctx.lineTo(f2x + fH*0.27, groundY);
-      ctx.lineTo(f2x - fH*0.24, groundY);
-      ctx.closePath();
-      ctx.fill();
-      ctx.strokeStyle = '#3d2510';
-      ctx.lineWidth = 1;
-      ctx.stroke();
-    }
-
-    // Overhanging foliage corners — darker, more natural
-    function drawOverhang() {
-      circ(0,      -H*0.05, W*0.13, '#0d1a14');
-      circ(W*0.06, H*0.03,  W*0.11, '#192623');
-      circ(W*0.11, H*0.01,  W*0.08, '#2b3e32');
-      circ(W*0.15, H*0.06,  W*0.06, '#385c4b');
-      circ(W*0.18, H*0.10,  W*0.04, '#558166');
-
-      circ(W,      -H*0.05, W*0.13, '#0d1a14');
-      circ(W*0.94, H*0.03,  W*0.11, '#192623');
-      circ(W*0.89, H*0.01,  W*0.08, '#2b3e32');
-      circ(W*0.85, H*0.06,  W*0.06, '#385c4b');
-      circ(W*0.82, H*0.10,  W*0.04, '#558166');
-    }
-
-    let t = 0;
     function draw() {
-      const groundY = H * 0.70;
+      ctx.clearRect(0, 0, W, H);
 
-      drawSky();
-      drawAtmosphericLight(groundY);
-
-      // Stars
-      stars.forEach(s => {
-        s.phase += s.speed;
-        const a = 0.25 + 0.55 * Math.sin(s.phase);
-        circ(s.x, s.y, s.r, '#d6dfa1', a);
-      });
-
-      // Distant spires in mist
-      drawSpires(W * 0.5, groundY * 0.88);
-
-      // Road
-      drawRoad(groundY);
-
-      // Mid background trees
-      drawSlenderTree(W*0.22, groundY, H*0.28, H*0.07, '#192623', '#2b3e32', '#385c4b');
-      drawSlenderTree(W*0.31, groundY, H*0.22, H*0.06, '#2b3e32', '#385c4b', '#558166');
-      drawSlenderTree(W*0.64, groundY, H*0.25, H*0.065,'#192623', '#2b3e32', '#385c4b');
-      drawSlenderTree(W*0.73, groundY, H*0.20, H*0.058,'#2b3e32', '#385c4b', '#558166');
-
-      // Ground
-      drawGround(groundY);
-
-      // Figures
-      drawFigures(groundY);
-
-      // Big ancient foreground trees (partially off screen)
-      drawAncientTree(W * 0.01, groundY, W*0.09, H*0.80, H*0.30);
-      drawAncientTree(W * 0.99, groundY, W*0.10, H*0.85, H*0.34);
-
-      // Overhanging foliage
-      drawOverhang();
-
-      // Fireflies
       flies.forEach(f => {
-        f.x += f.vx; f.y += f.vy;
+        f.x += f.vx;
+        f.y += f.vy;
         f.alpha += f.dir * f.spd;
         if (f.alpha > 0.9) f.dir = -1;
         if (f.alpha < 0.05) f.dir = 1;
-        if (f.y < groundY * 0.25) { f.y = groundY - 5; f.x = rf(0, W); }
-        if (f.x < -10 || f.x > W+10) f.x = rf(0, W);
-        circ(f.x, f.y, 1.8, f.col, f.alpha);
+        if (f.y < H * 0.1) { f.y = H * 0.85; f.x = rf(0, W); }
+        if (f.x < -10 || f.x > W + 10) f.x = rf(0, W);
+
+        ctx.save();
+        ctx.globalAlpha = f.alpha;
+        ctx.fillStyle = f.col;
+        ctx.beginPath();
+        ctx.arc(f.x, f.y, 1.8, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
       });
 
-      t++;
       requestAnimationFrame(draw);
     }
 
     resize();
-    initStars();
     initFlies();
     draw();
-    window.addEventListener('resize', () => { resize(); initStars(); initFlies(); });
+    window.addEventListener('resize', () => { resize(); initFlies(); });
   </script>
+
 </body>
 </html>
