@@ -4,21 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>simran shah — CV</title>
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      font-family: 'Press Start 2P', monospace;
+      font-family: 'Inter', sans-serif;
       background-image: url('bg.jpeg');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
+      background-attachment: fixed;
     }
     body::before {
       content: '';
@@ -50,6 +46,7 @@
       justify-content: space-between;
     }
     .nav-name {
+      font-family: 'Press Start 2P', monospace;
       font-size: 0.45rem;
       letter-spacing: 0.18em;
       color: #c0b455;
@@ -62,6 +59,7 @@
       list-style: none;
     }
     .nav-links a {
+      font-family: 'Press Start 2P', monospace;
       font-size: 0.42rem;
       letter-spacing: 0.15em;
       text-transform: uppercase;
@@ -84,36 +82,229 @@
     .nav-links a:hover::after { width: 100%; }
     .nav-links a.active { color: #c0b455; }
     .nav-links a.active::after { width: 100%; background: #c0b455; opacity: 0.5; }
-    .container {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+
+    .cv-wrap {
+      position: relative;
       z-index: 100;
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 88px 24px 80px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .cv-card {
+      background: rgba(21, 34, 33, 0.78);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(203, 216, 155, 0.15);
+      padding: 28px 32px;
+    }
+
+    .cv-download {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.38rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #c0b455;
+      border: 1px solid #c0b455;
+      padding: 8px 16px;
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+      align-self: flex-start;
+    }
+    .cv-download:hover { background: #c0b455; color: #0d1a14; }
+
+    /* ── Header card layout ── */
+    .cv-header-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+    }
+    .cv-header-left { flex: 1; }
+    .cv-header-visuals {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      flex-shrink: 0;
+    }
+    .cv-photo {
+      width: 90px;
+      height: 90px;
+      border: 1px solid rgba(203, 216, 155, 0.3);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .cv-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .cv-qr {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      flex-shrink: 0;
+    }
+    .cv-qr img {
+      width: 70px;
+      height: 70px;
+      border: 1px solid rgba(203, 216, 155, 0.2);
+      display: block;
+    }
+    .cv-qr-label {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.28rem;
+      color: #5c896b;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
       text-align: center;
     }
-    .status {
-      display: inline-block;
-      font-size: 0.6rem;
+
+    .cv-name {
+      font-family: 'Press Start 2P', monospace;
+      font-size: clamp(0.9rem, 3vw, 1.4rem);
+      color: #f0f0e8;
+      letter-spacing: 0.05em;
+      line-height: 1.5;
+      margin-bottom: 10px;
+    }
+    .cv-role {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.42rem;
+      color: #9ecf9b;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .cv-contact {
+      font-size: 13.5px;
+      color: #c8d8b0;
+      line-height: 2;
+    }
+    .cv-contact a {
+      color: #e0ecc8;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(203,216,155,0.3);
+      transition: color 0.2s;
+    }
+    .cv-contact a:hover { color: #c0b455; }
+
+    .cv-summary {
+      font-size: 14.5px;
+      color: #d0e0c0;
+      line-height: 1.85;
+      border-left: 2px solid #86b084;
+      padding-left: 16px;
+      text-align: justify;
+    }
+    .cv-summary strong { color: #f0f0e8; }
+
+    .lang-badges { margin-top: 16px; display: flex; gap: 8px; flex-wrap: wrap; }
+    .lang-badge {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.32rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      background: rgba(134, 176, 132, 0.15);
+      color: #9ecf9b;
+      border: 1px solid rgba(134, 176, 132, 0.35);
+    }
+
+    .cv-section-title {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.42rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
       color: #c0b455;
-      padding: 0.6rem 1.2rem;
-      border: 2px solid #c0b455;
-      box-shadow: 4px 4px 0px #7c7938, -2px -2px 0px #86b084;
-      letter-spacing: 0.12em;
-      animation: flicker 4s step-end infinite;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(192, 180, 85, 0.2);
     }
-    @keyframes flicker {
-      0%,94%,100% { opacity:1; }
-      95% { opacity:0.3; }
-      97% { opacity:1; }
-      98% { opacity:0.2; }
-      99% { opacity:1; }
+
+    .cv-entry { margin-bottom: 22px; padding-bottom: 22px; border-bottom: 1px solid rgba(203,216,155,0.08); }
+    .cv-entry:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+    .cv-entry-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 4px;
     }
+    .cv-entry-role {
+      font-size: 14px;
+      font-weight: 700;
+      color: #f0f0e8;
+    }
+    .cv-entry-date {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.42rem;
+      color: #8aaa8a;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .cv-entry-company {
+      font-size: 13.5px;
+      font-style: italic;
+      color: #9ecf9b;
+      margin-bottom: 10px;
+      display: block;
+    }
+    .cv-entry-desc {
+      font-size: 14.5px;
+      color: #c0d4a8;
+      line-height: 1.75;
+      margin-bottom: 10px;
+      text-align: justify;
+    }
+    .cv-entry ul { padding-left: 18px; margin: 0; }
+    .cv-entry ul li {
+      font-size: 14.5px;
+      color: #c0d4a8;
+      line-height: 1.75;
+      margin-bottom: 6px;
+      padding-left: 4px;
+      text-align: justify;
+    }
+    .cv-entry ul li::marker { color: #c0b455; }
+
+    /* ── Skills ── */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      gap: 16px 20px;
+    }
+    .skill-cat {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.42rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #86b084;
+      padding-top: 2px;
+      line-height: 1.8;
+    }
+    .skill-val {
+      color: #c0d4a8;
+      line-height: 1.75;
+      font-size: 14.5px;
+      text-align: justify;
+    }
+
     .footer {
       position: fixed;
       bottom: 1.5rem;
       left: 50%;
       transform: translateX(-50%);
+      font-family: 'Press Start 2P', monospace;
       font-size: 0.42rem;
       letter-spacing: 0.1em;
       color: #5c896b;
@@ -121,6 +312,7 @@
     }
     .footer a { color: #cbd89b; text-decoration: none; transition: color 0.3s; }
     .footer a:hover { color: #c0b455; }
+
     #transition-overlay {
       position: fixed;
       inset: 0;
@@ -131,11 +323,21 @@
       transition: opacity 0.5s ease;
     }
     #transition-overlay.fade-in { opacity: 1; pointer-events: all; }
+
+    @media (max-width: 600px) {
+      .cv-card { padding: 20px 18px; }
+      .cv-header-inner { flex-direction: column-reverse; }
+      .cv-header-visuals { align-self: flex-end; }
+      .skills-grid { grid-template-columns: 1fr; gap: 4px; }
+      .skill-cat { margin-top: 12px; }
+      .cv-entry-header { flex-direction: column; gap: 4px; }
+    }
   </style>
 </head>
 <body>
   <div id="transition-overlay"></div>
   <canvas id="c"></canvas>
+
   <nav>
     <span class="nav-name">Simran Shah</span>
     <ul class="nav-links">
@@ -147,12 +349,170 @@
       <li><a href="music.html">Music i listen to</a></li>
     </ul>
   </nav>
-  <div class="container">
-    <span class="status">WORK IN PROGRESS</span>
+
+  <div class="cv-wrap">
+
+    <a class="cv-download" href="cv-download.html" target="_blank">↓ download pdf</a>
+
+    <!-- Header card -->
+    <div class="cv-card">
+      <div class="cv-header-inner">
+        <div class="cv-header-left">
+          <div class="cv-name">Simran Shah</div>
+          <div class="cv-role">Strategic Marketing &amp; Product Professional</div>
+          <div class="cv-contact">
+            Gotenstr 50, 10829 Berlin, Germany &bull; +49 1520 2163 924<br>
+            <a href="mailto:simranshah1998@gmail.com">simranshah1998@gmail.com</a> &bull;
+            <a href="https://linkedin.com/in/simrancs1998" target="_blank" rel="noopener">linkedin.com/in/simrancs1998</a>
+          </div>
+        </div>
+        <div class="cv-header-visuals">
+          <div class="cv-qr">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://www.linkedin.com/in/simrancs1998/" alt="LinkedIn QR Code">
+            <span class="cv-qr-label">LinkedIn</span>
+          </div>
+          <!-- Replace 'picture.jpg' with your actual photo filename -->
+          <div class="cv-photo">
+            <img src="picture.jpg" alt="Simran Shah" onerror="this.parentElement.style.display='none'">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary card -->
+    <div class="cv-card">
+      <div class="cv-summary">
+        <strong>Strategic marketing and product professional</strong> with 4+ years of B2B commercial experience spanning solution sales, go-to-market strategy, enterprise pipeline management, and cross-functional stakeholder engagement. Proven track record of driving pipeline growth and revenue outcomes — including 15% YoY revenue growth and a 25% uplift in qualified pipeline — through data-driven campaigns, structured testing, and CXO-level client advisory. Complementary experience in the German B2B market through a consulting engagement with PIK AG, alongside academic research into AI-driven personalisation and privacy in marketing. Based in Berlin with conversational German and full fluency in English and Hindi. MA in Strategic Marketing Management, ISM Berlin (Grade: 1.91).
+        <div class="lang-badges">
+          <span class="lang-badge">English: Native / C2</span>
+          <span class="lang-badge">German: B2</span>
+          <span class="lang-badge">Hindi: Native / C2</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Experience card -->
+    <div class="cv-card">
+      <div class="cv-section-title">Professional Experience</div>
+
+      <div class="cv-entry">
+        <div class="cv-entry-header">
+          <span class="cv-entry-role">Marketing &amp; Product Manager — Cloud Sales</span>
+          <span class="cv-entry-date">Jan 2020 – Mar 2024</span>
+        </div>
+        <span class="cv-entry-company">Xpress Computers Ltd. (Microsoft Modern Workplace Certified Solutions Partner), Mumbai</span>
+        <p class="cv-entry-desc">Owned end-to-end B2B marketing and solution sales for a Microsoft-certified partner, running paid campaigns across Google Ads and LinkedIn Ads and managing the full commercial cycle from lead generation through to client onboarding and account growth across Azure, Copilot, and Modern Workplace.</p>
+        <ul>
+          <li>Planned, launched, and optimised Google Ads and LinkedIn Ads campaigns targeting enterprise decision-makers — managing audience segmentation, bidding strategies, budget allocation, and ad creative testing cycles to deliver 15% YoY revenue growth and a 25% increase in qualified pipeline.</li>
+          <li>Ran structured A/B tests across creatives, messaging, and targeting parameters, applying results iteratively to reduce cost per acquisition and improve conversion rates across campaigns.</li>
+          <li>Collaborated with design and technical teams on creative production, tracking setup, and attribution — making sure what we were measuring actually connected to revenue, not just clicks.</li>
+          <li>Built trusted CXO-level relationships across key enterprise accounts, translating complex product capabilities into clear commercial value and managing long-term account health and expansion.</li>
+        </ul>
+      </div>
+
+      <div class="cv-entry">
+        <div class="cv-entry-header">
+          <span class="cv-entry-role">Public Relations &amp; Communications Intern</span>
+          <span class="cv-entry-date">Aug 2019 – Oct 2019</span>
+        </div>
+        <span class="cv-entry-company">StudioTalkPR, Mumbai — Client: Population Foundation of India</span>
+        <ul>
+          <li>Managed media relations and press outreach for the Population Foundation of India, writing releases and coordinating editorial coverage across print and digital channels.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Education card -->
+    <div class="cv-card">
+      <div class="cv-section-title">Education</div>
+
+      <div class="cv-entry">
+        <div class="cv-entry-header">
+          <span class="cv-entry-role">M.A. Strategic Marketing Management</span>
+          <span class="cv-entry-date">Sep 2024 – Mar 2026</span>
+        </div>
+        <span class="cv-entry-company">International School of Management (ISM), Berlin &nbsp;|&nbsp; Final Grade: 1.91</span>
+        <p class="cv-entry-desc"><strong style="color:#e0ecc8">Thesis:</strong> AI Marketing Personalisation in Privacy-Conscious B2B Markets: A German Perspective — focused on how AI-driven targeting and attribution work in practice when data regulations constrain what you can track and personalise.</p>
+      </div>
+
+      <div class="cv-entry">
+        <div class="cv-entry-header">
+          <span class="cv-entry-role">Pre-Master Programme — International Business</span>
+          <span class="cv-entry-date">Mar 2024 – Aug 2024</span>
+        </div>
+        <span class="cv-entry-company">International School of Management (ISM), Berlin</span>
+        <p class="cv-entry-desc">Modules: Corporate Management, Intercultural Management, Financial Reporting, Investment Theory, Business Mathematics.</p>
+      </div>
+
+      <div class="cv-entry">
+        <div class="cv-entry-header">
+          <span class="cv-entry-role">B.A. Sociology</span>
+          <span class="cv-entry-date">Jun 2016 – Oct 2020</span>
+        </div>
+        <span class="cv-entry-company">L.S. Raheja College of Commerce and Arts, Mumbai</span>
+        <p class="cv-entry-desc">Focus on social dynamics, behavioural research, and quantitative and qualitative data analysis methodologies.</p>
+      </div>
+    </div>
+
+    <!-- Projects card -->
+    <div class="cv-card">
+      <div class="cv-section-title">Projects &amp; Courses</div>
+
+      <div class="cv-entry">
+        <div class="cv-entry-header">
+          <span class="cv-entry-role">McKinsey Forward Program</span>
+          <span class="cv-entry-date">April 2026</span>
+        </div>
+        <span class="cv-entry-company">McKinsey &amp; Company</span>
+        <p class="cv-entry-desc">Selective professional development program covering structured problem-solving, leadership, and business strategy.</p>
+      </div>
+
+      <div class="cv-entry">
+        <div class="cv-entry-header">
+          <span class="cv-entry-role">B2B Market Analyst &amp; Strategy Consultant</span>
+          <span class="cv-entry-date">Mar 2025 – Jun 2025</span>
+        </div>
+        <span class="cv-entry-company">Consulting Project — PIK AG via ISM Berlin</span>
+        <ul>
+          <li>Analysed the German B2B market across 1,000+ employee accounts, identifying growth opportunities and building a structured lead generation strategy with business cases presented to senior management.</li>
+          <li>Identified gaps in how teams were communicating internally and recommended practical fixes to improve cross-departmental execution.</li>
+        </ul>
+      </div>
+
+      <div class="cv-entry">
+        <div class="cv-entry-header">
+          <span class="cv-entry-role">International Buddy &amp; Event Coordinator</span>
+          <span class="cv-entry-date">Sep 2024 – Feb 2025</span>
+        </div>
+        <span class="cv-entry-company">ISM Berlin — International Student Services</span>
+        <ul>
+          <li>Planned and delivered 6 large-scale networking events end-to-end, coordinating cross-functional teams across logistics, communications, and stakeholder management.</li>
+          <li>First point of contact for incoming international students throughout the semester, managing a high volume of queries with patience and follow-through.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Skills card -->
+    <div class="cv-card">
+      <div class="cv-section-title">Competencies &amp; Tools</div>
+      <div class="skills-grid">
+        <span class="skill-cat">Research &amp; Analytics</span>
+        <span class="skill-val">SPSS (Advanced), Google Sheets &amp; Excel, KPI reporting, market &amp; competitor analysis, data-driven decision making.</span>
+
+        <span class="skill-cat">Platforms &amp; Tools</span>
+        <span class="skill-val">Google Ads, LinkedIn Ads, Microsoft Suite (Certified), Google Suite (Certified), Microsoft Azure, Microsoft Copilot, Canva, Figma, Adobe Photoshop (Certified), After Effects, CapCut.</span>
+
+        <span class="skill-cat">Languages</span>
+        <span class="skill-val">English (Native / C2), German (B2), Hindi (Native / C2).</span>
+      </div>
+    </div>
+
   </div>
+
   <p class="footer">
     <a href="https://www.linkedin.com/in/simrancs1998/" target="_blank">LinkedIn</a>
   </p>
+
   <script>
     const overlay = document.getElementById('transition-overlay');
     document.querySelectorAll('.nav-links a').forEach(link => {
@@ -165,6 +525,7 @@
       });
     });
     window.addEventListener('load', () => { overlay.classList.remove('fade-in'); });
+
     const canvas = document.getElementById('c');
     const ctx = canvas.getContext('2d');
     let W, H;
