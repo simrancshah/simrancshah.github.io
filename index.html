@@ -6,95 +6,63 @@
   <title>simran shah — work in progress</title>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet"/>
   <style>
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      image-rendering: pixelated;
-    }
-
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      background-color: #1e2b26;
-      color: #d7dfa2;
+      background: #0d1a14;
       overflow: hidden;
-      position: relative;
       font-family: 'Press Start 2P', monospace;
     }
-
     canvas {
       position: fixed;
       top: 0; left: 0;
-      width: 100%; height: 100%;
+      image-rendering: pixelated;
       pointer-events: none;
       z-index: 0;
-      image-rendering: pixelated;
     }
-
     .container {
       position: relative;
       z-index: 1;
       text-align: center;
-      padding: 2rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2rem;
     }
-
     .status {
       display: inline-block;
-      font-family: 'Press Start 2P', monospace;
-      font-size: 0.65rem;
-      color: #ccbd56;
+      font-size: 0.6rem;
+      color: #cbbb54;
       padding: 0.6rem 1.2rem;
-      border: 2px solid #ccbd56;
-      /* pixel-style box shadow */
-      box-shadow: 4px 4px 0px #636838, -2px -2px 0px #90924f;
-      letter-spacing: 0.1em;
-      animation: flicker 3s step-end infinite;
+      border: 2px solid #cbbb54;
+      box-shadow: 4px 4px 0px #616536, -2px -2px 0px #8e914e;
+      letter-spacing: 0.12em;
+      animation: flicker 4s step-end infinite;
     }
-
     @keyframes flicker {
-      0%, 95%, 100% { opacity: 1; }
-      96% { opacity: 0.4; }
-      97% { opacity: 1; }
-      98% { opacity: 0.2; }
-      99% { opacity: 1; }
+      0%,94%,100% { opacity:1; }
+      95% { opacity:0.3; }
+      96% { opacity:1; }
+      98% { opacity:0.2; }
+      99% { opacity:1; }
     }
-
     .footer {
       position: fixed;
       bottom: 1.5rem;
-      font-size: 0.5rem;
+      font-size: 0.45rem;
       letter-spacing: 0.1em;
-      color: #578468;
+      color: #558166;
       z-index: 1;
-      font-family: 'Press Start 2P', monospace;
     }
-
-    .footer a {
-      color: #74ab85;
-      text-decoration: none;
-    }
-
-    .footer a:hover {
-      color: #ccbd56;
-    }
+    .footer a { color: #72aa83; text-decoration: none; }
+    .footer a:hover { color: #cbbb54; }
   </style>
 </head>
 <body>
-
   <canvas id="scene"></canvas>
-
   <div class="container">
     <span class="status">WORK IN PROGRESS</span>
   </div>
-
   <p class="footer">
     <a href="https://www.linkedin.com/in/simrancs1998/" target="_blank">LinkedIn</a>
   </p>
@@ -104,247 +72,339 @@
     const ctx = canvas.getContext('2d');
     ctx.imageSmoothingEnabled = false;
 
+    const S = 3; // pixel block size
     let W, H;
-    const SCALE = 4; // pixel size — everything drawn at 1px = 4px block
+
+    const C = {
+      sky1:    '#0a1210',
+      sky2:    '#0d1a14',
+      sky3:    '#192623',
+      mist:    '#2b3e32',
+      deep:    '#192623',
+      darkG:   '#192623',
+      midG:    '#2b3e32',
+      fern:    '#385c4b',
+      leaf:    '#558166',
+      sage:    '#72aa83',
+      lichen:  '#a9c18a',
+      pale:    '#d6dfa1',
+      gold:    '#cbbb54',
+      olive:   '#616536',
+      moss:    '#8e914e',
+      bark:    '#1a1008',
+      bark2:   '#2a1a0e',
+      bark3:   '#3d2510',
+      road1:   '#3a2518',
+      road2:   '#4a3020',
+      road3:   '#5a3a28',
+      puddle:  '#1a2820',
+      mist2:   '#243b2e',
+    };
 
     function resize() {
-      W = canvas.width = Math.ceil(window.innerWidth / SCALE);
-      H = canvas.height = Math.ceil(window.innerHeight / SCALE);
+      W = canvas.width = Math.ceil(window.innerWidth / S);
+      H = canvas.height = Math.ceil(window.innerHeight / S);
       canvas.style.width = window.innerWidth + 'px';
       canvas.style.height = window.innerHeight + 'px';
     }
 
-    // ---- Palette ----
-    const C = {
-      bg:        '#1e2b26',
-      darkTree:  '#2f4436',
-      midTree:   '#3b604f',
-      leaf:      '#578468',
-      sage:      '#74ab85',
-      lichen:    '#a9c18a',
-      paleLeaf:  '#d7dfa2',
-      gold:      '#ccbd56',
-      oliveBark: '#636838',
-      driedMoss: '#90924f',
-      moonWhite: '#eef3dc',
-      sky1:      '#0f1a14',
-      sky2:      '#1e2b26',
-      sky3:      '#162218',
-    };
+    function p(x, y, w, h, color, alpha) {
+      if (alpha !== undefined) ctx.globalAlpha = alpha;
+      ctx.fillStyle = color;
+      ctx.fillRect(Math.floor(x), Math.floor(y), Math.max(1,Math.floor(w)), Math.max(1,Math.floor(h)));
+      if (alpha !== undefined) ctx.globalAlpha = 1;
+    }
 
-    // ---- Stars ----
+    // Stars
     let stars = [];
     function initStars() {
-      stars = [];
-      for (let i = 0; i < 80; i++) {
-        stars.push({
-          x: Math.floor(Math.random() * W),
-          y: Math.floor(Math.random() * (H * 0.45)),
-          bright: Math.random() > 0.7,
-          twinkle: Math.random() * Math.PI * 2,
-          speed: 0.03 + Math.random() * 0.04,
-        });
-      }
+      stars = Array.from({length: 60}, () => ({
+        x: Math.floor(Math.random() * W),
+        y: Math.floor(Math.random() * H * 0.35),
+        twinkle: Math.random() * Math.PI * 2,
+        speed: 0.02 + Math.random() * 0.03,
+        big: Math.random() > 0.8,
+      }));
     }
 
-    // ---- Fireflies ----
+    // Fireflies
     let flies = [];
     function initFlies() {
-      flies = [];
-      for (let i = 0; i < 30; i++) {
-        flies.push({
-          x: Math.random() * W,
-          y: H * 0.4 + Math.random() * H * 0.5,
-          vx: (Math.random() - 0.5) * 0.3,
-          vy: -0.05 - Math.random() * 0.2,
-          alpha: Math.random(),
-          alphaDir: Math.random() > 0.5 ? 1 : -1,
-          alphaSpeed: 0.01 + Math.random() * 0.03,
-          color: Math.random() > 0.4 ? C.gold : C.sage,
-        });
+      flies = Array.from({length: 25}, () => ({
+        x: Math.random() * W,
+        y: H * 0.45 + Math.random() * H * 0.4,
+        vx: (Math.random()-0.5)*0.25,
+        vy: -0.05 - Math.random()*0.15,
+        alpha: Math.random(),
+        dir: Math.random()>0.5?1:-1,
+        spd: 0.008+Math.random()*0.02,
+        col: Math.random()>0.5 ? C.gold : C.sage,
+      }));
+    }
+
+    // Draw pixel-art trunk segment
+    function trunkCol(depth) {
+      if (depth === 0) return C.bark;
+      if (depth === 1) return C.bark2;
+      return C.bark3;
+    }
+
+    // Draw a big ancient tree (like the massive one on the right)
+    function drawAncientTree(cx, baseY, trunkW, trunkH, canopyR) {
+      // Trunk — thick, gnarled, multiple columns
+      for (let col = 0; col < trunkW; col++) {
+        const shade = col < trunkW*0.25 ? C.bark : col < trunkW*0.6 ? C.bark2 : C.bark3;
+        const tx = cx - Math.floor(trunkW/2) + col;
+        // slight gnarl
+        const gnarl = Math.floor(Math.sin(col * 0.8) * 1.5);
+        p(tx, baseY - trunkH + gnarl, 1, trunkH, shade);
       }
-    }
-
-    // ---- Draw pixel rect ----
-    function pRect(x, y, w, h, color) {
-      ctx.fillStyle = color;
-      ctx.fillRect(Math.floor(x), Math.floor(y), Math.floor(w), Math.floor(h));
-    }
-
-    // ---- Draw moon ----
-    function drawMoon() {
-      const mx = Math.floor(W * 0.75);
-      const my = Math.floor(H * 0.18);
-      const r = 7;
-      for (let dy = -r; dy <= r; dy++) {
-        for (let dx = -r; dx <= r; dx++) {
-          if (dx*dx + dy*dy <= r*r) {
-            pRect(mx+dx, my+dy, 1, 1, C.moonWhite);
+      // Root flares at base
+      for (let r = 0; r < 5; r++) {
+        const rx = cx - Math.floor(trunkW/2) - r;
+        const rh = (5-r)*2;
+        p(rx, baseY - rh, 1, rh, C.bark2);
+        p(cx + Math.floor(trunkW/2) + r, baseY - rh, 1, rh, C.bark2);
+      }
+      // Hanging moss / tendrils
+      for (let m = 0; m < trunkW + 6; m++) {
+        const mx = cx - Math.floor(trunkW/2) - 3 + m;
+        const mlen = 3 + Math.floor(Math.sin(mx*1.2)*3 + Math.cos(mx*0.7)*2);
+        const mstart = baseY - trunkH + Math.floor(trunkH*0.4) + Math.floor(Math.sin(m*0.5)*4);
+        if (m % 2 === 0) p(mx, mstart, 1, mlen, C.fern);
+        if (m % 3 === 0) p(mx, mstart+mlen, 1, 2, C.midG);
+      }
+      // Canopy — massive blob of layered foliage
+      const layers = [
+        {dx:0,  dy:-trunkH-canopyR+5, r:canopyR,   c:C.midG},
+        {dx:-canopyR*0.4, dy:-trunkH-canopyR*0.6, r:canopyR*0.75, c:C.fern},
+        {dx:canopyR*0.35, dy:-trunkH-canopyR*0.7, r:canopyR*0.7,  c:C.fern},
+        {dx:0,  dy:-trunkH-canopyR*1.1, r:canopyR*0.55, c:C.leaf},
+        {dx:-canopyR*0.2, dy:-trunkH-canopyR*0.9, r:canopyR*0.45, c:C.leaf},
+        {dx:canopyR*0.15, dy:-trunkH-canopyR*1.3, r:canopyR*0.35, c:C.sage},
+        {dx:0, dy:-trunkH-canopyR*1.45, r:canopyR*0.2, c:C.lichen},
+      ];
+      layers.forEach(({dx,dy,r,c}) => {
+        for (let dy2=-r; dy2<=r; dy2++) {
+          for (let dx2=-r; dx2<=r; dx2++) {
+            if (dx2*dx2+dy2*dy2 <= r*r) {
+              p(cx+dx+dx2, baseY+dy+dy2, 1, 1, c);
+            }
           }
-        }
-      }
-      // crescent shadow
-      const ox = 3;
-      for (let dy = -r+1; dy <= r-1; dy++) {
-        for (let dx = -r+1; dx <= r-1; dx++) {
-          if ((dx-ox)*(dx-ox) + dy*dy <= (r-1)*(r-1)) {
-            pRect(mx+dx, my+dy, 1, 1, C.sky1);
-          }
-        }
-      }
-    }
-
-    // ---- Draw pixel tree ----
-    function drawTree(bx, groundY, trunkH, trunkW, layers, leafColor1, leafColor2) {
-      // trunk
-      pRect(bx - Math.floor(trunkW/2), groundY - trunkH, trunkW, trunkH, C.oliveBark);
-      // canopy layers (triangle-ish using rects)
-      for (let l = 0; l < layers; l++) {
-        const ly = groundY - trunkH - l * 6;
-        const lw = (layers - l) * 5 + 4;
-        const lh = 7;
-        const col = l % 2 === 0 ? leafColor1 : leafColor2;
-        pRect(bx - Math.floor(lw/2), ly - lh, lw, lh, col);
-      }
-    }
-
-    // ---- Draw pixel arch / ruins ----
-    function drawArch(cx, baseY, archW, archH, wallH, color, shadowColor) {
-      const hw = Math.floor(archW / 2);
-      // left pillar
-      pRect(cx - hw - 3, baseY - wallH, 4, wallH, color);
-      // right pillar
-      pRect(cx + hw, baseY - wallH, 4, wallH, color);
-      // arch top (approximated with stacked rects)
-      const steps = 8;
-      for (let i = 0; i <= steps; i++) {
-        const angle = Math.PI * (i / steps);
-        const ax = Math.floor(cx + (hw + 2) * Math.cos(Math.PI - angle));
-        const ay = Math.floor((baseY - wallH) - archH * Math.sin(angle));
-        pRect(ax - 2, ay, 4, (baseY - wallH) - ay + 1, color);
-      }
-      // shadow accent
-      pRect(cx - hw - 3, baseY - wallH, 1, wallH, shadowColor);
-      pRect(cx + hw + 3, baseY - wallH, 1, wallH, shadowColor);
-    }
-
-    // ---- Draw ground / grass tufts ----
-    function drawGround(groundY) {
-      pRect(0, groundY, W, H - groundY, C.darkTree);
-      // grass line
-      for (let x = 0; x < W; x += 2) {
-        const h = 1 + Math.floor(Math.sin(x * 0.7) + 1);
-        pRect(x, groundY - h, 1, h + 1, C.leaf);
-      }
-      // scattered flowers
-      const flowerPositions = [10, 25, 40, 60, 75, 85, 110, 130, 150, 170, 200, 220];
-      flowerPositions.forEach(fx => {
-        if (fx < W) {
-          pRect(fx, groundY - 3, 1, 3, C.midTree);
-          pRect(fx - 1, groundY - 4, 3, 2, C.gold);
         }
       });
     }
 
-    // ---- Vines on arch ----
-    function drawVines(cx, baseY, archW, archH, wallH) {
-      const hw = Math.floor(archW / 2);
-      // left pillar vines
-      for (let y = baseY - wallH; y < baseY; y += 3) {
-        if (Math.sin(y * 0.4) > 0.2) {
-          pRect(cx - hw - 2, y, 2, 2, C.leaf);
-          if (Math.sin(y * 0.8) > 0.5) pRect(cx - hw - 4, y + 1, 2, 1, C.sage);
+    // Slender background tree
+    function drawSlenderTree(cx, baseY, h, leafR, col1, col2) {
+      p(cx, baseY-h, 2, h, C.bark2);
+      [[0,-h+2,leafR,col1],[−leafR*0.3,-h-leafR*0.5,leafR*0.7,col2],[leafR*0.2,-h-leafR*0.8,leafR*0.5,col1]].forEach(([dx,dy,r,c]) => {
+        for (let dy2=-r;dy2<=r;dy2++) for (let dx2=-r;dx2<=r;dx2++)
+          if (dx2*dx2+dy2*dy2<=r*r) p(cx+dx+dx2,baseY+dy+dy2,1,1,c);
+      });
+    }
+
+    // Ruined spires / castle in mist
+    function drawSpires(cx, baseY) {
+      const spires = [
+        {x:cx-8, h:22, w:3},
+        {x:cx-3, h:30, w:4},
+        {x:cx+4, h:25, w:3},
+        {x:cx+9, h:18, w:2},
+      ];
+      spires.forEach(({x, h, w}) => {
+        p(x, baseY-h, w, h, C.mist2);
+        // pointed top
+        for (let i=0; i<4; i++) p(x+i*0.3, baseY-h-i, w-Math.floor(i*0.4), 1, C.mist);
+        // window slits
+        p(x+1, baseY-Math.floor(h*0.6), 1, 3, C.sky1);
+        p(x+1, baseY-Math.floor(h*0.35), 1, 2, C.sky1);
+      });
+      // arch bridge between spires
+      for (let bx=cx-4; bx<=cx+6; bx++) {
+        const arch = Math.floor(2*Math.sin(Math.PI*(bx-(cx-4))/10));
+        p(bx, baseY-12-arch, 1, 3, C.mist2);
+      }
+    }
+
+    // Road / path
+    function drawRoad(groundY) {
+      // perspective road narrowing toward center
+      const vanishX = Math.floor(W/2);
+      const vanishY = Math.floor(groundY * 0.72);
+      for (let y=vanishY; y<=groundY; y++) {
+        const t = (y - vanishY)/(groundY - vanishY);
+        const roadW = Math.floor(t * W * 0.28);
+        const rx = vanishX - Math.floor(roadW/2);
+        const col = t < 0.4 ? C.road1 : t < 0.7 ? C.road2 : C.road3;
+        p(rx, y, roadW, 1, col);
+        // edge shadow
+        p(rx, y, 2, 1, C.bark2);
+        p(rx+roadW-2, y, 2, 1, C.bark2);
+        // puddles / water reflection near bottom
+        if (t > 0.85 && Math.floor(y*0.3) % 4 === 0) {
+          p(rx + Math.floor(roadW*0.25), y, Math.floor(roadW*0.18), 1, C.puddle);
         }
       }
-      // right pillar vines
-      for (let y = baseY - wallH; y < baseY; y += 4) {
-        if (Math.cos(y * 0.35) > 0.1) {
-          pRect(cx + hw + 1, y, 2, 2, C.midTree);
+    }
+
+    // Mist layers
+    function drawMist(groundY, t) {
+      for (let layer=0; layer<3; layer++) {
+        const my = groundY - 8 - layer*6;
+        const alpha = 0.08 + layer*0.04 + 0.03*Math.sin(t*0.008 + layer);
+        for (let x=0; x<W; x++) {
+          const wave = Math.floor(3*Math.sin(x*0.05 + t*0.005 + layer));
+          p(x, my+wave, 1, 4, C.mist, alpha);
         }
       }
+    }
+
+    // Two cloaked figures walking
+    function drawFigures(groundY) {
+      const gY = groundY;
+      // Figure 1 — dark cloak (left)
+      const f1x = Math.floor(W*0.38);
+      p(f1x,   gY-14, 5, 8,  '#2a1a0e'); // cloak body
+      p(f1x+1, gY-18, 3, 5,  '#1a0e06'); // hood
+      p(f1x,   gY-8,  6, 6,  '#1a0e06'); // cloak lower
+      p(f1x+2, gY-6,  1, 6,  '#0d0905'); // shadow
+      // cloak tail
+      p(f1x-1, gY-5,  2, 5,  '#1a0e06');
+      p(f1x+4, gY-4,  2, 4,  '#1a0e06');
+
+      // Figure 2 — armoured (right of f1)
+      const f2x = f1x + 9;
+      p(f2x,   gY-16, 5, 9,  '#3d2510'); // cloak body
+      p(f2x+1, gY-20, 3, 5,  '#2a1a0e'); // hood
+      p(f2x,   gY-9,  6, 7,  '#2a1a0e'); // cloak lower
+      // helmet glint
+      p(f2x+1, gY-20, 3, 2,  C.mist);
+      // armour shoulder
+      p(f2x,   gY-15, 2, 3,  C.mist2);
+      // cloak tail
+      p(f2x-1, gY-6,  2, 6,  '#1a0e06');
+      p(f2x+5, gY-5,  2, 5,  '#2a1a0e');
+    }
+
+    // Foreground foliage overhanging top
+    function drawOverhang(groundY) {
+      // Left tree branches hanging from top
+      const branches = [
+        {x:0, w:30, leafY:0, leafH:18, c:C.midG},
+        {x:5, w:22, leafY:5, leafH:14, c:C.fern},
+        {x:8, w:18, leafY:8, leafH:12, c:C.leaf},
+        {x:12, w:10, leafY:12, leafH:8, c:C.sage},
+      ];
+      branches.forEach(({x,w,leafY,leafH,c}) => {
+        p(x, leafY, w, leafH, c);
+      });
+      // Right side overhang
+      const rbranches = [
+        {x:W-28, w:28, leafY:0, leafH:16, c:C.midG},
+        {x:W-22, w:22, leafY:4, leafH:14, c:C.fern},
+        {x:W-16, w:16, leafY:8, leafH:10, c:C.leaf},
+      ];
+      rbranches.forEach(({x,w,leafY,leafH,c}) => {
+        p(x, leafY, w, leafH, c);
+      });
     }
 
     let t = 0;
 
-    function drawScene() {
+    function draw() {
       ctx.clearRect(0, 0, W, H);
+      const groundY = Math.floor(H * 0.72);
 
-      const groundY = Math.floor(H * 0.68);
+      // Sky
+      for (let y=0; y<groundY; y++) {
+        const r = y/groundY;
+        const col = r < 0.4 ? C.sky1 : r < 0.65 ? C.sky2 : C.sky3;
+        p(0, y, W, 1, col);
+      }
 
-      // Sky gradient (pixel bands)
-      pRect(0, 0, W, H, C.sky1);
-      pRect(0, Math.floor(H*0.3), W, Math.floor(H*0.2), C.sky2);
-      pRect(0, Math.floor(H*0.5), W, Math.floor(H*0.2), C.bg);
-
-      // Stars
+      // Stars (upper sky only)
       stars.forEach(s => {
         s.twinkle += s.speed;
-        const brightness = 0.5 + 0.5 * Math.sin(s.twinkle);
-        if (brightness > 0.4) {
-          ctx.fillStyle = s.bright ? C.moonWhite : C.paleLeaf;
-          ctx.globalAlpha = brightness;
-          ctx.fillRect(s.x, s.y, s.bright ? 2 : 1, s.bright ? 2 : 1);
+        const b = 0.4 + 0.6*Math.sin(s.twinkle);
+        if (b > 0.3) {
+          ctx.globalAlpha = b * 0.7;
+          ctx.fillStyle = C.pale;
+          ctx.fillRect(s.x, s.y, s.big?2:1, s.big?2:1);
         }
       });
       ctx.globalAlpha = 1;
 
-      drawMoon();
+      // Distant misty background (light break through)
+      const lightX = Math.floor(W * 0.5);
+      for (let r=40; r>0; r--) {
+        p(lightX-r, Math.floor(groundY*0.3), r*2, Math.floor(groundY*0.6), C.mist, 0.012);
+      }
 
-      // Background trees (dark, distant)
-      drawTree(Math.floor(W*0.05), groundY, 22, 3, 3, C.darkTree, C.midTree);
-      drawTree(Math.floor(W*0.15), groundY, 18, 2, 2, C.darkTree, C.bg);
-      drawTree(Math.floor(W*0.88), groundY, 25, 3, 3, C.darkTree, C.midTree);
-      drawTree(Math.floor(W*0.95), groundY, 16, 2, 2, C.bg, C.darkTree);
+      // Far background spires (misty, faint)
+      ctx.globalAlpha = 0.45;
+      drawSpires(Math.floor(W*0.5), Math.floor(groundY*0.88));
+      ctx.globalAlpha = 1;
 
-      // Mid trees
-      drawTree(Math.floor(W*0.1), groundY, 30, 3, 4, C.midTree, C.darkTree);
-      drawTree(Math.floor(W*0.82), groundY, 28, 3, 4, C.midTree, C.leaf);
+      // Background trees (distant, dark)
+      drawSlenderTree(Math.floor(W*0.28), groundY, 35, 9, C.midG, C.fern);
+      drawSlenderTree(Math.floor(W*0.68), groundY, 30, 8, C.midG, C.darkG);
+      drawSlenderTree(Math.floor(W*0.35), groundY, 28, 7, C.fern, C.midG);
+      drawSlenderTree(Math.floor(W*0.62), groundY, 32, 9, C.fern, C.midG);
 
-      // Arch / ruin (centre)
-      const archCX = Math.floor(W / 2);
-      drawArch(archCX, groundY, 28, 20, 40, C.driedMoss, C.oliveBark);
-      drawVines(archCX, groundY, 28, 20, 40);
+      // LEFT foreground ancient tree trunk (partially off-screen)
+      drawAncientTree(-8, groundY, 22, Math.floor(groundY*0.7), 38);
 
-      // Foreground trees
-      drawTree(Math.floor(W*0.22), groundY, 35, 4, 5, C.leaf, C.midTree);
-      drawTree(Math.floor(W*0.78), groundY, 38, 4, 5, C.leaf, C.sage);
+      // Road
+      drawRoad(groundY);
 
-      drawGround(groundY);
+      // Ground
+      p(0, groundY, W, H-groundY, C.deep);
+      // grass edge
+      for (let x=0; x<W; x+=1) {
+        const gh = 1 + Math.floor(Math.abs(Math.sin(x*0.6+1))*2);
+        p(x, groundY-gh, 1, gh+1, x%3===0?C.fern:C.midG);
+      }
+
+      // RIGHT foreground ancient tree (massive, partially off-screen)
+      drawAncientTree(Math.floor(W*0.82), groundY, 30, Math.floor(groundY*0.85), 52);
+
+      // Mist
+      drawMist(groundY, t);
+
+      // Figures
+      drawFigures(groundY);
+
+      // Overhanging foliage
+      drawOverhang(groundY);
 
       // Fireflies
-      flies.forEach(p => {
-        p.x += p.vx;
-        p.y += p.vy;
-        p.alpha += p.alphaDir * p.alphaSpeed;
-        if (p.alpha >= 0.95) p.alphaDir = -1;
-        if (p.alpha <= 0.05) p.alphaDir = 1;
-        if (p.y < H * 0.3) { p.y = groundY; p.x = Math.random() * W; }
-        if (p.x < 0 || p.x > W) p.x = Math.random() * W;
-        ctx.fillStyle = p.color;
-        ctx.globalAlpha = p.alpha;
-        ctx.fillRect(Math.floor(p.x), Math.floor(p.y), 2, 2);
+      flies.forEach(f => {
+        f.x += f.vx; f.y += f.vy;
+        f.alpha += f.dir * f.spd;
+        if (f.alpha>0.95) f.dir=-1;
+        if (f.alpha<0.05) f.dir=1;
+        if (f.y < groundY*0.3) { f.y = groundY - 5; f.x = Math.random()*W; }
+        if (f.x<0||f.x>W) f.x = Math.random()*W;
+        ctx.globalAlpha = f.alpha;
+        ctx.fillStyle = f.col;
+        ctx.fillRect(Math.floor(f.x), Math.floor(f.y), 2, 2);
       });
       ctx.globalAlpha = 1;
 
       t++;
-      requestAnimationFrame(drawScene);
+      requestAnimationFrame(draw);
     }
 
     resize();
     initStars();
     initFlies();
-    drawScene();
-
-    window.addEventListener('resize', () => {
-      resize();
-      initStars();
-      initFlies();
-    });
+    draw();
+    window.addEventListener('resize', () => { resize(); initStars(); initFlies(); });
   </script>
 </body>
 </html>'''
 
 with open("index.html", "w") as f:
     f.write(html)
-
 print("done")
