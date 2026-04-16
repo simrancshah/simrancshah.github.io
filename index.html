@@ -22,12 +22,11 @@
       background-repeat: no-repeat;
     }
 
-    /* dark overlay so text stays readable */
     body::before {
       content: '';
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.35);
+      background: rgba(0, 0, 0, 0.3);
       z-index: 0;
     }
 
@@ -39,6 +38,82 @@
       z-index: 1;
     }
 
+    /* ---- NAV ---- */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 200;
+      background: rgba(21, 34, 33, 0.78);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-top: 1px solid rgba(203, 216, 155, 0.25);
+      border-bottom: 1px solid rgba(203, 216, 155, 0.25);
+      padding: 0 2rem;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-name {
+      font-size: 0.45rem;
+      letter-spacing: 0.18em;
+      color: #c0b455;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 0.42rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #cbd89b;
+      text-decoration: none;
+      position: relative;
+      padding-bottom: 3px;
+      transition: color 0.3s ease;
+    }
+
+    /* vine underline grows left to right on hover */
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0%;
+      height: 1px;
+      background: #c0b455;
+      transition: width 0.35s ease;
+    }
+
+    .nav-links a:hover {
+      color: #c0b455;
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    /* active page indicator */
+    .nav-links a.active {
+      color: #c0b455;
+    }
+
+    .nav-links a.active::after {
+      width: 100%;
+      background: #c0b455;
+      opacity: 0.5;
+    }
+
+    /* ---- CENTRE CONTENT ---- */
     .container {
       position: fixed;
       top: 50%;
@@ -51,10 +126,10 @@
     .status {
       display: inline-block;
       font-size: 0.6rem;
-      color: #cbbb54;
+      color: #c0b455;
       padding: 0.6rem 1.2rem;
-      border: 2px solid #cbbb54;
-      box-shadow: 4px 4px 0px #616536, -2px -2px 0px #8e914e;
+      border: 2px solid #c0b455;
+      box-shadow: 4px 4px 0px #7c7938, -2px -2px 0px #86b084;
       letter-spacing: 0.12em;
       animation: flicker 4s step-end infinite;
     }
@@ -67,24 +142,54 @@
       99% { opacity:1; }
     }
 
+    /* ---- FOOTER ---- */
     .footer {
       position: fixed;
       bottom: 1.5rem;
       left: 50%;
       transform: translateX(-50%);
-      font-size: 0.45rem;
+      font-size: 0.42rem;
       letter-spacing: 0.1em;
-      color: #a9c18a;
+      color: #5c896b;
       z-index: 100;
     }
+    .footer a { color: #cbd89b; text-decoration: none; transition: color 0.3s; }
+    .footer a:hover { color: #c0b455; }
 
-    .footer a { color: #cbbb54; text-decoration: none; }
-    .footer a:hover { color: #ffffff; }
+    /* ---- PAGE TRANSITION OVERLAY ---- */
+    #transition-overlay {
+      position: fixed;
+      inset: 0;
+      background: #0d1a14;
+      z-index: 999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+    }
+
+    #transition-overlay.fade-in {
+      opacity: 1;
+      pointer-events: all;
+    }
   </style>
 </head>
 <body>
 
+  <div id="transition-overlay"></div>
+
   <canvas id="c"></canvas>
+
+  <nav>
+    <span class="nav-name">Simran Shah</span>
+     <ul class="nav-links">
+      <li><a href="index.html" class="active">Home</a></li>
+      <li><a href="dog.html">Pictures of my Dog</a></li>
+      <li><a href="cv.html">CV (hi recruiters!)</a></li>
+      <li><a href="movies.html">Movie Reviews</a></li>
+      <li><a href="books.html">Books I'm Reading</a></li>
+      <li><a href="music.html">Music I Listen To</a></li>
+    </ul>
+  </nav>
 
   <div class="container">
     <span class="status">WORK IN PROGRESS</span>
@@ -95,6 +200,28 @@
   </p>
 
   <script>
+    // ---- Page transition on nav link click ----
+    const overlay = document.getElementById('transition-overlay');
+
+    document.querySelectorAll('.nav-links a').forEach(link => {
+      link.addEventListener('click', function(e) {
+        const href = this.getAttribute('href');
+        // don't transition if it's the current page
+        if (this.classList.contains('active')) return;
+        e.preventDefault();
+        overlay.classList.add('fade-in');
+        setTimeout(() => {
+          window.location.href = href;
+        }, 500);
+      });
+    });
+
+    // Fade in on page load
+    window.addEventListener('load', () => {
+      overlay.classList.remove('fade-in');
+    });
+
+    // ---- Fireflies ----
     const canvas = document.getElementById('c');
     const ctx = canvas.getContext('2d');
     let W, H;
@@ -118,23 +245,20 @@
           alpha: rf(0.1, 0.8),
           dir: Math.random() > 0.5 ? 1 : -1,
           spd: rf(0.005, 0.018),
-          col: Math.random() > 0.5 ? '#cbbb54' : '#72aa83'
+          col: Math.random() > 0.5 ? '#c0b455' : '#86b084'
         });
       }
     }
 
     function draw() {
       ctx.clearRect(0, 0, W, H);
-
       flies.forEach(f => {
-        f.x += f.vx;
-        f.y += f.vy;
+        f.x += f.vx; f.y += f.vy;
         f.alpha += f.dir * f.spd;
         if (f.alpha > 0.9) f.dir = -1;
         if (f.alpha < 0.05) f.dir = 1;
         if (f.y < H * 0.1) { f.y = H * 0.85; f.x = rf(0, W); }
         if (f.x < -10 || f.x > W + 10) f.x = rf(0, W);
-
         ctx.save();
         ctx.globalAlpha = f.alpha;
         ctx.fillStyle = f.col;
@@ -143,7 +267,6 @@
         ctx.fill();
         ctx.restore();
       });
-
       requestAnimationFrame(draw);
     }
 
