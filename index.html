@@ -1,11 +1,161 @@
-body {
-  background: linear-gradient(270deg, #1e2b26, #3b604f, #ccbd56, #2f4436);
-  background-size: 600% 600%;
-  animation: gradientShift 12s ease infinite;
-}
+'''<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>simran shah — work in progress</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Lato:wght@300;400&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-@keyframes gradientShift {
-  0%   { background-position: 0% 50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Lato', sans-serif;
+      background: linear-gradient(270deg, #1e2b26, #3b604f, #1a2a1f, #2f4436, #1e2b26);
+      background-size: 800% 800%;
+      animation: gradientShift 18s ease infinite;
+      color: #d7dfa2;
+      overflow: hidden;
+      position: relative;
+    }
+
+    @keyframes gradientShift {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .status {
+      display: inline-block;
+      font-family: 'Lato', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #1e2b26;
+      background: #ccbd56;
+      padding: 0.4rem 1rem;
+      border-radius: 2px;
+    }
+
+    .footer {
+      position: fixed;
+      bottom: 1.5rem;
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      color: #578468;
+      z-index: 1;
+    }
+
+    .footer a {
+      color: #74ab85;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .footer a:hover {
+      color: #ccbd56;
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="fireflies"></canvas>
+
+  <div class="container">
+    <span class="status">Work in progress</span>
+  </div>
+
+  <p class="footer">
+    <a href="https://www.linkedin.com/in/simrancs1998/" target="_blank">LinkedIn</a>
+  </p>
+
+  <script>
+    const canvas = document.getElementById('fireflies');
+    const ctx = canvas.getContext('2d');
+
+    let W, H, particles;
+
+    function resize() {
+      W = canvas.width = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+    }
+
+    function randomBetween(a, b) {
+      return a + Math.random() * (b - a);
+    }
+
+    function createParticles(n) {
+      return Array.from({ length: n }, () => ({
+        x: randomBetween(0, W),
+        y: randomBetween(0, H),
+        r: randomBetween(1, 2.5),
+        speedX: randomBetween(-0.3, 0.3),
+        speedY: randomBetween(-0.5, -0.1),
+        alpha: randomBetween(0.2, 0.9),
+        alphaDir: Math.random() > 0.5 ? 1 : -1,
+        alphaSpeed: randomBetween(0.003, 0.012),
+        color: Math.random() > 0.4 ? '#ccbd56' : '#a9c18a',
+      }));
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      particles.forEach(p => {
+        p.x += p.speedX;
+        p.y += p.speedY;
+        p.alpha += p.alphaDir * p.alphaSpeed;
+
+        if (p.alpha >= 0.9) p.alphaDir = -1;
+        if (p.alpha <= 0.1) p.alphaDir = 1;
+        if (p.y < -10) { p.y = H + 10; p.x = randomBetween(0, W); }
+        if (p.x < -10 || p.x > W + 10) p.x = randomBetween(0, W);
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = p.alpha;
+        ctx.fill();
+      });
+      ctx.globalAlpha = 1;
+      requestAnimationFrame(draw);
+    }
+
+    resize();
+    particles = createParticles(55);
+    draw();
+    window.addEventListener('resize', () => {
+      resize();
+      particles = createParticles(55);
+    });
+  </script>
+</body>
+</html>'''
+
+with open("index.html", "w") as f:
+    f.write(html)
+
+print("done")
