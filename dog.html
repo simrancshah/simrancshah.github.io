@@ -157,19 +157,16 @@
     const overlay = document.getElementById('transition-overlay');
     document.querySelectorAll('.nav-links a').forEach(link => {
       link.addEventListener('click', function(e) {
-       document.querySelectorAll('.nav-links a').forEach(link => {
-  link.addEventListener('click', function(e) {
-    if (this.classList.contains('active')) return;
-    const href = this.getAttribute('href');
-    if (href === '/' || href === '/index.html') {
-      return; // let browser handle it normally
-    }
-    e.preventDefault();
-    overlay.classList.add('fade-in');
-    setTimeout(() => { window.location.href = href; }, 500);
-  });
-});
-        window.addEventListener('load', () => { overlay.classList.remove('fade-in'); });
+        if (this.classList.contains('active')) return;
+        const href = this.getAttribute('href');
+        if (href === '/' || href === '/index.html') return;
+        e.preventDefault();
+        overlay.classList.add('fade-in');
+        setTimeout(() => { window.location.href = href; }, 500);
+      });
+    });
+    window.addEventListener('load', () => { overlay.classList.remove('fade-in'); });
+
     const canvas = document.getElementById('c');
     const ctx = canvas.getContext('2d');
     let W, H;
