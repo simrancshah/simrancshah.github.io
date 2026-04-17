@@ -7,7 +7,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
       min-height: 100vh;
       font-family: 'Press Start 2P', monospace;
@@ -17,7 +16,6 @@
       background-repeat: no-repeat;
       background-attachment: fixed;
     }
-
     body::before {
       content: '';
       position: fixed;
@@ -25,7 +23,6 @@
       background: rgba(0, 0, 0, 0.3);
       z-index: 0;
     }
-
     canvas {
       position: fixed;
       top: 0; left: 0;
@@ -33,7 +30,6 @@
       pointer-events: none;
       z-index: 1;
     }
-
     nav {
       position: fixed;
       top: 0; left: 0; right: 0;
@@ -49,7 +45,6 @@
       align-items: center;
       justify-content: space-between;
     }
-
     .nav-name {
       font-size: 0.45rem;
       letter-spacing: 0.18em;
@@ -57,13 +52,11 @@
       text-transform: uppercase;
       white-space: nowrap;
     }
-
     .nav-links {
       display: flex;
       gap: 2rem;
       list-style: none;
     }
-
     .nav-links a {
       font-size: 0.42rem;
       letter-spacing: 0.15em;
@@ -74,7 +67,6 @@
       padding-bottom: 3px;
       transition: color 0.3s ease;
     }
-
     .nav-links a::after {
       content: '';
       position: absolute;
@@ -84,11 +76,44 @@
       background: #c0b455;
       transition: width 0.35s ease;
     }
-
     .nav-links a:hover { color: #c0b455; }
     .nav-links a:hover::after { width: 100%; }
     .nav-links a.active { color: #c0b455; }
     .nav-links a.active::after { width: 100%; background: #c0b455; opacity: 0.5; }
+
+    /* Hamburger button */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      z-index: 300;
+    }
+    .hamburger span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: #cbd89b;
+      transition: all 0.3s ease;
+    }
+
+    /* Mobile menu */
+    @media (max-width: 768px) {
+      .hamburger { display: flex; }
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        gap: 1.5rem;
+        position: fixed;
+        top: 48px; left: 0; right: 0;
+        background: rgba(21, 34, 33, 0.97);
+        padding: 2rem;
+        z-index: 199;
+        border-bottom: 1px solid rgba(203, 216, 155, 0.25);
+      }
+      .nav-links.open { display: flex; }
+      .album-grid { grid-template-columns: 1fr; padding: 0 1rem; }
+    }
 
     .page-content {
       position: relative;
@@ -97,13 +122,11 @@
       max-width: 960px;
       margin: 0 auto;
     }
-
     .page-header-wrap {
       text-align: center;
       margin-bottom: 2.5rem;
       padding-top: 2rem;
     }
-
     .page-header {
       display: inline-block;
       background: rgba(21, 34, 33, 0.78);
@@ -113,7 +136,6 @@
       padding: 0.8rem 1.6rem;
       text-align: center;
     }
-
     .page-title {
       font-size: 0.55rem;
       color: #c0b455;
@@ -121,20 +143,17 @@
       text-transform: uppercase;
       margin-bottom: 0.5rem;
     }
-
     .page-subtitle {
       font-size: 0.35rem;
       color: #5c896b;
       letter-spacing: 0.12em;
     }
-
     .album-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
       gap: 1.8rem;
       padding: 0 2rem;
     }
-
     .album-card {
       background: rgba(13, 26, 20, 0.75);
       border: 1px solid rgba(203, 216, 155, 0.2);
@@ -142,10 +161,8 @@
       cursor: pointer;
       transition: border-color 0.3s ease;
     }
-
     .album-card:hover { border-color: rgba(192, 180, 85, 0.6); }
     .album-card.open { border-color: #c0b455; }
-
     .album-cover {
       width: 100%;
       aspect-ratio: 1;
@@ -154,15 +171,12 @@
       filter: brightness(0.88);
       transition: filter 0.3s;
     }
-
     .album-card:hover .album-cover,
     .album-card.open .album-cover { filter: brightness(1); }
-
     .album-info {
       padding: 0.8rem;
       border-top: 1px solid rgba(203, 216, 155, 0.15);
     }
-
     .album-title {
       font-size: 0.42rem;
       color: #cbd89b;
@@ -171,45 +185,32 @@
       margin-bottom: 0.4rem;
       text-transform: uppercase;
     }
-
     .album-artist {
       font-size: 0.42rem;
       color: #5c896b;
       letter-spacing: 0.1em;
       text-transform: uppercase;
     }
-
     .album-embed {
       max-height: 0;
       overflow: hidden;
       transition: max-height 0.45s ease;
     }
-
-    .album-card.open .album-embed {
-      max-height: var(--embed-height, 160px);
+    .album-card.open .album-embed { max-height: var(--embed-height, 160px); }
+    .album-embed iframe { width: 100%; border: none; display: block; }
+    .footer {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      text-align: center;
+      font-size: 0.42rem;
+      letter-spacing: 0.1em;
+      color: #5c896b;
     }
-
-    .album-embed iframe {
-      width: 100%;
-      border: none;
-      display: block;
-    }
-
-.footer {
-  position: fixed;
-  bottom: 1.5rem;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 100;
-  text-align: center;
-  font-size: 0.42rem;
-  letter-spacing: 0.1em;
-  color: #5c896b;
-}
-
     .footer a { color: #cbd89b; text-decoration: none; transition: color 0.3s; }
     .footer a:hover { color: #c0b455; }
-
     #transition-overlay {
       position: fixed;
       inset: 0;
@@ -219,7 +220,6 @@
       pointer-events: none;
       transition: opacity 0.5s ease;
     }
-
     #transition-overlay.fade-in { opacity: 1; pointer-events: all; }
   </style>
 </head>
@@ -229,7 +229,10 @@
 
   <nav>
     <span class="nav-name">Simran Shah</span>
-    <ul class="nav-links">
+    <div class="hamburger" id="hamburger">
+      <span></span><span></span><span></span>
+    </div>
+    <ul class="nav-links" id="nav-links">
       <li><a href="/">Home</a></li>
       <li><a href="dog.html">Pictures of my dog</a></li>
       <li><a href="cv.html">CV</a></li>
@@ -244,267 +247,272 @@
     <div class="page-header-wrap">
       <div class="page-header">
         <h1 class="page-title">Jams</h1>
-        </div>
+      </div>
     </div>
 
     <div class="album-grid">
 
-  <!-- Bad Bunny -->
-  <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 450px;">
-    <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b273bbd45c8d36e0e045ef640411" alt="Debí Tirar Más Fotos" />
-    <div class="album-info">
-      <div class="album-title">Debí Tirar Más Fotos</div>
-      <div class="album-artist">Bad Bunny</div>
-    </div>
-    <div class="album-embed">
-      <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="450" style="width:100%;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/in/album/deb%C3%AD-tirar-m%C3%A1s-fotos/1787022393"></iframe>
+      <!-- Bad Bunny -->
+      <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 450px;">
+        <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b273bbd45c8d36e0e045ef640411" alt="Debí Tirar Más Fotos" />
+        <div class="album-info">
+          <div class="album-title">Debí Tirar Más Fotos</div>
+          <div class="album-artist">Bad Bunny</div>
+        </div>
+        <div class="album-embed">
+          <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="450" style="width:100%;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/in/album/deb%C3%AD-tirar-m%C3%A1s-fotos/1787022393"></iframe>
+        </div>
+      </div>
+
+      <!-- Clairo -->
+      <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 450px;">
+        <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b273193c2fafdce8f116b5ca0a78" alt="Charm" />
+        <div class="album-info">
+          <div class="album-title">Charm</div>
+          <div class="album-artist">Clairo</div>
+        </div>
+        <div class="album-embed">
+          <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="450" style="width:100%;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/in/album/charm/1742301413"></iframe>
+        </div>
+      </div>
+
+      <!-- ROSALÍA -->
+      <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 450px;">
+        <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b27393ee2e2f2dfb7de9befcc164" alt="LUX" />
+        <div class="album-info">
+          <div class="album-title">LUX</div>
+          <div class="album-artist">ROSALÍA</div>
+        </div>
+        <div class="album-embed">
+          <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="450" style="width:100%;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/in/album/lux/1848167516"></iframe>
+        </div>
+      </div>
+
+      <!-- Project Hail Mary -->
+      <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 450px;">
+        <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b273386bb0988c7e5707d90f4f59" alt="Project Hail Mary OST" />
+        <div class="album-info">
+          <div class="album-title">Project Hail Mary</div>
+          <div class="album-artist">Original Motion Picture Score</div>
+        </div>
+        <div class="album-embed">
+          <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="450" style="width:100%;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/in/album/project-hail-mary-original-motion-picture-score/1884144779"></iframe>
+        </div>
+      </div>
+
+      <!-- Kylie Minogue -->
+      <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 450px;">
+        <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b2736531dcfcbc99b82be7eec9f0" alt="Fever (Deluxe Edition)" />
+        <div class="album-info">
+          <div class="album-title">Fever (Deluxe Edition)</div>
+          <div class="album-artist">Kylie Minogue</div>
+        </div>
+        <div class="album-embed">
+          <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="450" style="width:100%;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/in/album/fever-deluxe-edition/726320287"></iframe>
+        </div>
+      </div>
+
+      <!-- MARINA -->
+      <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 450px;">
+        <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b2737ce4002911f389a2a4465d6f" alt="Princess of Power" />
+        <div class="album-info">
+          <div class="album-title">Princess of Power</div>
+          <div class="album-artist">MARINA</div>
+        </div>
+        <div class="album-embed">
+          <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="450" style="width:100%;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/in/album/princess-of-power/1807308262"></iframe>
+        </div>
+      </div>
+
+      <!-- Son Lux -->
+      <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 450px;">
+        <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b273ff1e91752a8e5e88ef9d179b" alt="Thunderbolts* OST" />
+        <div class="album-info">
+          <div class="album-title">Thunderbolts* (Original Motion Picture Soundtrack)</div>
+          <div class="album-artist">Son Lux</div>
+        </div>
+        <div class="album-embed">
+          <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="450" style="width:100%;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/in/album/thunderbolts-original-motion-picture-soundtrack/1810533249"></iframe>
+        </div>
+      </div>
+
+      <!-- Frou Frou -->
+      <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 450px;">
+        <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b2732d0c0ef37bf28fe4b2b35789" alt="Details" />
+        <div class="album-info">
+          <div class="album-title">Details</div>
+          <div class="album-artist">Frou Frou</div>
+        </div>
+        <div class="album-embed">
+          <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="450" style="width:100%;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/in/album/details/1440927446"></iframe>
+        </div>
+      </div>
+
+      <!-- Everything Everything -->
+      <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 450px;">
+        <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b27373d50b9ec2d2a127a06d21d3" alt="Mountainhead" />
+        <div class="album-info">
+          <div class="album-title">Mountainhead</div>
+          <div class="album-artist">Everything Everything</div>
+        </div>
+        <div class="album-embed">
+          <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="450" style="width:100%;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/in/album/mountainhead/1710738572"></iframe>
+        </div>
+      </div>
+
+      <!-- West Side Story -->
+      <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 450px;">
+        <img class="album-cover" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRJJQpmM8dCY387lE5NicQ5x4I7CibsEwW1_g&s" alt="West Side Story 2021" />
+        <div class="album-info">
+          <div class="album-title">West Side Story (2021 Motion Picture Soundtrack)</div>
+          <div class="album-artist">Various Artists</div>
+        </div>
+        <div class="album-embed">
+          <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="450" style="width:100%;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/in/album/west-side-story-2021-motion-picture-soundtrack/1597020481"></iframe>
+        </div>
+      </div>
+
+      <!-- Fontaines D.C. -->
+      <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 450px;">
+        <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b273f69e28716be1331924f25f2e" alt="Romance" />
+        <div class="album-info">
+          <div class="album-title">Romance</div>
+          <div class="album-artist">Fontaines D.C.</div>
+        </div>
+        <div class="album-embed">
+          <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="450" style="width:100%;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/in/album/romance/1737990072"></iframe>
+        </div>
+      </div>
+
+      <!-- Company -->
+      <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 450px;">
+        <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b2730c16402a73f6074645d694bf" alt="Company 2006 Broadway Revival Cast" />
+        <div class="album-info">
+          <div class="album-title">Company (2006 Broadway Revival Cast)</div>
+          <div class="album-artist">Original Broadway Cast</div>
+        </div>
+        <div class="album-embed">
+          <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="450" style="width:100%;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/in/album/company-2006-broadway-revival-cast/214976495"></iframe>
+        </div>
+      </div>
+
+      <!-- Charli xcx -->
+      <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 450px;">
+        <img class="album-cover" src="https://i.scdn.co/image/ab67616d00001e02fa1fb2582857abf6fbc01248" alt="Brat" />
+        <div class="album-info">
+          <div class="album-title">Brat and it's the same but there's three more songs so it's not</div>
+          <div class="album-artist">Charli xcx</div>
+        </div>
+        <div class="album-embed">
+          <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="450" style="width:100%;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/in/album/brat-and-its-the-same-but-theres-three-more-songs-so-its-not/1750468113"></iframe>
+        </div>
+      </div>
+
+      <!-- Spice Girls -->
+      <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 450px;">
+        <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b273f660420bcef3b16b4c7e5f2b" alt="Spiceworld" />
+        <div class="album-info">
+          <div class="album-title">Spiceworld</div>
+          <div class="album-artist">Spice Girls</div>
+        </div>
+        <div class="album-embed">
+          <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="450" style="width:100%;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/in/album/spiceworld/724613654"></iframe>
+        </div>
+      </div>
+
+      <!-- Laufey -->
+      <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 450px;">
+        <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b2736ec6bdb1b31c8cb6b1d3511f" alt="A Matter of Time: The Final Hour" />
+        <div class="album-info">
+          <div class="album-title">A Matter of Time: The Final Hour</div>
+          <div class="album-artist">Laufey</div>
+        </div>
+        <div class="album-embed">
+          <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="450" style="width:100%;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/in/album/a-matter-of-time-the-final-hour/1873116455"></iframe>
+        </div>
+      </div>
+
+      <!-- Harry Styles -->
+      <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 450px;">
+        <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b27374959140f550b11049c18a38" alt="Kiss All The Time. Disco, Occasionally." />
+        <div class="album-info">
+          <div class="album-title">Kiss All The Time. Disco, Occasionally.</div>
+          <div class="album-artist">Harry Styles</div>
+        </div>
+        <div class="album-embed">
+          <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="450" style="width:100%;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/in/album/kiss-all-the-time-disco-occasionally/1870984032"></iframe>
+        </div>
+      </div>
+
+      <!-- Ariana Grande -->
+      <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 450px;">
+        <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b2735ab3c842fde848df7a4ee6d9" alt="Eternal Sunshine Deluxe" />
+        <div class="album-info">
+          <div class="album-title">Eternal Sunshine Deluxe: Brighter Days Ahead</div>
+          <div class="album-artist">Ariana Grande</div>
+        </div>
+        <div class="album-embed">
+          <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="450" style="width:100%;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/in/album/eternal-sunshine-deluxe-brighter-days-ahead/1800579610"></iframe>
+        </div>
+      </div>
+
+      <!-- Trixie Mattel -->
+      <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 450px;">
+        <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b273e4fa718e6010a7158bb9c805" alt="Solid Pink Disco 2025 (DJ Mix)" />
+        <div class="album-info">
+          <div class="album-title">Solid Pink Disco 2025 (DJ Mix)</div>
+          <div class="album-artist">Trixie Mattel</div>
+        </div>
+        <div class="album-embed">
+          <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="450" style="width:100%;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/in/album/solid-pink-disco-2025-dj-mix/1837299208"></iframe>
+        </div>
+      </div>
+
+      <!-- twenty one pilots -->
+      <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 450px;">
+        <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b273b5b991fd65053a3acb8c2db2" alt="Drag Path" />
+        <div class="album-info">
+          <div class="album-title">Drag Path</div>
+          <div class="album-artist">twenty one pilots</div>
+        </div>
+        <div class="album-embed">
+          <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="450" style="width:100%;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/in/album/drag-path-single/1876977594"></iframe>
+        </div>
+      </div>
+
+      <!-- Hayley Williams -->
+      <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 450px;">
+        <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b273850c0e3fdd3b3b5cb0b7fa63" alt="Ego Death at a Bachelorette Party" />
+        <div class="album-info">
+          <div class="album-title">Ego Death at a Bachelorette Party</div>
+          <div class="album-artist">Hayley Williams</div>
+        </div>
+        <div class="album-embed">
+          <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="450" style="width:100%;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/in/album/ego-death-at-a-bachelorette-party/1850011909"></iframe>
+        </div>
+      </div>
+
     </div>
   </div>
-
-  <!-- Clairo -->
-  <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 450px;">
-    <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b273193c2fafdce8f116b5ca0a78" alt="Charm" />
-    <div class="album-info">
-      <div class="album-title">Charm</div>
-      <div class="album-artist">Clairo</div>
-    </div>
-    <div class="album-embed">
-      <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="450" style="width:100%;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/in/album/charm/1742301413"></iframe>
-    </div>
-  </div>
-
-  <!-- ROSALÍA -->
-  <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 450px;">
-    <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b27393ee2e2f2dfb7de9befcc164" alt="LUX" />
-    <div class="album-info">
-      <div class="album-title">LUX</div>
-      <div class="album-artist">ROSALÍA</div>
-    </div>
-    <div class="album-embed">
-      <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="450" style="width:100%;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/in/album/lux/1848167516"></iframe>
-    </div>
-  </div>
-
-  <!-- Project Hail Mary -->
-  <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 450px;">
-    <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b273386bb0988c7e5707d90f4f59" alt="Project Hail Mary OST" />
-    <div class="album-info">
-      <div class="album-title">Project Hail Mary</div>
-      <div class="album-artist">Original Motion Picture Score</div>
-    </div>
-    <div class="album-embed">
-      <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="450" style="width:100%;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/in/album/project-hail-mary-original-motion-picture-score/1884144779"></iframe>
-    </div>
-  </div>
-
-  <!-- Kylie Minogue -->
-  <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 450px;">
-    <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b2736531dcfcbc99b82be7eec9f0" alt="Fever (Deluxe Edition)" />
-    <div class="album-info">
-      <div class="album-title">Fever (Deluxe Edition)</div>
-      <div class="album-artist">Kylie Minogue</div>
-    </div>
-    <div class="album-embed">
-      <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="450" style="width:100%;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/in/album/fever-deluxe-edition/726320287"></iframe>
-    </div>
-  </div>
-
-  <!-- MARINA -->
-  <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 450px;">
-    <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b2737ce4002911f389a2a4465d6f" alt="Princess of Power" />
-    <div class="album-info">
-      <div class="album-title">Princess of Power</div>
-      <div class="album-artist">MARINA</div>
-    </div>
-    <div class="album-embed">
-      <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="450" style="width:100%;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/in/album/princess-of-power/1807308262"></iframe>
-    </div>
-  </div>
-
-  <!-- Son Lux -->
-  <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 450px;">
-    <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b273ff1e91752a8e5e88ef9d179b" alt="Thunderbolts* OST" />
-    <div class="album-info">
-      <div class="album-title">Thunderbolts* (Original Motion Picture Soundtrack)</div>
-      <div class="album-artist">Son Lux</div>
-    </div>
-    <div class="album-embed">
-      <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="450" style="width:100%;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/in/album/thunderbolts-original-motion-picture-soundtrack/1810533249"></iframe>
-    </div>
-  </div>
-
-  <!-- Frou Frou -->
-  <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 450px;">
-    <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b2732d0c0ef37bf28fe4b2b35789" alt="Details" />
-    <div class="album-info">
-      <div class="album-title">Details</div>
-      <div class="album-artist">Frou Frou</div>
-    </div>
-    <div class="album-embed">
-      <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="450" style="width:100%;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/in/album/details/1440927446"></iframe>
-    </div>
-  </div>
-
-  <!-- Everything Everything -->
-  <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 450px;">
-    <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b27373d50b9ec2d2a127a06d21d3" alt="Mountainhead" />
-    <div class="album-info">
-      <div class="album-title">Mountainhead</div>
-      <div class="album-artist">Everything Everything</div>
-    </div>
-    <div class="album-embed">
-      <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="450" style="width:100%;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/in/album/mountainhead/1710738572"></iframe>
-    </div>
-  </div>
-
-  <!-- West Side Story -->
-  <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 450px;">
-    <img class="album-cover" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRJJQpmM8dCY387lE5NicQ5x4I7CibsEwW1_g&s" alt="West Side Story 2021" />
-    <div class="album-info">
-      <div class="album-title">West Side Story (2021 Motion Picture Soundtrack)</div>
-      <div class="album-artist">Various Artists</div>
-    </div>
-    <div class="album-embed">
-      <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="450" style="width:100%;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/in/album/west-side-story-2021-motion-picture-soundtrack/1597020481"></iframe>
-    </div>
-  </div>
-
-  <!-- Fontaines D.C. -->
-  <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 450px;">
-    <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b273f69e28716be1331924f25f2e" alt="Romance" />
-    <div class="album-info">
-      <div class="album-title">Romance</div>
-      <div class="album-artist">Fontaines D.C.</div>
-    </div>
-    <div class="album-embed">
-      <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="450" style="width:100%;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/in/album/romance/1737990072"></iframe>
-    </div>
-  </div>
-
-  <!-- Company -->
-  <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 450px;">
-    <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b2730c16402a73f6074645d694bf" alt="Company 2006 Broadway Revival Cast" />
-    <div class="album-info">
-      <div class="album-title">Company (2006 Broadway Revival Cast)</div>
-      <div class="album-artist">Original Broadway Cast</div>
-    </div>
-    <div class="album-embed">
-      <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="450" style="width:100%;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/in/album/company-2006-broadway-revival-cast/214976495"></iframe>
-    </div>
-  </div>
-
-  <!-- Charli xcx -->
-  <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 450px;">
-    <img class="album-cover" src="https://i.scdn.co/image/ab67616d00001e02fa1fb2582857abf6fbc01248" alt="Brat" />
-    <div class="album-info">
-      <div class="album-title">Brat and it's the same but there's three more songs so it's not</div>
-      <div class="album-artist">Charli xcx</div>
-    </div>
-    <div class="album-embed">
-      <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="450" style="width:100%;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/in/album/brat-and-its-the-same-but-theres-three-more-songs-so-its-not/1750468113"></iframe>
-    </div>
-  </div>
-
-  <!-- Spice Girls -->
-  <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 450px;">
-    <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b273f660420bcef3b16b4c7e5f2b" alt="Spiceworld" />
-    <div class="album-info">
-      <div class="album-title">Spiceworld</div>
-      <div class="album-artist">Spice Girls</div>
-    </div>
-    <div class="album-embed">
-      <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="450" style="width:100%;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/in/album/spiceworld/724613654"></iframe>
-    </div>
-  </div>
-
-  <!-- Laufey -->
-  <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 450px;">
-    <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b2736ec6bdb1b31c8cb6b1d3511f" alt="A Matter of Time: The Final Hour" />
-    <div class="album-info">
-      <div class="album-title">A Matter of Time: The Final Hour</div>
-      <div class="album-artist">Laufey</div>
-    </div>
-    <div class="album-embed">
-      <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="450" style="width:100%;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/in/album/a-matter-of-time-the-final-hour/1873116455"></iframe>
-    </div>
-  </div>
-
-  <!-- Harry Styles -->
-  <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 450px;">
-    <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b27374959140f550b11049c18a38" alt="Kiss All The Time. Disco, Occasionally." />
-    <div class="album-info">
-      <div class="album-title">Kiss All The Time. Disco, Occasionally.</div>
-      <div class="album-artist">Harry Styles</div>
-    </div>
-    <div class="album-embed">
-      <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="450" style="width:100%;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/in/album/kiss-all-the-time-disco-occasionally/1870984032"></iframe>
-    </div>
-  </div>
-
-  <!-- Ariana Grande -->
-  <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 450px;">
-    <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b2735ab3c842fde848df7a4ee6d9" alt="Eternal Sunshine Deluxe" />
-    <div class="album-info">
-      <div class="album-title">Eternal Sunshine Deluxe: Brighter Days Ahead</div>
-      <div class="album-artist">Ariana Grande</div>
-    </div>
-    <div class="album-embed">
-      <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="450" style="width:100%;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/in/album/eternal-sunshine-deluxe-brighter-days-ahead/1800579610"></iframe>
-    </div>
-  </div>
-
-  <!-- Trixie Mattel -->
-  <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 450px;">
-    <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b273e4fa718e6010a7158bb9c805" alt="Solid Pink Disco 2025 (DJ Mix)" />
-    <div class="album-info">
-      <div class="album-title">Solid Pink Disco 2025 (DJ Mix)</div>
-      <div class="album-artist">Trixie Mattel</div>
-    </div>
-    <div class="album-embed">
-      <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="450" style="width:100%;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/in/album/solid-pink-disco-2025-dj-mix/1837299208"></iframe>
-    </div>
-  </div>
-
-  <!-- twenty one pilots -->
-  <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 450px;">
-    <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b273b5b991fd65053a3acb8c2db2" alt="Drag Path" />
-    <div class="album-info">
-      <div class="album-title">Drag Path</div>
-      <div class="album-artist">twenty one pilots</div>
-    </div>
-    <div class="album-embed">
-      <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="450" style="width:100%;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/in/album/drag-path-single/1876977594"></iframe>
-    </div>
-  </div>
-
-  <!-- Hayley Williams -->
-  <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 450px;">
-    <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b273850c0e3fdd3b3b5cb0b7fa63" alt="Ego Death at a Bachelorette Party" />
-    <div class="album-info">
-      <div class="album-title">Ego Death at a Bachelorette Party</div>
-      <div class="album-artist">Hayley Williams</div>
-    </div>
-    <div class="album-embed">
-      <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="450" style="width:100%;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/in/album/ego-death-at-a-bachelorette-party/1850011909"></iframe>
-    </div>
-  </div>
-
-     </div> <!-- closes last .album-card -->
-
-    </div> <!-- closes .album-grid -->
-  </div> <!-- closes .page-content -->
 
   <footer class="footer">
     <a href="https://www.linkedin.com/in/simrancs1998/" target="_blank">LinkedIn</a>
   </footer>
 
   <script>
+    // Hamburger toggle
+    const hamburger = document.getElementById('hamburger');
+    const navLinks = document.getElementById('nav-links');
+    hamburger.addEventListener('click', () => { navLinks.classList.toggle('open'); });
+
+    // Album toggle
     function toggleAlbum(card) {
       const wasOpen = card.classList.contains('open');
       document.querySelectorAll('.album-card.open').forEach(c => c.classList.remove('open'));
       if (!wasOpen) card.classList.add('open');
     }
 
+    // Page transitions
     const overlay = document.getElementById('transition-overlay');
     document.querySelectorAll('.nav-links a').forEach(link => {
       link.addEventListener('click', function(e) {
@@ -517,6 +525,7 @@
     });
     window.addEventListener('load', () => { overlay.classList.remove('fade-in'); });
 
+    // Canvas animation
     const canvas = document.getElementById('c');
     const ctx = canvas.getContext('2d');
     let W, H;
