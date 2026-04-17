@@ -30,21 +30,23 @@
       pointer-events: none;
       z-index: 1;
     }
-   nav {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 200;
-  background: rgba(21, 34, 33, 0.78);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-top: 1px solid rgba(203, 216, 155, 0.25);
-  border-bottom: 1px solid rgba(203, 216, 155, 0.25);
-  padding: 0 2rem;
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 200;
+      background: rgba(21, 34, 33, 0.78);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-top: 1px solid rgba(203, 216, 155, 0.25);
+      border-bottom: 1px solid rgba(203, 216, 155, 0.25);
+      padding: 0 2rem;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-sizing: border-box;
+      line-height: 1;
+    }
     .nav-name {
       font-family: 'Press Start 2P', monospace;
       font-size: 0.45rem;
@@ -83,6 +85,39 @@
     .nav-links a.active { color: #c0b455; }
     .nav-links a.active::after { width: 100%; background: #c0b455; opacity: 0.5; }
 
+    /* Hamburger button */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      z-index: 300;
+    }
+    .hamburger span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: #cbd89b;
+      transition: all 0.3s ease;
+    }
+
+    /* Mobile menu */
+    @media (max-width: 768px) {
+      .hamburger { display: flex; }
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        gap: 1.5rem;
+        position: fixed;
+        top: 48px; left: 0; right: 0;
+        background: rgba(21, 34, 33, 0.97);
+        padding: 2rem;
+        z-index: 199;
+        border-bottom: 1px solid rgba(203, 216, 155, 0.25);
+      }
+      .nav-links.open { display: flex; }
+    }
+
     .cv-wrap {
       position: relative;
       z-index: 100;
@@ -93,7 +128,6 @@
       flex-direction: column;
       gap: 16px;
     }
-
     .cv-card {
       background: rgba(21, 34, 33, 0.78);
       backdrop-filter: blur(8px);
@@ -101,7 +135,6 @@
       border: 1px solid rgba(203, 216, 155, 0.15);
       padding: 28px 32px;
     }
-
     .cv-download {
       display: inline-flex;
       align-items: center;
@@ -118,8 +151,6 @@
       align-self: flex-start;
     }
     .cv-download:hover { background: #c0b455; color: #0d1a14; }
-
-    /* ── Header card layout ── */
     .cv-header-inner {
       display: flex;
       justify-content: space-between;
@@ -140,11 +171,7 @@
       overflow: hidden;
       flex-shrink: 0;
     }
-    .cv-photo img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+    .cv-photo img { width: 100%; height: 100%; object-fit: cover; }
     .cv-qr {
       display: flex;
       flex-direction: column;
@@ -166,7 +193,6 @@
       letter-spacing: 0.1em;
       text-align: center;
     }
-
     .cv-name {
       font-family: 'Press Start 2P', monospace;
       font-size: clamp(0.9rem, 3vw, 1.4rem);
@@ -183,11 +209,7 @@
       text-transform: uppercase;
       margin-bottom: 16px;
     }
-    .cv-contact {
-      font-size: 13.5px;
-      color: #c8d8b0;
-      line-height: 2;
-    }
+    .cv-contact { font-size: 13.5px; color: #c8d8b0; line-height: 2; }
     .cv-contact a {
       color: #e0ecc8;
       text-decoration: none;
@@ -195,7 +217,6 @@
       transition: color 0.2s;
     }
     .cv-contact a:hover { color: #c0b455; }
-
     .cv-summary {
       font-size: 14.5px;
       color: #d0e0c0;
@@ -205,7 +226,6 @@
       text-align: justify;
     }
     .cv-summary strong { color: #f0f0e8; }
-
     .lang-badges { margin-top: 16px; display: flex; gap: 8px; flex-wrap: wrap; }
     .lang-badge {
       font-family: 'Press Start 2P', monospace;
@@ -217,7 +237,6 @@
       color: #9ecf9b;
       border: 1px solid rgba(134, 176, 132, 0.35);
     }
-
     .cv-section-title {
       font-family: 'Press Start 2P', monospace;
       font-size: 0.42rem;
@@ -228,10 +247,8 @@
       padding-bottom: 10px;
       border-bottom: 1px solid rgba(192, 180, 85, 0.2);
     }
-
     .cv-entry { margin-bottom: 22px; padding-bottom: 22px; border-bottom: 1px solid rgba(203,216,155,0.08); }
     .cv-entry:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-
     .cv-entry-header {
       display: flex;
       justify-content: space-between;
@@ -240,11 +257,7 @@
       flex-wrap: wrap;
       margin-bottom: 4px;
     }
-    .cv-entry-role {
-      font-size: 14px;
-      font-weight: 700;
-      color: #f0f0e8;
-    }
+    .cv-entry-role { font-size: 14px; font-weight: 700; color: #f0f0e8; }
     .cv-entry-date {
       font-family: 'Press Start 2P', monospace;
       font-size: 0.42rem;
@@ -276,8 +289,6 @@
       text-align: justify;
     }
     .cv-entry ul li::marker { color: #c0b455; }
-
-    /* ── Skills ── */
     .skills-grid {
       display: grid;
       grid-template-columns: 160px 1fr;
@@ -292,13 +303,7 @@
       padding-top: 2px;
       line-height: 1.8;
     }
-    .skill-val {
-      color: #c0d4a8;
-      line-height: 1.75;
-      font-size: 14.5px;
-      text-align: justify;
-    }
-
+    .skill-val { color: #c0d4a8; line-height: 1.75; font-size: 14.5px; text-align: justify; }
     .footer {
       position: fixed;
       bottom: 1.5rem;
@@ -312,7 +317,6 @@
     }
     .footer a { color: #cbd89b; text-decoration: none; transition: color 0.3s; }
     .footer a:hover { color: #c0b455; }
-
     #transition-overlay {
       position: fixed;
       inset: 0;
@@ -340,7 +344,10 @@
 
   <nav>
     <span class="nav-name">Simran Shah</span>
-    <ul class="nav-links">
+    <div class="hamburger" id="hamburger">
+      <span></span><span></span><span></span>
+    </div>
+    <ul class="nav-links" id="nav-links">
       <li><a href="/">Home</a></li>
       <li><a href="dog.html">pictures of my dog</a></li>
       <li><a href="cv.html" class="active">CV</a></li>
@@ -353,7 +360,7 @@
 
   <div class="cv-wrap">
 
-   <a class="cv-download" href="Simran Shah - Resume.pdf" download target="_blank">↓ download pdf</a>
+    <a class="cv-download" href="Simran Shah - Resume.pdf" download target="_blank">↓ download pdf</a>
 
     <!-- Header card -->
     <div class="cv-card">
@@ -372,7 +379,6 @@
             <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://www.linkedin.com/in/simrancs1998/" alt="LinkedIn QR Code">
             <span class="cv-qr-label">LinkedIn</span>
           </div>
-          <!-- Replace 'picture.jpg' with your actual photo filename -->
           <div class="cv-photo">
             <img src="picture.jpg" alt="Simran Shah" onerror="this.parentElement.style.display='none'">
           </div>
@@ -395,7 +401,6 @@
     <!-- Experience card -->
     <div class="cv-card">
       <div class="cv-section-title">Professional Experience</div>
-
       <div class="cv-entry">
         <div class="cv-entry-header">
           <span class="cv-entry-role">Marketing &amp; Product Manager — Cloud Sales</span>
@@ -410,7 +415,6 @@
           <li>Built trusted CXO-level relationships across key enterprise accounts, translating complex product capabilities into clear commercial value and managing long-term account health and expansion.</li>
         </ul>
       </div>
-
       <div class="cv-entry">
         <div class="cv-entry-header">
           <span class="cv-entry-role">Public Relations &amp; Communications Intern</span>
@@ -426,7 +430,6 @@
     <!-- Education card -->
     <div class="cv-card">
       <div class="cv-section-title">Education</div>
-
       <div class="cv-entry">
         <div class="cv-entry-header">
           <span class="cv-entry-role">M.A. Strategic Marketing Management</span>
@@ -435,7 +438,6 @@
         <span class="cv-entry-company">International School of Management (ISM), Berlin &nbsp;|&nbsp; Final Grade: 1.91</span>
         <p class="cv-entry-desc"><strong style="color:#e0ecc8">Thesis:</strong> AI Marketing Personalisation in Privacy-Conscious B2B Markets: A German Perspective — focused on how AI-driven targeting and attribution work in practice when data regulations constrain what you can track and personalise.</p>
       </div>
-
       <div class="cv-entry">
         <div class="cv-entry-header">
           <span class="cv-entry-role">Pre-Master Programme — International Business</span>
@@ -444,7 +446,6 @@
         <span class="cv-entry-company">International School of Management (ISM), Berlin</span>
         <p class="cv-entry-desc">Modules: Corporate Management, Intercultural Management, Financial Reporting, Investment Theory, Business Mathematics.</p>
       </div>
-
       <div class="cv-entry">
         <div class="cv-entry-header">
           <span class="cv-entry-role">B.A. Sociology</span>
@@ -458,7 +459,6 @@
     <!-- Projects card -->
     <div class="cv-card">
       <div class="cv-section-title">Projects &amp; Courses</div>
-
       <div class="cv-entry">
         <div class="cv-entry-header">
           <span class="cv-entry-role">McKinsey Forward Program</span>
@@ -467,7 +467,6 @@
         <span class="cv-entry-company">McKinsey &amp; Company</span>
         <p class="cv-entry-desc">Selective professional development program covering structured problem-solving, leadership, and business strategy.</p>
       </div>
-
       <div class="cv-entry">
         <div class="cv-entry-header">
           <span class="cv-entry-role">B2B Market Analyst &amp; Strategy Consultant</span>
@@ -479,7 +478,6 @@
           <li>Identified gaps in how teams were communicating internally and recommended practical fixes to improve cross-departmental execution.</li>
         </ul>
       </div>
-
       <div class="cv-entry">
         <div class="cv-entry-header">
           <span class="cv-entry-role">International Buddy &amp; Event Coordinator</span>
@@ -499,10 +497,8 @@
       <div class="skills-grid">
         <span class="skill-cat">Research &amp; Analytics</span>
         <span class="skill-val">SPSS (Advanced), Google Sheets &amp; Excel, KPI reporting, market &amp; competitor analysis, data-driven decision making.</span>
-
         <span class="skill-cat">Platforms &amp; Tools</span>
         <span class="skill-val">Google Ads, LinkedIn Ads, Microsoft Suite (Certified), Google Suite (Certified), Microsoft Azure, Microsoft Copilot, Canva, Figma, Adobe Photoshop (Certified), After Effects, CapCut.</span>
-
         <span class="skill-cat">Languages</span>
         <span class="skill-val">English (Native / C2), German (B2), Hindi (Native / C2).</span>
       </div>
@@ -515,6 +511,12 @@
   </p>
 
   <script>
+    // Hamburger toggle
+    const hamburger = document.getElementById('hamburger');
+    const navLinks = document.getElementById('nav-links');
+    hamburger.addEventListener('click', () => { navLinks.classList.toggle('open'); });
+
+    // Page transitions
     const overlay = document.getElementById('transition-overlay');
     document.querySelectorAll('.nav-links a').forEach(link => {
       link.addEventListener('click', function(e) {
@@ -527,6 +529,7 @@
     });
     window.addEventListener('load', () => { overlay.classList.remove('fade-in'); });
 
+    // Canvas animation
     const canvas = document.getElementById('c');
     const ctx = canvas.getContext('2d');
     let W, H;
