@@ -85,6 +85,41 @@
     .nav-links a.active { color: #c0b455; }
     .nav-links a.active::after { width: 100%; background: #c0b455; opacity: 0.5; }
 
+    /* Hamburger button */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      z-index: 300;
+    }
+    .hamburger span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: #cbd89b;
+      transition: all 0.3s ease;
+    }
+
+    /* Mobile menu */
+    @media (max-width: 768px) {
+      .hamburger { display: flex; }
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        gap: 1.5rem;
+        position: fixed;
+        top: 48px; left: 0; right: 0;
+        background: rgba(21, 34, 33, 0.97);
+        padding: 2rem;
+        z-index: 199;
+        border-bottom: 1px solid rgba(203, 216, 155, 0.25);
+      }
+      .nav-links.open { display: flex; }
+      .contact-card { padding: 24px 20px; }
+      .contact-row { flex-direction: column; gap: 6px; }
+    }
+
     /* ── Contact card ── */
     .contact-wrap {
       position: relative;
@@ -119,9 +154,9 @@
       border-top: 1px solid rgba(203, 216, 155, 0.12);
       margin-bottom: 28px;
     }
-  .contact-row {
-  display: flex;
-  align-items: baseline;
+    .contact-row {
+      display: flex;
+      align-items: baseline;
       gap: 16px;
       margin-bottom: 24px;
     }
@@ -150,7 +185,6 @@
       color: #c0b455;
       border-color: #c0b455;
     }
-
     .footer {
       position: fixed;
       bottom: 1.5rem;
@@ -163,7 +197,6 @@
     }
     .footer a { color: #cbd89b; text-decoration: none; transition: color 0.3s; }
     .footer a:hover { color: #c0b455; }
-
     #transition-overlay {
       position: fixed;
       inset: 0;
@@ -182,7 +215,10 @@
 
   <nav>
     <span class="nav-name">Simran Shah</span>
-    <ul class="nav-links">
+    <div class="hamburger" id="hamburger">
+      <span></span><span></span><span></span>
+    </div>
+    <ul class="nav-links" id="nav-links">
       <li><a href="/">Home</a></li>
       <li><a href="dog.html">pictures of my dog</a></li>
       <li><a href="cv.html">CV</a></li>
@@ -217,7 +253,6 @@
         <span class="contact-label">Location</span>
         <span class="contact-value">Berlin, Germany</span>
       </div>
-
     </div>
   </div>
 
@@ -226,6 +261,12 @@
   </p>
 
   <script>
+    // Hamburger toggle
+    const hamburger = document.getElementById('hamburger');
+    const navLinks = document.getElementById('nav-links');
+    hamburger.addEventListener('click', () => { navLinks.classList.toggle('open'); });
+
+    // Page transitions
     const overlay = document.getElementById('transition-overlay');
     document.querySelectorAll('.nav-links a').forEach(link => {
       link.addEventListener('click', function(e) {
@@ -239,6 +280,7 @@
     });
     window.addEventListener('load', () => { overlay.classList.remove('fade-in'); });
 
+    // Canvas animation
     const canvas = document.getElementById('c');
     const ctx = canvas.getContext('2d');
     let W, H;
