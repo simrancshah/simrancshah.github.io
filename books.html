@@ -84,6 +84,40 @@
     .nav-links a:hover::after { width: 100%; }
     .nav-links a.active { color: #c0b455; }
     .nav-links a.active::after { width: 100%; background: #c0b455; opacity: 0.5; }
+
+    /* Hamburger button */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      z-index: 300;
+    }
+    .hamburger span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: #cbd89b;
+      transition: all 0.3s ease;
+    }
+
+    /* Mobile menu */
+    @media (max-width: 768px) {
+      .hamburger { display: flex; }
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        gap: 1.5rem;
+        position: fixed;
+        top: 48px; left: 0; right: 0;
+        background: rgba(21, 34, 33, 0.97);
+        padding: 2rem;
+        z-index: 199;
+        border-bottom: 1px solid rgba(203, 216, 155, 0.25);
+      }
+      .nav-links.open { display: flex; }
+    }
+
     .container {
       position: fixed;
       top: 50%;
@@ -138,12 +172,15 @@
   <canvas id="c"></canvas>
   <nav>
     <span class="nav-name">Simran Shah</span>
-    <ul class="nav-links">
+    <div class="hamburger" id="hamburger">
+      <span></span><span></span><span></span>
+    </div>
+    <ul class="nav-links" id="nav-links">
       <li><a href="/">Home</a></li>
       <li><a href="dog.html">Pictures of my dog</a></li>
       <li><a href="cv.html">CV</a></li>
       <li><a href="movies.html">Movie reviews</a></li>
-      <li><a href="books.html"class="active">books i'm reading</a></li>
+      <li><a href="books.html" class="active">books i'm reading</a></li>
       <li><a href="music.html">Music i listen to</a></li>
       <li><a href="contact.html">contact</a></li>
     </ul>
@@ -155,6 +192,12 @@
     <a href="https://www.linkedin.com/in/simrancs1998/" target="_blank">LinkedIn</a>
   </p>
   <script>
+    // Hamburger toggle
+    const hamburger = document.getElementById('hamburger');
+    const navLinks = document.getElementById('nav-links');
+    hamburger.addEventListener('click', () => { navLinks.classList.toggle('open'); });
+
+    // Page transitions
     const overlay = document.getElementById('transition-overlay');
     document.querySelectorAll('.nav-links a').forEach(link => {
       link.addEventListener('click', function(e) {
@@ -166,6 +209,8 @@
       });
     });
     window.addEventListener('load', () => { overlay.classList.remove('fade-in'); });
+
+    // Canvas animation
     const canvas = document.getElementById('c');
     const ctx = canvas.getContext('2d');
     let W, H;
