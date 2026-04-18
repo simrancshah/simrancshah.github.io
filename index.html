@@ -660,9 +660,9 @@
       const hour = new Date().getHours();
       let g;
       if (hour < 5)  g = "Still up";
-      else if (hour < 12) g = "Good morning";
-      else if (hour < 18) g = "Good afternoon";
-      else if (hour < 22) g = "Good evening";
+      else if (hour < 12) g = "good morning";
+      else if (hour < 18) g = "good afternoon";
+      else if (hour < 22) g = "good evening";
       else g = "Late signal";
       document.getElementById('greeting').textContent = g;
     })();
