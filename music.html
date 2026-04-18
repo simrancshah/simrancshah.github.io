@@ -3,543 +3,955 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>simran shah — music i listen to</title>
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet"/>
+  <title>simran shah - audio log</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <style>
+    /* ──────────────────────────────────────────────
+       AUDIO LOG — MOD.02
+       Album grid in field-post aesthetic.
+       Click an album card to expand its Spotify
+       embed inline. Same chrome as home/cv/contact.
+       ────────────────────────────────────────────── */
+
+    :root {
+      --deep:      #131d1c;
+      --panel:     rgba(19, 29, 28, 0.68);
+      --panel-2:   rgba(19, 29, 28, 0.82);
+      --line:      rgba(138, 181, 209, 0.22);
+      --line-soft: rgba(138, 181, 209, 0.1);
+      --dim:       #7b9591;
+      --text:      #e8eddc;
+      --white:     #f2f5ec;
+      --sage:      #9ebf8a;
+      --blue:      #8ab5d1;
+      --aqua:      #7fc9b3;
+      --coral:     #d89985;
+    }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
     body {
       min-height: 100vh;
-      font-family: 'Press Start 2P', monospace;
+      background: var(--deep);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 14.5px;
+      line-height: 1.7;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Background layers — same as home */
+    .bg-layer {
+      position: fixed; inset: -40px;
       background-image: url('bg.jpeg');
       background-size: cover;
       background-position: center;
-      background-repeat: no-repeat;
-      background-attachment: fixed;
-    }
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.3);
+      filter: brightness(0.88);
       z-index: 0;
+      will-change: transform;
+      transition: transform 0.3s ease-out;
     }
-    canvas {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      pointer-events: none;
-      z-index: 1;
+    .bg-wash {
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse at 75% 25%, rgba(138, 181, 209, 0.1), transparent 55%),
+        linear-gradient(rgba(19, 29, 28, 0.5), rgba(19, 29, 28, 0.7));
+      z-index: 1; pointer-events: none;
     }
+    .scanlines {
+      position: fixed; inset: 0;
+      background: repeating-linear-gradient(
+        to bottom, transparent, transparent 3px,
+        rgba(0, 0, 0, 0.06) 3px, rgba(0, 0, 0, 0.06) 4px
+      );
+      pointer-events: none; z-index: 50;
+    }
+    .grain {
+      position: fixed; inset: 0;
+      opacity: 0.04; z-index: 51; pointer-events: none;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence baseFrequency='0.85' numOctaves='2'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>");
+    }
+    canvas.leaves {
+      position: fixed; inset: 0; z-index: 3; pointer-events: none;
+    }
+
+    /* Nav */
     nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 200;
-      background: rgba(21, 34, 33, 0.78);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border-top: 1px solid rgba(203, 216, 155, 0.25);
-      border-bottom: 1px solid rgba(203, 216, 155, 0.25);
-      padding: 0 2rem;
-      height: 48px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: var(--panel-2);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
+      padding: 0 32px; height: 56px;
+      display: flex; align-items: center; justify-content: space-between;
     }
-    .nav-name {
-      font-size: 0.45rem;
-      letter-spacing: 0.18em;
-      color: #c0b455;
+    .nav-brand {
+      display: flex; align-items: center; gap: 10px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.5rem;
+      color: var(--blue);
+      letter-spacing: 0.22em;
       text-transform: uppercase;
-      white-space: nowrap;
+    }
+    .nav-brand .live-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--aqua);
+      box-shadow: 0 0 10px var(--aqua);
+      animation: breathe 3s ease-in-out infinite;
+    }
+    @keyframes breathe {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.82); }
     }
     .nav-links {
-      display: flex;
-      gap: 2rem;
-      list-style: none;
+      display: flex; gap: 2px; list-style: none;
     }
     .nav-links a {
-      font-size: 0.42rem;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: #cbd89b;
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 7px 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px;
+      letter-spacing: 0.08em;
+      color: var(--text);
       text-decoration: none;
-      position: relative;
-      padding-bottom: 3px;
-      transition: color 0.3s ease;
+      transition: color 0.2s;
     }
-    .nav-links a::after {
-      content: '';
-      position: absolute;
-      bottom: 0; left: 0;
-      width: 0%;
-      height: 1px;
-      background: #c0b455;
-      transition: width 0.35s ease;
-    }
-    .nav-links a:hover { color: #c0b455; }
-    .nav-links a:hover::after { width: 100%; }
-    .nav-links a.active { color: #c0b455; }
-    .nav-links a.active::after { width: 100%; background: #c0b455; opacity: 0.5; }
+    .nav-links a::before { content: '>'; color: var(--dim); }
+    .nav-links a:hover { color: var(--blue); }
+    .nav-links a:hover::before { color: var(--blue); }
+    .nav-links a.active { color: var(--blue); }
 
-    /* Hamburger button */
+    /* Hamburger */
     .hamburger {
       display: none;
       flex-direction: column;
+      justify-content: center;
       gap: 5px;
       cursor: pointer;
+      background: transparent;
+      border: none;
+      padding: 8px;
       z-index: 300;
     }
     .hamburger span {
       display: block;
       width: 22px;
       height: 2px;
-      background: #cbd89b;
+      background: var(--text);
       transition: all 0.3s ease;
     }
+    .hamburger.open span:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+      background: var(--blue);
+    }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+      background: var(--blue);
+    }
 
-    /* Mobile menu */
-    @media (max-width: 768px) {
+    /* Main + viewport */
+    main {
+      position: relative; z-index: 10;
+      max-width: 1180px; margin: 0 auto;
+      padding: 88px 28px 48px;
+    }
+
+    .viewport {
+      position: relative;
+      padding: 48px 44px 36px;
+      background: rgba(19, 29, 28, 0.45);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      border: 1px solid var(--line);
+    }
+    .viewport::before,
+    .viewport::after,
+    .viewport .bracket-bl,
+    .viewport .bracket-br {
+      content: '';
+      position: absolute;
+      width: 18px; height: 18px;
+      border: 1px solid var(--blue);
+    }
+    .viewport::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+    .viewport::after  { top: -1px; right: -1px; border-left: none; border-bottom: none; }
+    .bracket-bl { bottom: -1px; left: -1px; border-right: none; border-top: none; }
+    .bracket-br { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+
+    .viewport-label {
+      position: absolute; top: -9px; left: 48px;
+      background: var(--deep); padding: 0 14px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.4rem; color: var(--blue);
+      letter-spacing: 0.28em;
+    }
+    .viewport-id {
+      position: absolute; top: -9px; right: 48px;
+      background: var(--deep); padding: 0 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; color: var(--dim);
+      letter-spacing: 0.18em;
+    }
+
+    /* Page header */
+    .page-head {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 28px;
+      align-items: end;
+      padding-bottom: 24px;
+      border-bottom: 1px dashed var(--line-soft);
+      margin-bottom: 36px;
+    }
+    .page-kicker {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.38rem;
+      color: var(--sage);
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .page-kicker::before {
+      content: ''; width: 24px; height: 1px; background: var(--sage);
+    }
+    .page-title {
+      font-family: 'VT323', monospace;
+      font-size: clamp(2.6rem, 5.5vw, 3.8rem);
+      line-height: 1;
+      color: var(--white);
+      letter-spacing: 0.01em;
+      margin-bottom: 8px;
+    }
+    .page-title .accent { color: var(--blue); }
+    .page-sub {
+      font-size: 14.5px;
+      color: var(--dim);
+      line-height: 1.6;
+      max-width: 52ch;
+    }
+    .page-sub em { color: var(--sage); font-style: normal; }
+    .page-meta {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--dim);
+      letter-spacing: 0.15em;
+      text-align: right;
+    }
+    .page-meta .count {
+      font-family: 'VT323', monospace;
+      font-size: 2.2rem;
+      color: var(--aqua);
+      letter-spacing: 0.02em;
+      display: block;
+      line-height: 1;
+      margin-bottom: 6px;
+      text-shadow: 0 0 12px rgba(127, 201, 179, 0.2);
+    }
+
+    /* Album grid */
+    .album-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+      margin-top: 28px;
+    }
+    .album-card {
+      background: rgba(19, 29, 28, 0.55);
+      border: 1px solid var(--line);
+      cursor: pointer;
+      transition: border-color 0.25s, transform 0.25s, background 0.25s;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      padding: 4px;
+    }
+    .album-card:hover {
+      border-color: var(--blue);
+      background: rgba(138, 181, 209, 0.05);
+      transform: translateY(-2px);
+    }
+    .album-card.open {
+      border-color: var(--aqua);
+      background: rgba(127, 201, 179, 0.06);
+    }
+    .album-card.open:hover { transform: none; }
+
+    /* Corner brackets — small mini-viewports */
+    .album-card::before,
+    .album-card::after,
+    .album-card .card-bl,
+    .album-card .card-br {
+      content: '';
+      position: absolute;
+      width: 10px; height: 10px;
+      border: 1px solid var(--blue);
+      opacity: 0;
+      transition: opacity 0.25s;
+      pointer-events: none;
+    }
+    .album-card::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+    .album-card::after  { top: -1px; right: -1px; border-left: none; border-bottom: none; }
+    .album-card .card-bl { bottom: -1px; left: -1px; border-right: none; border-top: none; }
+    .album-card .card-br { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+    .album-card:hover::before,
+    .album-card:hover::after,
+    .album-card:hover .card-bl,
+    .album-card:hover .card-br { opacity: 1; }
+    .album-card.open::before,
+    .album-card.open::after,
+    .album-card.open .card-bl,
+    .album-card.open .card-br { opacity: 1; border-color: var(--aqua); }
+
+    /* Track number badge */
+    .album-num {
+      position: absolute;
+      top: 8px; left: 8px;
+      z-index: 2;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.3rem;
+      color: var(--text);
+      letter-spacing: 0.2em;
+      background: rgba(19, 29, 28, 0.75);
+      backdrop-filter: blur(4px);
+      padding: 5px 8px;
+      border: 1px solid var(--line);
+    }
+    .album-card.open .album-num { color: var(--aqua); border-color: var(--aqua); }
+
+    .album-cover-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1;
+      overflow: hidden;
+    }
+    .album-cover {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: brightness(0.92) saturate(0.92);
+      transition: filter 0.3s;
+    }
+    .album-card:hover .album-cover,
+    .album-card.open .album-cover { filter: brightness(1) saturate(1); }
+
+    /* Expand indicator over the cover */
+    .album-expand {
+      position: absolute;
+      bottom: 8px; right: 8px;
+      width: 28px; height: 28px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(19, 29, 28, 0.75);
+      backdrop-filter: blur(4px);
+      border: 1px solid var(--line);
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      line-height: 1;
+      transition: all 0.2s;
+    }
+    .album-card:hover .album-expand {
+      border-color: var(--blue);
+      color: var(--blue);
+    }
+    .album-card.open .album-expand {
+      border-color: var(--aqua);
+      color: var(--aqua);
+      transform: rotate(45deg);
+    }
+
+    .album-info {
+      padding: 14px 14px 12px;
+      border-top: 1px solid var(--line-soft);
+    }
+    .album-title {
+      font-family: 'VT323', monospace;
+      font-size: 1.4rem;
+      line-height: 1.1;
+      color: var(--white);
+      margin-bottom: 4px;
+      transition: color 0.2s;
+    }
+    .album-card:hover .album-title { color: var(--blue); }
+    .album-card.open .album-title { color: var(--aqua); }
+    .album-artist {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--dim);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    /* Spotify embed expand area */
+    .album-embed {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s ease;
+      border-top: 0 solid var(--aqua);
+    }
+    .album-card.open .album-embed {
+      max-height: 380px;
+      border-top: 1px solid rgba(127, 201, 179, 0.3);
+    }
+    .album-embed iframe {
+      width: 100%;
+      border: none;
+      display: block;
+    }
+
+    /* Viewport footer */
+    .viewport-foot {
+      margin-top: 40px; padding-top: 20px;
+      border-top: 1px dashed var(--line-soft);
+      display: flex; justify-content: space-between;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; color: var(--dim);
+      letter-spacing: 0.12em;
+    }
+    .viewport-foot .left { display: flex; align-items: center; gap: 10px; }
+    .viewport-foot .left .dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--aqua);
+      box-shadow: 0 0 5px var(--aqua);
+      animation: breathe 3s ease-in-out infinite;
+    }
+    .viewport-foot .right {
+      color: var(--sage);
+      font-style: italic;
+    }
+
+    /* Log footer — sits outside the viewport, below the album grid */
+    .log-foot {
+      margin-top: 36px;
+      padding-top: 20px;
+      border-top: 1px dashed var(--line-soft);
+      display: flex;
+      justify-content: space-between;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--dim);
+      letter-spacing: 0.12em;
+    }
+    .log-foot .left { display: flex; align-items: center; gap: 10px; }
+    .log-foot .left .dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--aqua);
+      box-shadow: 0 0 5px var(--aqua);
+      animation: breathe 3s ease-in-out infinite;
+    }
+    .log-foot .right {
+      color: var(--sage);
+      font-style: italic;
+    }
+
+    /* Subpage boot */
+    .boot {
+      position: fixed; inset: 0;
+      background: var(--deep);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 10px;
+      font-family: 'VT323', monospace;
+      animation: bootOut 0.4s ease 0.9s forwards;
+    }
+    @keyframes bootOut { to { opacity: 0; pointer-events: none; } }
+    .boot-lines {
+      font-size: 17px; line-height: 1.7;
+      color: var(--text); text-align: left;
+    }
+    .boot-lines div { opacity: 0; animation: bootLine 0.15s forwards; }
+    .boot-lines div:nth-child(1) { animation-delay: 0.1s; color: var(--blue); }
+    .boot-lines div:nth-child(2) { animation-delay: 0.45s; color: var(--aqua); }
+    @keyframes bootLine { to { opacity: 1; } }
+
+    @media (max-width: 880px) {
       .hamburger { display: flex; }
       .nav-links {
         display: none;
         flex-direction: column;
-        gap: 1.5rem;
+        gap: 0;
         position: fixed;
-        top: 48px; left: 0; right: 0;
-        background: rgba(21, 34, 33, 0.97);
-        padding: 2rem;
-        z-index: 199;
-        border-bottom: 1px solid rgba(203, 216, 155, 0.25);
+        top: 56px; left: 0; right: 0;
+        background: var(--panel-2);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        padding: 12px 24px 16px;
+        border-bottom: 1px solid var(--line);
       }
       .nav-links.open { display: flex; }
-      .album-grid { grid-template-columns: 1fr; padding: 0 1rem; }
+      .nav-links li { border-bottom: 1px dashed var(--line-soft); }
+      .nav-links li:last-child { border-bottom: none; }
+      .nav-links a { padding: 12px 6px; font-size: 13px; }
+      .viewport { padding: 30px 20px 24px; }
+      main { padding: 76px 14px 32px; }
+      .page-head { grid-template-columns: 1fr; gap: 14px; }
+      .page-meta { text-align: left; }
+      .album-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .viewport-foot { flex-direction: column; gap: 8px; }
+      .log-foot { flex-direction: column; gap: 8px; }
     }
-
-    .page-content {
-      position: relative;
-      z-index: 100;
-      padding: 48px 0 4rem;
-      max-width: 960px;
-      margin: 0 auto;
+    @media (max-width: 480px) {
+      .album-grid { grid-template-columns: 1fr; }
     }
-    .page-header-wrap {
-      text-align: center;
-      margin-bottom: 2.5rem;
-      padding-top: 2rem;
-    }
-    .page-header {
-      display: inline-block;
-      background: rgba(21, 34, 33, 0.78);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border: 1px solid rgba(203, 216, 155, 0.25);
-      padding: 0.8rem 1.6rem;
-      text-align: center;
-    }
-    .page-title {
-      font-size: 0.55rem;
-      color: #c0b455;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      margin-bottom: 0.5rem;
-    }
-    .page-subtitle {
-      font-size: 0.35rem;
-      color: #5c896b;
-      letter-spacing: 0.12em;
-    }
-    .album-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 1.8rem;
-      padding: 0 2rem;
-    }
-    .album-card {
-      background: rgba(13, 26, 20, 0.75);
-      border: 1px solid rgba(203, 216, 155, 0.2);
-      backdrop-filter: blur(6px);
-      cursor: pointer;
-      transition: border-color 0.3s ease;
-    }
-    .album-card:hover { border-color: rgba(192, 180, 85, 0.6); }
-    .album-card.open { border-color: #c0b455; }
-    .album-cover {
-      width: 100%;
-      aspect-ratio: 1;
-      object-fit: cover;
-      display: block;
-      filter: brightness(0.88);
-      transition: filter 0.3s;
-    }
-    .album-card:hover .album-cover,
-    .album-card.open .album-cover { filter: brightness(1); }
-    .album-info {
-      padding: 0.8rem;
-      border-top: 1px solid rgba(203, 216, 155, 0.15);
-    }
-    .album-title {
-      font-size: 0.42rem;
-      color: #cbd89b;
-      letter-spacing: 0.1em;
-      line-height: 1.6;
-      margin-bottom: 0.4rem;
-      text-transform: uppercase;
-    }
-    .album-artist {
-      font-size: 0.42rem;
-      color: #5c896b;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-    }
-    .album-embed {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.45s ease;
-    }
-    .album-card.open .album-embed { max-height: var(--embed-height, 352px); }
-    .album-embed iframe { width: 100%; border: none; display: block; }
-    .footer {
-      position: fixed;
-      bottom: 1.5rem;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 100;
-      text-align: center;
-      font-size: 0.42rem;
-      letter-spacing: 0.1em;
-      color: #5c896b;
-    }
-    .footer a { color: #cbd89b; text-decoration: none; transition: color 0.3s; }
-    .footer a:hover { color: #c0b455; }
-    #transition-overlay {
-      position: fixed;
-      inset: 0;
-      background: #0d1a14;
-      z-index: 999;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.5s ease;
-    }
-    #transition-overlay.fade-in { opacity: 1; pointer-events: all; }
   </style>
 </head>
 <body>
-  <div id="transition-overlay"></div>
-  <canvas id="c"></canvas>
 
-  <nav>
-    <span class="nav-name">Simran Shah</span>
-    <div class="hamburger" id="hamburger">
-      <span></span><span></span><span></span>
+  <!-- Boot -->
+  <div class="boot">
+    <div class="boot-lines">
+      <div>▮ ACCESSING MOD.02</div>
+      <div>audio log ready.</div>
     </div>
-    <ul class="nav-links" id="nav-links">
-      <li><a href="/">Home</a></li>
-      <li><a href="dog.html">Pictures of my dog</a></li>
+  </div>
+
+  <!-- Background -->
+  <div class="bg-layer" id="bg"></div>
+  <div class="bg-wash"></div>
+  <div class="scanlines"></div>
+  <div class="grain"></div>
+  <canvas class="leaves" id="leaves"></canvas>
+
+  <!-- Nav -->
+  <nav>
+    <span class="nav-brand">
+      <span class="live-dot"></span>
+      Simran Shah · Station 42
+    </span>
+    <button class="hamburger" id="hamburger" aria-label="Toggle navigation menu">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">field_post</a></li>
       <li><a href="cv.html">CV</a></li>
-      <li><a href="movies.html">Movie reviews</a></li>
-      <li><a href="books.html">Books i'm reading</a></li>
-      <li><a href="music.html" class="active">Music i listen to</a></li>
+      <li><a href="music.html" class="active">audio_log</a></li>
+      <li><a href="books.html">reading_list</a></li>
+      <li><a href="movies.html">viewing_log</a></li>
+      <li><a href="dog.html">companion</a></li>
       <li><a href="contact.html">contact</a></li>
     </ul>
   </nav>
 
-  <div class="page-content">
-    <div class="page-header-wrap">
-      <div class="page-header">
-        <h1 class="page-title">Music I Listen To</h1>
-        <p class="page-subtitle">click an album to expand</p>
-      </div>
-    </div>
+  <main>
+    <section class="viewport">
+      <span class="bracket-bl"></span>
+      <span class="bracket-br"></span>
+      <span class="viewport-label">▮ AUDIO LOG // MOD.02</span>
+      <span class="viewport-id">FORMAT · SPOTIFY</span>
+
+      <header class="page-head">
+        <div>
+          <div class="page-kicker">In current rotation</div>
+          <h1 class="page-title">Audio <span class="accent">log</span>.</h1>
+          <p class="page-sub">
+            What's been playing lately. Click an album to <em>open the stream</em>.
+          </p>
+        </div>
+        <div class="page-meta">
+          <span class="count">19</span>
+          albums on file
+        </div>
+      </header>
+    </section>
 
     <div class="album-grid">
 
-      <!-- Bad Bunny -->
-      <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 352px;">
-        <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b273bbd45c8d36e0e045ef640411" alt="Debí Tirar Más Fotos" />
-        <div class="album-info">
-          <div class="album-title">Debí Tirar Más Fotos</div>
-          <div class="album-artist">Bad Bunny</div>
+        <!-- Bad Bunny -->
+        <div class="album-card" onclick="toggleAlbum(this)"><span class="card-bl"></span><span class="card-br"></span>
+          <span class="album-num">01</span>
+          <div class="album-cover-wrap">
+            <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b273bbd45c8d36e0e045ef640411" alt="Debí Tirar Más Fotos" loading="lazy"/>
+            <span class="album-expand">+</span>
+          </div>
+          <div class="album-info">
+            <div class="album-title">Debí Tirar Más Fotos</div>
+            <div class="album-artist">Bad Bunny</div>
+          </div>
+          <div class="album-embed">
+            <iframe src="https://open.spotify.com/embed/album/5K79FLRUCSysQnVESLcTdb?utm_source=generator" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+          </div>
         </div>
-        <div class="album-embed">
-          <iframe style="border-radius:12px" src="https://open.spotify.com/embed/album/5K79FLRUCSysQnVESLcTdb?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+
+        <!-- Clairo -->
+        <div class="album-card" onclick="toggleAlbum(this)"><span class="card-bl"></span><span class="card-br"></span>
+          <span class="album-num">02</span>
+          <div class="album-cover-wrap">
+            <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b273193c2fafdce8f116b5ca0a78" alt="Charm" loading="lazy"/>
+            <span class="album-expand">+</span>
+          </div>
+          <div class="album-info">
+            <div class="album-title">Charm</div>
+            <div class="album-artist">Clairo</div>
+          </div>
+          <div class="album-embed">
+            <iframe src="https://open.spotify.com/embed/album/1KNUCVXgIxKUGiuEB8eG0i?utm_source=generator" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+          </div>
         </div>
+
+        <!-- ROSALÍA -->
+        <div class="album-card" onclick="toggleAlbum(this)"><span class="card-bl"></span><span class="card-br"></span>
+          <span class="album-num">03</span>
+          <div class="album-cover-wrap">
+            <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b27393ee2e2f2dfb7de9befcc164" alt="LUX" loading="lazy"/>
+            <span class="album-expand">+</span>
+          </div>
+          <div class="album-info">
+            <div class="album-title">LUX</div>
+            <div class="album-artist">ROSALÍA</div>
+          </div>
+          <div class="album-embed">
+            <iframe src="https://open.spotify.com/embed/album/3SUEJULSGgBDG1j4GQhfYY?utm_source=generator" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+          </div>
+        </div>
+
+        <!-- Project Hail Mary -->
+        <div class="album-card" onclick="toggleAlbum(this)"><span class="card-bl"></span><span class="card-br"></span>
+          <span class="album-num">04</span>
+          <div class="album-cover-wrap">
+            <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b273386bb0988c7e5707d90f4f59" alt="Project Hail Mary" loading="lazy"/>
+            <span class="album-expand">+</span>
+          </div>
+          <div class="album-info">
+            <div class="album-title">Project Hail Mary</div>
+            <div class="album-artist">Original Motion Picture Score</div>
+          </div>
+          <div class="album-embed">
+            <iframe src="https://open.spotify.com/embed/album/47Kmv7voPLipz2zbyD8v84?utm_source=generator" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+          </div>
+        </div>
+
+        <!-- Kylie Minogue -->
+        <div class="album-card" onclick="toggleAlbum(this)"><span class="card-bl"></span><span class="card-br"></span>
+          <span class="album-num">05</span>
+          <div class="album-cover-wrap">
+            <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b2736531dcfcbc99b82be7eec9f0" alt="Fever (Deluxe Edition)" loading="lazy"/>
+            <span class="album-expand">+</span>
+          </div>
+          <div class="album-info">
+            <div class="album-title">Fever (Deluxe Edition)</div>
+            <div class="album-artist">Kylie Minogue</div>
+          </div>
+          <div class="album-embed">
+            <iframe src="https://open.spotify.com/embed/track/2HpWHLtZldOcDn5qzX8kb2?utm_source=generator" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+          </div>
+        </div>
+
+        <!-- MARINA -->
+        <div class="album-card" onclick="toggleAlbum(this)"><span class="card-bl"></span><span class="card-br"></span>
+          <span class="album-num">06</span>
+          <div class="album-cover-wrap">
+            <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b2737ce4002911f389a2a4465d6f" alt="Princess of Power" loading="lazy"/>
+            <span class="album-expand">+</span>
+          </div>
+          <div class="album-info">
+            <div class="album-title">Princess of Power</div>
+            <div class="album-artist">MARINA</div>
+          </div>
+          <div class="album-embed">
+            <iframe src="https://open.spotify.com/embed/album/2rjfRdmVDBMFT5mamSsVeU?utm_source=generator" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+          </div>
+        </div>
+
+        <!-- Son Lux -->
+        <div class="album-card" onclick="toggleAlbum(this)"><span class="card-bl"></span><span class="card-br"></span>
+          <span class="album-num">07</span>
+          <div class="album-cover-wrap">
+            <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b273ff1e91752a8e5e88ef9d179b" alt="Thunderbolts* OST" loading="lazy"/>
+            <span class="album-expand">+</span>
+          </div>
+          <div class="album-info">
+            <div class="album-title">Thunderbolts* (OST)</div>
+            <div class="album-artist">Son Lux</div>
+          </div>
+          <div class="album-embed">
+            <iframe src="https://open.spotify.com/embed/album/5JTAY7hOUdzJx2GslB4nwc?utm_source=generator" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+          </div>
+        </div>
+
+        <!-- Frou Frou -->
+        <div class="album-card" onclick="toggleAlbum(this)"><span class="card-bl"></span><span class="card-br"></span>
+          <span class="album-num">08</span>
+          <div class="album-cover-wrap">
+            <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b2732d0c0ef37bf28fe4b2b35789" alt="Details" loading="lazy"/>
+            <span class="album-expand">+</span>
+          </div>
+          <div class="album-info">
+            <div class="album-title">Details</div>
+            <div class="album-artist">Frou Frou</div>
+          </div>
+          <div class="album-embed">
+            <iframe src="https://open.spotify.com/embed/track/3xKTpGCsafXzV4muM1Hpl3?utm_source=generator" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+          </div>
+        </div>
+
+        <!-- Everything Everything -->
+        <div class="album-card" onclick="toggleAlbum(this)"><span class="card-bl"></span><span class="card-br"></span>
+          <span class="album-num">09</span>
+          <div class="album-cover-wrap">
+            <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b27373d50b9ec2d2a127a06d21d3" alt="Mountainhead" loading="lazy"/>
+            <span class="album-expand">+</span>
+          </div>
+          <div class="album-info">
+            <div class="album-title">Mountainhead</div>
+            <div class="album-artist">Everything Everything</div>
+          </div>
+          <div class="album-embed">
+            <iframe src="https://open.spotify.com/embed/album/1s3ypfinSBGQl36cJSRjOv?utm_source=generator" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+          </div>
+        </div>
+
+        <!-- West Side Story -->
+        <div class="album-card" onclick="toggleAlbum(this)"><span class="card-bl"></span><span class="card-br"></span>
+          <span class="album-num">10</span>
+          <div class="album-cover-wrap">
+            <img class="album-cover" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRJJQpmM8dCY387lE5NicQ5x4I7CibsEwW1_g&s" alt="West Side Story 2021" loading="lazy"/>
+            <span class="album-expand">+</span>
+          </div>
+          <div class="album-info">
+            <div class="album-title">West Side Story (2021 OST)</div>
+            <div class="album-artist">Various Artists</div>
+          </div>
+          <div class="album-embed">
+            <iframe src="https://open.spotify.com/embed/album/16oKZSg3msLgn69IK1puzi?utm_source=generator" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+          </div>
+        </div>
+
+        <!-- Fontaines D.C. -->
+        <div class="album-card" onclick="toggleAlbum(this)"><span class="card-bl"></span><span class="card-br"></span>
+          <span class="album-num">11</span>
+          <div class="album-cover-wrap">
+            <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b273f69e28716be1331924f25f2e" alt="Romance" loading="lazy"/>
+            <span class="album-expand">+</span>
+          </div>
+          <div class="album-info">
+            <div class="album-title">Romance</div>
+            <div class="album-artist">Fontaines D.C.</div>
+          </div>
+          <div class="album-embed">
+            <iframe src="https://open.spotify.com/embed/album/287QQ922OsJYh8aFNGdJG5?utm_source=generator" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+          </div>
+        </div>
+
+        <!-- Company -->
+        <div class="album-card" onclick="toggleAlbum(this)"><span class="card-bl"></span><span class="card-br"></span>
+          <span class="album-num">12</span>
+          <div class="album-cover-wrap">
+            <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b2730c16402a73f6074645d694bf" alt="Company 2006 Broadway Revival Cast" loading="lazy"/>
+            <span class="album-expand">+</span>
+          </div>
+          <div class="album-info">
+            <div class="album-title">Company (2006 Revival)</div>
+            <div class="album-artist">Original Broadway Cast</div>
+          </div>
+          <div class="album-embed">
+            <iframe src="https://open.spotify.com/embed/track/4GDSnxxtmIyVS4Twl7Y7UB?utm_source=generator" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+          </div>
+        </div>
+
+        <!-- Charli xcx -->
+        <div class="album-card" onclick="toggleAlbum(this)"><span class="card-bl"></span><span class="card-br"></span>
+          <span class="album-num">13</span>
+          <div class="album-cover-wrap">
+            <img class="album-cover" src="https://i.scdn.co/image/ab67616d00001e02fa1fb2582857abf6fbc01248" alt="Brat" loading="lazy"/>
+            <span class="album-expand">+</span>
+          </div>
+          <div class="album-info">
+            <div class="album-title">Brat and it's the same but there's three more songs so it's not</div>
+            <div class="album-artist">Charli xcx</div>
+          </div>
+          <div class="album-embed">
+            <iframe src="https://open.spotify.com/embed/album/316O0Xetgx2NJLRgJBw4uq?utm_source=generator" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+          </div>
+        </div>
+
+        <!-- Spice Girls -->
+        <div class="album-card" onclick="toggleAlbum(this)"><span class="card-bl"></span><span class="card-br"></span>
+          <span class="album-num">14</span>
+          <div class="album-cover-wrap">
+            <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b273f660420bcef3b16b4c7e5f2b" alt="Spiceworld" loading="lazy"/>
+            <span class="album-expand">+</span>
+          </div>
+          <div class="album-info">
+            <div class="album-title">Spiceworld</div>
+            <div class="album-artist">Spice Girls</div>
+          </div>
+          <div class="album-embed">
+            <iframe src="https://open.spotify.com/embed/track/3FteycP8CaXS1MhjcXekVT?utm_source=generator" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+          </div>
+        </div>
+
+        <!-- Laufey -->
+        <div class="album-card" onclick="toggleAlbum(this)"><span class="card-bl"></span><span class="card-br"></span>
+          <span class="album-num">15</span>
+          <div class="album-cover-wrap">
+            <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b2736ec6bdb1b31c8cb6b1d3511f" alt="A Matter of Time: The Final Hour" loading="lazy"/>
+            <span class="album-expand">+</span>
+          </div>
+          <div class="album-info">
+            <div class="album-title">A Matter of Time: The Final Hour</div>
+            <div class="album-artist">Laufey</div>
+          </div>
+          <div class="album-embed">
+            <iframe src="https://open.spotify.com/embed/album/4DWK6TLXHl1fly2zi5RlO7?utm_source=generator" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+          </div>
+        </div>
+
+        <!-- Harry Styles -->
+        <div class="album-card" onclick="toggleAlbum(this)"><span class="card-bl"></span><span class="card-br"></span>
+          <span class="album-num">16</span>
+          <div class="album-cover-wrap">
+            <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b27374959140f550b11049c18a38" alt="Kiss All The Time. Disco, Occasionally." loading="lazy"/>
+            <span class="album-expand">+</span>
+          </div>
+          <div class="album-info">
+            <div class="album-title">Kiss All The Time. Disco, Occasionally.</div>
+            <div class="album-artist">Harry Styles</div>
+          </div>
+          <div class="album-embed">
+            <iframe src="https://open.spotify.com/embed/album/69BqE1V8Bzb9GCyeP1fFeR?utm_source=generator" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+          </div>
+        </div>
+
+        <!-- Ariana Grande -->
+        <div class="album-card" onclick="toggleAlbum(this)"><span class="card-bl"></span><span class="card-br"></span>
+          <span class="album-num">17</span>
+          <div class="album-cover-wrap">
+            <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b2735ab3c842fde848df7a4ee6d9" alt="Eternal Sunshine Deluxe" loading="lazy"/>
+            <span class="album-expand">+</span>
+          </div>
+          <div class="album-info">
+            <div class="album-title">Eternal Sunshine Deluxe: Brighter Days Ahead</div>
+            <div class="album-artist">Ariana Grande</div>
+          </div>
+          <div class="album-embed">
+            <iframe src="https://open.spotify.com/embed/album/6cbwstHlsAIIWurIIXXBPd?utm_source=generator" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+          </div>
+        </div>
+
+        <!-- twenty one pilots -->
+        <div class="album-card" onclick="toggleAlbum(this)"><span class="card-bl"></span><span class="card-br"></span>
+          <span class="album-num">18</span>
+          <div class="album-cover-wrap">
+            <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b273b5b991fd65053a3acb8c2db2" alt="Drag Path" loading="lazy"/>
+            <span class="album-expand">+</span>
+          </div>
+          <div class="album-info">
+            <div class="album-title">Drag Path</div>
+            <div class="album-artist">twenty one pilots</div>
+          </div>
+          <div class="album-embed">
+            <iframe src="https://open.spotify.com/embed/album/27KwvdCscr3IQtSbnyAZpo?utm_source=generator" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+          </div>
+        </div>
+
+        <!-- Hayley Williams -->
+        <div class="album-card" onclick="toggleAlbum(this)"><span class="card-bl"></span><span class="card-br"></span>
+          <span class="album-num">19</span>
+          <div class="album-cover-wrap">
+            <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b273850c0e3fdd3b3b5cb0b7fa63" alt="Ego Death at a Bachelorette Party" loading="lazy"/>
+            <span class="album-expand">+</span>
+          </div>
+          <div class="album-info">
+            <div class="album-title">Ego Death at a Bachelorette Party</div>
+            <div class="album-artist">Hayley Williams</div>
+          </div>
+          <div class="album-embed">
+            <iframe src="https://open.spotify.com/embed/album/3MROTtttK946gHaTkXeP8b?utm_source=generator" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+          </div>
+        </div>
+
       </div>
 
-      <!-- Clairo -->
-      <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 352px;">
-        <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b273193c2fafdce8f116b5ca0a78" alt="Charm" />
-        <div class="album-info">
-          <div class="album-title">Charm</div>
-          <div class="album-artist">Clairo</div>
-        </div>
-        <div class="album-embed">
-          <iframe style="border-radius:12px" src="https://open.spotify.com/embed/album/1KNUCVXgIxKUGiuEB8eG0i?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-        </div>
+      <!-- Foot -->
+      <div class="log-foot">
+        <span class="left"><span class="dot"></span>log updated · by hand · imperfect</span>
+        <span class="right">signal via spotify</span>
       </div>
-
-      <!-- ROSALÍA -->
-      <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 352px;">
-        <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b27393ee2e2f2dfb7de9befcc164" alt="LUX" />
-        <div class="album-info">
-          <div class="album-title">LUX</div>
-          <div class="album-artist">ROSALÍA</div>
-        </div>
-        <div class="album-embed">
-          <iframe style="border-radius:12px" src="https://open.spotify.com/embed/album/3SUEJULSGgBDG1j4GQhfYY?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-        </div>
-      </div>
-
-      <!-- Project Hail Mary -->
-      <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 352px;">
-        <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b273386bb0988c7e5707d90f4f59" alt="Project Hail Mary" />
-        <div class="album-info">
-          <div class="album-title">Project Hail Mary</div>
-          <div class="album-artist">Original Motion Picture Score</div>
-        </div>
-        <div class="album-embed">
-          <iframe style="border-radius:12px" src="https://open.spotify.com/embed/album/47Kmv7voPLipz2zbyD8v84?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-        </div>
-      </div>
-
-      <!-- Kylie Minogue -->
-      <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 352px;">
-        <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b2736531dcfcbc99b82be7eec9f0" alt="Fever (Deluxe Edition)" />
-        <div class="album-info">
-          <div class="album-title">Fever (Deluxe Edition)</div>
-          <div class="album-artist">Kylie Minogue</div>
-        </div>
-        <div class="album-embed">
-          <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/2HpWHLtZldOcDn5qzX8kb2?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-        </div>
-      </div>
-
-      <!-- MARINA -->
-      <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 352px;">
-        <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b2737ce4002911f389a2a4465d6f" alt="Princess of Power" />
-        <div class="album-info">
-          <div class="album-title">Princess of Power</div>
-          <div class="album-artist">MARINA</div>
-        </div>
-        <div class="album-embed">
-          <iframe style="border-radius:12px" src="https://open.spotify.com/embed/album/2rjfRdmVDBMFT5mamSsVeU?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-        </div>
-      </div>
-
-      <!-- Son Lux -->
-      <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 352px;">
-        <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b273ff1e91752a8e5e88ef9d179b" alt="Thunderbolts* OST" />
-        <div class="album-info">
-          <div class="album-title">Thunderbolts* (Original Motion Picture Soundtrack)</div>
-          <div class="album-artist">Son Lux</div>
-        </div>
-        <div class="album-embed">
-          <iframe style="border-radius:12px" src="https://open.spotify.com/embed/album/5JTAY7hOUdzJx2GslB4nwc?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-        </div>
-      </div>
-
-      <!-- Frou Frou -->
-      <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 352px;">
-        <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b2732d0c0ef37bf28fe4b2b35789" alt="Details" />
-        <div class="album-info">
-          <div class="album-title">Details</div>
-          <div class="album-artist">Frou Frou</div>
-        </div>
-        <div class="album-embed">
-          <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/3xKTpGCsafXzV4muM1Hpl3?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-        </div>
-      </div>
-
-      <!-- Everything Everything -->
-      <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 352px;">
-        <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b27373d50b9ec2d2a127a06d21d3" alt="Mountainhead" />
-        <div class="album-info">
-          <div class="album-title">Mountainhead</div>
-          <div class="album-artist">Everything Everything</div>
-        </div>
-        <div class="album-embed">
-          <iframe style="border-radius:12px" src="https://open.spotify.com/embed/album/1s3ypfinSBGQl36cJSRjOv?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-        </div>
-      </div>
-
-      <!-- West Side Story -->
-      <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 352px;">
-        <img class="album-cover" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRJJQpmM8dCY387lE5NicQ5x4I7CibsEwW1_g&s" alt="West Side Story 2021" />
-        <div class="album-info">
-          <div class="album-title">West Side Story (2021 Motion Picture Soundtrack)</div>
-          <div class="album-artist">Various Artists</div>
-        </div>
-        <div class="album-embed">
-          <iframe style="border-radius:12px" src="https://open.spotify.com/embed/album/16oKZSg3msLgn69IK1puzi?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-        </div>
-      </div>
-
-      <!-- Fontaines D.C. -->
-      <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 352px;">
-        <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b273f69e28716be1331924f25f2e" alt="Romance" />
-        <div class="album-info">
-          <div class="album-title">Romance</div>
-          <div class="album-artist">Fontaines D.C.</div>
-        </div>
-        <div class="album-embed">
-          <iframe style="border-radius:12px" src="https://open.spotify.com/embed/album/287QQ922OsJYh8aFNGdJG5?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-        </div>
-      </div>
-
-      <!-- Company -->
-      <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 352px;">
-        <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b2730c16402a73f6074645d694bf" alt="Company 2006 Broadway Revival Cast" />
-        <div class="album-info">
-          <div class="album-title">Company (2006 Broadway Revival Cast)</div>
-          <div class="album-artist">Original Broadway Cast</div>
-        </div>
-        <div class="album-embed">
-          <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/4GDSnxxtmIyVS4Twl7Y7UB?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-        </div>
-      </div>
-
-      <!-- Charli xcx -->
-      <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 352px;">
-        <img class="album-cover" src="https://i.scdn.co/image/ab67616d00001e02fa1fb2582857abf6fbc01248" alt="Brat" />
-        <div class="album-info">
-          <div class="album-title">Brat and it's the same but there's three more songs so it's not</div>
-          <div class="album-artist">Charli xcx</div>
-        </div>
-        <div class="album-embed">
-          <iframe style="border-radius:12px" src="https://open.spotify.com/embed/album/316O0Xetgx2NJLRgJBw4uq?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-        </div>
-      </div>
-
-      <!-- Spice Girls -->
-      <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 352px;">
-        <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b273f660420bcef3b16b4c7e5f2b" alt="Spiceworld" />
-        <div class="album-info">
-          <div class="album-title">Spiceworld</div>
-          <div class="album-artist">Spice Girls</div>
-        </div>
-        <div class="album-embed">
-          <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/3FteycP8CaXS1MhjcXekVT?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-        </div>
-      </div>
-
-      <!-- Laufey -->
-      <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 352px;">
-        <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b2736ec6bdb1b31c8cb6b1d3511f" alt="A Matter of Time: The Final Hour" />
-        <div class="album-info">
-          <div class="album-title">A Matter of Time: The Final Hour</div>
-          <div class="album-artist">Laufey</div>
-        </div>
-        <div class="album-embed">
-          <iframe style="border-radius:12px" src="https://open.spotify.com/embed/album/4DWK6TLXHl1fly2zi5RlO7?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-        </div>
-      </div>
-
-      <!-- Harry Styles -->
-      <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 352px;">
-        <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b27374959140f550b11049c18a38" alt="Kiss All The Time. Disco, Occasionally." />
-        <div class="album-info">
-          <div class="album-title">Kiss All The Time. Disco, Occasionally.</div>
-          <div class="album-artist">Harry Styles</div>
-        </div>
-        <div class="album-embed">
-          <iframe style="border-radius:12px" src="https://open.spotify.com/embed/album/69BqE1V8Bzb9GCyeP1fFeR?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-        </div>
-      </div>
-
-      <!-- Ariana Grande -->
-      <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 352px;">
-        <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b2735ab3c842fde848df7a4ee6d9" alt="Eternal Sunshine Deluxe" />
-        <div class="album-info">
-          <div class="album-title">Eternal Sunshine Deluxe: Brighter Days Ahead</div>
-          <div class="album-artist">Ariana Grande</div>
-        </div>
-        <div class="album-embed">
-          <iframe style="border-radius:12px" src="https://open.spotify.com/embed/album/6cbwstHlsAIIWurIIXXBPd?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-        </div>
-      </div>
-
-      <!-- twenty one pilots -->
-      <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 352px;">
-        <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b273b5b991fd65053a3acb8c2db2" alt="Drag Path" />
-        <div class="album-info">
-          <div class="album-title">Drag Path</div>
-          <div class="album-artist">twenty one pilots</div>
-        </div>
-        <div class="album-embed">
-          <iframe style="border-radius:12px" src="https://open.spotify.com/embed/album/27KwvdCscr3IQtSbnyAZpo?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-        </div>
-      </div>
-
-      <!-- Hayley Williams -->
-      <div class="album-card" onclick="toggleAlbum(this)" style="--embed-height: 352px;">
-        <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b273850c0e3fdd3b3b5cb0b7fa63" alt="Ego Death at a Bachelorette Party" />
-        <div class="album-info">
-          <div class="album-title">Ego Death at a Bachelorette Party</div>
-          <div class="album-artist">Hayley Williams</div>
-        </div>
-        <div class="album-embed">
-          <iframe style="border-radius:12px" src="https://open.spotify.com/embed/album/3MROTtttK946gHaTkXeP8b?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <footer class="footer">
-    <a href="https://www.linkedin.com/in/simrancs1998/" target="_blank">LinkedIn</a>
-  </footer>
+  </main>
 
   <script>
     // Hamburger toggle
     const hamburger = document.getElementById('hamburger');
-    const navLinks = document.getElementById('nav-links');
-    hamburger.addEventListener('click', () => { navLinks.classList.toggle('open'); });
+    const navLinks = document.getElementById('navLinks');
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      navLinks.classList.toggle('open');
+    });
+    document.addEventListener('click', (e) => {
+      if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) {
+        hamburger.classList.remove('open');
+        navLinks.classList.remove('open');
+      }
+    });
 
-    // Album toggle
+    // Album expand — one at a time
     function toggleAlbum(card) {
       const wasOpen = card.classList.contains('open');
       document.querySelectorAll('.album-card.open').forEach(c => c.classList.remove('open'));
       if (!wasOpen) card.classList.add('open');
     }
 
-    // Page transitions
-    const overlay = document.getElementById('transition-overlay');
-    document.querySelectorAll('.nav-links a').forEach(link => {
-      link.addEventListener('click', function(e) {
-        if (this.classList.contains('active')) return;
-        e.preventDefault();
-        const href = this.getAttribute('href');
-        overlay.classList.add('fade-in');
-        setTimeout(() => { window.location.href = href; }, 500);
-      });
+    // Cursor parallax
+    const bg = document.getElementById('bg');
+    document.addEventListener('mousemove', (e) => {
+      const x = (e.clientX / window.innerWidth - 0.5) * 14;
+      const y = (e.clientY / window.innerHeight - 0.5) * 14;
+      bg.style.transform = `translate(${-x}px, ${-y}px)`;
     });
-    window.addEventListener('load', () => { overlay.classList.remove('fade-in'); });
 
-    // Canvas animation
-    const canvas = document.getElementById('c');
+    // Drifting leaves
+    const canvas = document.getElementById('leaves');
     const ctx = canvas.getContext('2d');
-    let W, H;
-    function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
-    function rf(a, b) { return Math.random() * (b - a) + a; }
-    let flies = [];
-    function initFlies() {
-      flies = [];
-      for (let i = 0; i < 35; i++) {
-        flies.push({ x: rf(0,W), y: rf(H*0.2,H*0.85), vx: rf(-0.3,0.3), vy: rf(-0.25,-0.04), alpha: rf(0.1,0.8), dir: Math.random()>0.5?1:-1, spd: rf(0.005,0.018), col: Math.random()>0.5?'#c0b455':'#86b084' });
+    let W, H, leaves = [];
+    function resize() { W = canvas.width = innerWidth; H = canvas.height = innerHeight; }
+    function rand(a, b) { return Math.random() * (b - a) + a; }
+    function initLeaves() {
+      leaves = [];
+      const palette = ['#9ebf8a', '#8ab5d1', '#7fc9b3', '#7a9b8a'];
+      for (let i = 0; i < 14; i++) {
+        leaves.push({
+          x: rand(0, W), y: rand(-H, H),
+          size: rand(3, 7),
+          vx: rand(-0.3, 0.3), vy: rand(0.1, 0.35),
+          rot: rand(0, Math.PI * 2), vr: rand(-0.008, 0.008),
+          color: palette[Math.floor(Math.random() * palette.length)],
+          alpha: rand(0.2, 0.5)
+        });
       }
     }
-    function draw() {
-      ctx.clearRect(0,0,W,H);
-      flies.forEach(f => {
-        f.x+=f.vx; f.y+=f.vy; f.alpha+=f.dir*f.spd;
-        if(f.alpha>0.9) f.dir=-1; if(f.alpha<0.05) f.dir=1;
-        if(f.y<H*0.1){f.y=H*0.85;f.x=rf(0,W);} if(f.x<-10||f.x>W+10) f.x=rf(0,W);
-        ctx.save(); ctx.globalAlpha=f.alpha; ctx.fillStyle=f.col;
-        ctx.beginPath(); ctx.arc(f.x,f.y,1.8,0,Math.PI*2); ctx.fill(); ctx.restore();
-      });
-      requestAnimationFrame(draw);
+    function drawLeaf(l) {
+      ctx.save();
+      ctx.translate(l.x, l.y);
+      ctx.rotate(l.rot);
+      ctx.globalAlpha = l.alpha;
+      ctx.fillStyle = l.color;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, l.size, l.size * 0.45, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
     }
-    resize(); initFlies(); draw();
-    window.addEventListener('resize', () => { resize(); initFlies(); });
+    function animate() {
+      ctx.clearRect(0, 0, W, H);
+      leaves.forEach(l => {
+        l.x += l.vx + Math.sin(l.y * 0.008) * 0.2;
+        l.y += l.vy;
+        l.rot += l.vr;
+        if (l.y > H + 20) { l.y = -20; l.x = rand(0, W); }
+        if (l.x < -20) l.x = W + 20;
+        if (l.x > W + 20) l.x = -20;
+        drawLeaf(l);
+      });
+      requestAnimationFrame(animate);
+    }
+    resize();
+    initLeaves();
+    animate();
+    window.addEventListener('resize', () => { resize(); initLeaves(); });
   </script>
 </body>
 </html>
