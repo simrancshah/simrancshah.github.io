@@ -131,6 +131,35 @@
     .nav-links a:hover::before { color: var(--blue); }
     .nav-links a.active { color: var(--blue); }
 
+    /* ── Hamburger (mobile only) ── */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      cursor: pointer;
+      background: transparent;
+      border: none;
+      padding: 8px;
+      z-index: 300;
+    }
+    .hamburger span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--text);
+      transition: all 0.3s ease;
+    }
+    .hamburger.open span:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+      background: var(--blue);
+    }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+      background: var(--blue);
+    }
+
     /* ── Main viewport ── */
     main {
       position: relative; z-index: 10;
@@ -417,7 +446,28 @@
       .widgets { grid-template-columns: 1fr; }
       .launchers { grid-template-columns: repeat(3, 1fr); }
       .modules { grid-template-columns: 1fr; }
-      .nav-links { display: none; }
+      .hamburger { display: flex; }
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        gap: 0;
+        position: fixed;
+        top: 56px; left: 0; right: 0;
+        background: var(--panel-2);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        padding: 12px 24px 16px;
+        border-bottom: 1px solid var(--line);
+      }
+      .nav-links.open { display: flex; }
+      .nav-links li {
+        border-bottom: 1px dashed var(--line-soft);
+      }
+      .nav-links li:last-child { border-bottom: none; }
+      .nav-links a {
+        padding: 12px 6px;
+        font-size: 13px;
+      }
       .viewport { padding: 28px 20px 24px; }
       main { padding: 76px 14px 32px; }
       .viewport-foot { flex-direction: column; gap: 8px; }
@@ -449,7 +499,10 @@
       <span class="live-dot"></span>
       Simran Shah · Station 42
     </span>
-    <ul class="nav-links">
+    <button class="hamburger" id="hamburger" aria-label="Toggle navigation menu">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links" id="navLinks">
       <li><a href="index.html" class="active">field_post</a></li>
       <li><a href="cv.html">CV</a></li>
       <li><a href="music.html">audio_log</a></li>
@@ -566,6 +619,21 @@
   </main>
 
   <script>
+    // Hamburger menu toggle (mobile)
+    const hamburger = document.getElementById('hamburger');
+    const navLinks = document.getElementById('navLinks');
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      navLinks.classList.toggle('open');
+    });
+    // Close menu if user taps outside it
+    document.addEventListener('click', (e) => {
+      if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) {
+        hamburger.classList.remove('open');
+        navLinks.classList.remove('open');
+      }
+    });
+
     // Cursor parallax — subtle
     const bg = document.getElementById('bg');
     document.addEventListener('mousemove', (e) => {
