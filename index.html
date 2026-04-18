@@ -3,356 +3,650 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>simran shah</title>
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet"/>
+  <title>Station 42 · Field Post — Simran Shah</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
   <style>
+    /* ──────────────────────────────────────────────
+       FIELD POST · v2 — HOME DASHBOARD
+       Cool solarpunk palette (blue / green / white)
+       Home page behaves like a comms system opening
+       screen: greeting, live widgets, module launchers.
+       Everything lives inside one viewport frame.
+       ────────────────────────────────────────────── */
+
+    :root {
+      --deep:      #131d1c;                   /* cool-dark base */
+      --panel:     rgba(19, 29, 28, 0.68);
+      --panel-2:   rgba(19, 29, 28, 0.82);
+      --line:      rgba(138, 181, 209, 0.22); /* soft steel-blue hairline */
+      --line-soft: rgba(138, 181, 209, 0.1);
+      --dim:       #7b9591;                   /* muted blue-green-gray */
+      --text:      #e8eddc;                   /* cool cream / near-white */
+      --white:     #f2f5ec;
+
+      --sage:      #9ebf8a;                   /* the green */
+      --blue:      #8ab5d1;                   /* soft steel blue — primary accent */
+      --aqua:      #7fc9b3;                   /* seafoam — LIVE indicator */
+      --coral:     #d89985;                   /* used sparingly for pending */
+    }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
     body {
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      font-family: 'Press Start 2P', monospace;
+      background: var(--deep);
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      line-height: 1.7;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* ── Background layers ── */
+    .bg-layer {
+      position: fixed;
+      inset: -40px;
       background-image: url('bg.jpeg');
       background-size: cover;
       background-position: center;
-      background-repeat: no-repeat;
-    }
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.3);
+      /* Gentle tone only — let the original Ghibli palette show through */
+      filter: brightness(0.88);
       z-index: 0;
+      will-change: transform;
+      transition: transform 0.3s ease-out;
     }
-
-    /* ── Scanline overlay ── */
-    body::after {
-      content: '';
+    .bg-wash {
       position: fixed;
       inset: 0;
+      background:
+        radial-gradient(ellipse at 75% 25%, rgba(138, 181, 209, 0.12), transparent 55%),
+        radial-gradient(ellipse at 20% 85%, rgba(127, 201, 179, 0.08), transparent 50%),
+        linear-gradient(rgba(19, 29, 28, 0.35), rgba(19, 29, 28, 0.62));
+      z-index: 1;
+      pointer-events: none;
+    }
+    .scanlines {
+      position: fixed; inset: 0;
       background: repeating-linear-gradient(
         to bottom,
-        transparent,
-        transparent 2px,
-        rgba(0, 0, 0, 0.04) 2px,
-        rgba(0, 0, 0, 0.04) 4px
+        transparent, transparent 3px,
+        rgba(0, 0, 0, 0.06) 3px,
+        rgba(0, 0, 0, 0.06) 4px
       );
-      pointer-events: none;
-      z-index: 2;
+      pointer-events: none; z-index: 50;
+    }
+    .grain {
+      position: fixed; inset: 0;
+      opacity: 0.04; z-index: 51; pointer-events: none;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence baseFrequency='0.85' numOctaves='2'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>");
+    }
+    canvas.leaves {
+      position: fixed; inset: 0; z-index: 3; pointer-events: none;
     }
 
-    canvas {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      pointer-events: none;
-      z-index: 1;
-    }
+    /* ── Nav ── */
     nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 200;
-      background: rgba(21, 34, 33, 0.78);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border-top: 1px solid rgba(203, 216, 155, 0.25);
-      border-bottom: 1px solid rgba(203, 216, 155, 0.25);
-      padding: 0 2rem;
-      height: 48px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: var(--panel-2);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
+      padding: 0 32px; height: 56px;
+      display: flex; align-items: center; justify-content: space-between;
     }
-
-    /* ── Glitch on nav name ── */
-    .nav-name {
-      font-size: 0.45rem;
-      letter-spacing: 0.18em;
-      color: #c0b455;
+    .nav-brand {
+      display: flex; align-items: center; gap: 10px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.5rem;
+      color: var(--blue);
+      letter-spacing: 0.22em;
       text-transform: uppercase;
-      white-space: nowrap;
-      animation: glitch-idle 8s infinite;
     }
-    @keyframes glitch-idle {
-      0%, 90%, 100% { text-shadow: none; transform: none; }
-      91% { text-shadow: -2px 0 #86b084, 2px 0 #c0b455; transform: skewX(-2deg); }
-      92% { text-shadow: 2px 0 #86b084, -2px 0 #c0b455; transform: skewX(2deg); }
-      93% { text-shadow: none; transform: none; }
-      94% { text-shadow: -1px 0 #c0b455; transform: skewX(-1deg); }
-      95% { text-shadow: none; transform: none; }
+    .nav-brand .live-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--aqua);
+      box-shadow: 0 0 10px var(--aqua);
+      animation: breathe 3s ease-in-out infinite;
     }
-
+    @keyframes breathe {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.82); }
+    }
     .nav-links {
-      display: flex;
-      gap: 2rem;
-      list-style: none;
+      display: flex; gap: 2px; list-style: none;
     }
     .nav-links a {
-      font-size: 0.42rem;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: #cbd89b;
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 7px 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px;
+      letter-spacing: 0.08em;
+      color: var(--text);
       text-decoration: none;
-      position: relative;
-      padding-bottom: 3px;
-      transition: color 0.3s ease;
+      transition: color 0.2s;
     }
-    .nav-links a::after {
+    .nav-links a::before { content: '>'; color: var(--dim); }
+    .nav-links a:hover { color: var(--blue); }
+    .nav-links a:hover::before { color: var(--blue); }
+    .nav-links a.active { color: var(--blue); }
+
+    /* ── Main viewport ── */
+    main {
+      position: relative; z-index: 10;
+      max-width: 1180px; margin: 0 auto;
+      padding: 88px 28px 48px;
+    }
+
+    .viewport {
+      position: relative;
+      padding: 44px 44px 36px;
+      background: rgba(19, 29, 28, 0.38);
+      backdrop-filter: blur(3px);
+      -webkit-backdrop-filter: blur(3px);
+      border: 1px solid var(--line);
+    }
+    .viewport::before,
+    .viewport::after,
+    .viewport .bracket-bl,
+    .viewport .bracket-br {
       content: '';
       position: absolute;
-      bottom: 0; left: 0;
-      width: 0%;
-      height: 1px;
-      background: #c0b455;
-      transition: width 0.35s ease;
+      width: 18px; height: 18px;
+      border: 1px solid var(--blue);
     }
-    .nav-links a:hover { color: #c0b455; }
-    .nav-links a:hover::after { width: 100%; }
-    .nav-links a.active { color: #c0b455; }
-    .nav-links a.active::after { width: 100%; background: #c0b455; opacity: 0.5; }
+    .viewport::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+    .viewport::after  { top: -1px; right: -1px; border-left: none; border-bottom: none; }
+    .bracket-bl { bottom: -1px; left: -1px; border-right: none; border-top: none; }
+    .bracket-br { bottom: -1px; right: -1px; border-left: none; border-top: none; }
 
-    .hamburger {
-      display: none;
-      flex-direction: column;
-      gap: 5px;
-      cursor: pointer;
-      z-index: 300;
+    .viewport-label {
+      position: absolute; top: -9px; left: 48px;
+      background: var(--deep); padding: 0 14px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.4rem; color: var(--blue);
+      letter-spacing: 0.28em;
     }
-    .hamburger span {
-      display: block;
-      width: 22px;
-      height: 2px;
-      background: #cbd89b;
-      transition: all 0.3s ease;
+    .viewport-id {
+      position: absolute; top: -9px; right: 48px;
+      background: var(--deep); padding: 0 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; color: var(--dim);
+      letter-spacing: 0.18em;
     }
 
-    @media (max-width: 768px) {
-      .hamburger { display: flex; }
-      .nav-links {
-        display: none;
-        flex-direction: column;
-        gap: 1.5rem;
-        position: fixed;
-        top: 48px; left: 0; right: 0;
-        background: rgba(21, 34, 33, 0.97);
-        padding: 2rem;
-        z-index: 199;
-        border-bottom: 1px solid rgba(203, 216, 155, 0.25);
-      }
-      .nav-links.open { display: flex; }
+    /* ── Dashboard header row: greeting + clock ── */
+    .dash-head {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 40px;
+      align-items: end;
+      margin-bottom: 44px;
+      padding-bottom: 28px;
+      border-bottom: 1px dashed var(--line-soft);
+    }
+    .greet-kicker {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.38rem;
+      color: var(--sage);
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .greet-kicker::before {
+      content: ''; width: 24px; height: 1px; background: var(--sage);
+    }
+    .greet-title {
+      font-family: 'VT323', monospace;
+      font-size: clamp(2.6rem, 5.5vw, 4.4rem);
+      line-height: 1;
+      color: var(--white);
+      margin-bottom: 10px;
+    }
+    .greet-title .accent { color: var(--blue); }
+    .greet-sub {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13.5px;
+      color: var(--dim);
+      letter-spacing: 0.03em;
+    }
+    .greet-sub .hl { color: var(--aqua); }
+    .greet-sub .pending { color: var(--coral); font-style: italic; }
+
+    /* Clock block (right) */
+    .clock {
+      text-align: right;
+      border-left: 1px solid var(--line-soft);
+      padding-left: 32px;
+      min-width: 200px;
+    }
+    .clock .clock-label {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.32rem;
+      color: var(--dim);
+      letter-spacing: 0.3em;
+      margin-bottom: 10px;
+    }
+    .clock .clock-time {
+      font-family: 'VT323', monospace;
+      font-size: 3rem;
+      line-height: 1;
+      color: var(--aqua);
+      letter-spacing: 0.02em;
+      text-shadow: 0 0 16px rgba(127, 201, 179, 0.25);
+    }
+    .clock .clock-time .blink { animation: blink 1.2s steps(2) infinite; }
+    @keyframes blink { 50% { opacity: 0.3; } }
+    .clock .clock-date {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--dim);
+      letter-spacing: 0.15em;
+      margin-top: 6px;
     }
 
-    .container {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 100;
-      text-align: center;
+    /* ── Widgets row ── */
+    .widgets-label {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.4rem;
+      color: var(--blue);
+      letter-spacing: 0.3em;
+      margin-bottom: 16px;
+      display: flex; align-items: center; gap: 14px;
     }
-    .status {
-      display: inline-block;
-      font-size: 0.6rem;
-      color: #c0b455;
-      padding: 0.6rem 1.2rem;
-      border: 2px solid #c0b455;
-      box-shadow: 4px 4px 0px #7c7938, -2px -2px 0px #86b084;
-      letter-spacing: 0.12em;
-      animation: flicker 4s step-end infinite;
+    .widgets-label .fill {
+      flex: 1; height: 1px;
+      background: linear-gradient(to right, var(--line), transparent);
     }
-    @keyframes flicker {
-      0%,94%,100% { opacity:1; }
-      95% { opacity:0.3; }
-      97% { opacity:1; }
-      98% { opacity:0.2; }
-      99% { opacity:1; }
+    .widgets-label .meta {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10.5px; color: var(--dim);
+      letter-spacing: 0.15em;
     }
 
-    .footer {
-      position: fixed;
-      bottom: 1.5rem;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 0.42rem;
-      letter-spacing: 0.1em;
-      color: #5c896b;
-      z-index: 100;
+    .widgets {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 44px;
     }
-    .footer a { color: #cbd89b; text-decoration: none; transition: color 0.3s; }
-    .footer a:hover { color: #c0b455; }
-
-    #transition-overlay {
-      position: fixed;
-      inset: 0;
-      background: #0d1a14;
-      z-index: 999;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.5s ease;
-    }
-    #transition-overlay.fade-in { opacity: 1; pointer-events: all; }
-
-    /* ── Loading Screen ── */
-    #loading-screen {
-      position: fixed;
-      inset: 0;
-      background: #0d1a14;
-      z-index: 9999;
+    .widget {
+      padding: 18px 20px 16px;
+      border: 1px solid var(--line-soft);
+      background: rgba(19, 29, 28, 0.55);
+      text-decoration: none;
+      color: var(--text);
+      transition: all 0.2s;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 20px;
-      transition: opacity 0.6s ease;
     }
-    #loading-screen.hide {
-      opacity: 0;
-      pointer-events: none;
+    .widget:hover {
+      border-color: var(--blue);
+      background: rgba(138, 181, 209, 0.06);
     }
-    .loading-text {
+    .widget .w-key {
       font-family: 'Press Start 2P', monospace;
-      font-size: 0.55rem;
-      color: #c0b455;
+      font-size: 0.32rem;
       letter-spacing: 0.25em;
+      color: var(--sage);
+      margin-bottom: 12px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .widget .w-key .pulse {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--aqua);
+      box-shadow: 0 0 6px var(--aqua);
+      animation: breathe 2.5s ease-in-out infinite;
+    }
+    .widget .w-title {
+      font-family: 'VT323', monospace;
+      font-size: 1.55rem;
+      line-height: 1.1;
+      color: var(--white);
+      margin-bottom: 4px;
+    }
+    .widget:hover .w-title { color: var(--blue); }
+    .widget .w-sub {
+      font-size: 12.5px;
+      color: var(--dim);
+      line-height: 1.5;
+    }
+    .widget .w-sub em { color: var(--sage); font-style: normal; }
+
+    /* ── Module cards (bigger, descriptive — like OG Observation Deck) ── */
+    .modules {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+    }
+    .module-card {
+      display: block;
+      padding: 18px 20px 16px;
+      border: 1px solid var(--line);
+      background: rgba(19, 29, 28, 0.55);
+      text-decoration: none;
+      color: var(--text);
+      position: relative;
+      transition: all 0.2s;
+    }
+    .module-card:hover {
+      border-color: var(--blue);
+      background: rgba(138, 181, 209, 0.05);
+      transform: translateY(-2px);
+    }
+    .module-card .m-code {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.32rem;
+      color: var(--dim);
+      letter-spacing: 0.22em;
+      margin-bottom: 10px;
+    }
+    .module-card .m-name {
+      font-family: 'VT323', monospace;
+      font-size: 1.75rem;
+      line-height: 1.05;
+      color: var(--white);
+      margin-bottom: 14px;
+      transition: color 0.2s;
+    }
+    .module-card:hover .m-name { color: var(--blue); }
+    .module-card .m-foot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10.5px;
+      color: var(--dim);
+      letter-spacing: 0.12em;
       text-transform: uppercase;
     }
-    .loading-bar-wrap {
-      width: 180px;
-      height: 3px;
-      background: rgba(203, 216, 155, 0.15);
+    .module-card .status.live { color: var(--aqua); }
+    .module-card .status.live::before { content: '● '; }
+    .module-card .status.pending { color: var(--coral); font-style: italic; }
+    .module-card .status.pending::before { content: '◌ '; font-style: normal; }
+
+    /* ── Bottom line ── */
+    .viewport-foot {
+      margin-top: 40px; padding-top: 20px;
+      border-top: 1px dashed var(--line-soft);
+      display: flex; justify-content: space-between;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; color: var(--dim);
+      letter-spacing: 0.12em;
     }
-    .loading-bar {
-      height: 100%;
-      width: 0%;
-      background: #c0b455;
-      transition: width 0.2s ease;
+    .viewport-foot .left { display: flex; align-items: center; gap: 10px; }
+    .viewport-foot .left .dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--aqua);
+      box-shadow: 0 0 5px var(--aqua);
+      animation: breathe 3s ease-in-out infinite;
+    }
+    .viewport-foot .right a {
+      color: var(--text);
+      text-decoration: none;
+      margin-left: 18px;
+      transition: color 0.2s;
+    }
+    .viewport-foot .right a:hover { color: var(--blue); }
+
+    /* ── Boot ── */
+    .boot {
+      position: fixed; inset: 0;
+      background: var(--deep); z-index: 9999;
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 14px;
+      font-family: 'VT323', monospace;
+      animation: bootOut 0.5s ease 1.8s forwards;
+    }
+    @keyframes bootOut { to { opacity: 0; pointer-events: none; } }
+    .boot-lines {
+      font-size: 18px; line-height: 1.8;
+      color: var(--text); text-align: left;
+    }
+    .boot-lines div { opacity: 0; animation: bootLine 0.15s forwards; }
+    .boot-lines div:nth-child(1) { animation-delay: 0.2s; color: var(--blue); }
+    .boot-lines div:nth-child(2) { animation-delay: 0.6s; }
+    .boot-lines div:nth-child(3) { animation-delay: 1.0s; }
+    .boot-lines div:nth-child(4) { animation-delay: 1.4s; color: var(--aqua); }
+    @keyframes bootLine { to { opacity: 1; } }
+
+    @media (max-width: 880px) {
+      .dash-head { grid-template-columns: 1fr; }
+      .clock { border-left: none; padding-left: 0; text-align: left; }
+      .widgets { grid-template-columns: 1fr; }
+      .launchers { grid-template-columns: repeat(3, 1fr); }
+      .modules { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+      .viewport { padding: 28px 20px 24px; }
+      main { padding: 76px 14px 32px; }
+      .viewport-foot { flex-direction: column; gap: 8px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Loading Screen -->
-  <div id="loading-screen">
-    <div class="loading-text" id="scramble-text">LOADING</div>
-    <div class="loading-bar-wrap">
-      <div class="loading-bar" id="loading-bar"></div>
+  <!-- Boot -->
+  <div class="boot">
+    <div class="boot-lines">
+      <div>▮ STATION 42 · FIELD POST</div>
+      <div>warming the instruments...</div>
+      <div>opening the shutters...</div>
+      <div>welcome back, observer.</div>
     </div>
   </div>
 
-  <div id="transition-overlay"></div>
-  <canvas id="c"></canvas>
+  <!-- Background -->
+  <div class="bg-layer" id="bg"></div>
+  <div class="bg-wash"></div>
+  <div class="scanlines"></div>
+  <div class="grain"></div>
+  <canvas class="leaves" id="leaves"></canvas>
 
+  <!-- Nav — CV and contact kept plain, others themed -->
   <nav>
-    <span class="nav-name">Simran Shah</span>
-    <div class="hamburger" id="hamburger">
-      <span></span><span></span><span></span>
-    </div>
-    <ul class="nav-links" id="nav-links">
-      <li><a href="/" class="active">Home</a></li>
-      <li><a href="dog.html">pictures of my dog</a></li>
+    <span class="nav-brand">
+      <span class="live-dot"></span>
+      Simran Shah · Station 42
+    </span>
+    <ul class="nav-links">
+      <li><a href="index.html" class="active">field_post</a></li>
       <li><a href="cv.html">CV</a></li>
-      <li><a href="movies.html">movie reviews</a></li>
-      <li><a href="books.html">books i'm reading</a></li>
-      <li><a href="music.html">Music i listen to</a></li>
+      <li><a href="music.html">audio_log</a></li>
+      <li><a href="books.html">reading_list</a></li>
+      <li><a href="movies.html">viewing_log</a></li>
+      <li><a href="dog.html">companion</a></li>
       <li><a href="contact.html">contact</a></li>
     </ul>
   </nav>
 
-  <div class="container">
-    <span class="status">WORK IN PROGRESS</span>
-  </div>
+  <!-- Main dashboard -->
+  <main>
+    <section class="viewport">
+      <span class="bracket-bl"></span>
+      <span class="bracket-br"></span>
+      <span class="viewport-label">▮ FIELD POST // MAIN VIEW</span>
+      <span class="viewport-id">0xSH-1998 · BERLIN, DE</span>
 
-  <p class="footer">
-    <a href="https://www.linkedin.com/in/simrancs1998/" target="_blank">LinkedIn</a>
-  </p>
+      <!-- Greeting + clock -->
+      <header class="dash-head">
+        <div>
+          <div class="greet-kicker">Signal received from Berlin</div>
+          <h1 class="greet-title">
+            <span id="greeting">Good evening</span>.
+          </h1>
+          <p class="greet-sub">
+            <span class="hl">3 modules live</span> &nbsp;·&nbsp;
+            <span class="pending">3 pending upload</span> &nbsp;·&nbsp;
+            ambient conditions nominal
+          </p>
+        </div>
 
-  <!-- Loading screen JS (runs first) -->
+        <div class="clock">
+          <div class="clock-label">▮ local time</div>
+          <div class="clock-time"><span id="hh">00</span><span class="blink">:</span><span id="mm">00</span></div>
+          <div class="clock-date" id="dateLine">—</div>
+        </div>
+      </header>
+
+      <!-- Widgets -->
+      <div class="widgets-label">
+        ▮ currently
+        <span class="fill"></span>
+        <span class="meta">updated by hand · imperfect</span>
+      </div>
+
+      <div class="widgets">
+        <a href="music.html" class="widget">
+          <div class="w-key"><span class="pulse"></span>on the turntable</div>
+          <div class="w-title">LUX</div>
+          <div class="w-sub">Rosalía &nbsp;·&nbsp; <em>playing loudly</em></div>
+        </a>
+        <a href="books.html" class="widget">
+          <div class="w-key"><span class="pulse"></span>now reading</div>
+          <div class="w-title">Project Hail Mary</div>
+          <div class="w-sub">Andy Weir &nbsp;·&nbsp; <em>42% through</em></div>
+        </a>
+        <a href="movies.html" class="widget">
+          <div class="w-key"><span class="pulse"></span>last watched</div>
+          <div class="w-title">Past Lives</div>
+          <div class="w-sub">Celine Song &nbsp;·&nbsp; <em>thinking about it</em></div>
+        </a>
+      </div>
+
+      <!-- Launchers -->
+      <div class="widgets-label">
+        ▮ modules
+        <span class="fill"></span>
+        <span class="meta">6 total · 3 live</span>
+      </div>
+
+      <div class="modules">
+        <a href="cv.html" class="module-card">
+          <div class="m-code">MOD.01</div>
+          <div class="m-name">CV</div>
+          <div class="m-foot"><span>work history · thesis</span><span class="status live">live</span></div>
+        </a>
+        <a href="music.html" class="module-card">
+          <div class="m-code">MOD.02</div>
+          <div class="m-name">Audio Log</div>
+          <div class="m-foot"><span>music · 20 albums</span><span class="status live">live</span></div>
+        </a>
+        <a href="contact.html" class="module-card">
+          <div class="m-code">MOD.03</div>
+          <div class="m-name">Contact</div>
+          <div class="m-foot"><span>open channel</span><span class="status live">live</span></div>
+        </a>
+        <a href="dog.html" class="module-card">
+          <div class="m-code">MOD.04</div>
+          <div class="m-name">Companion</div>
+          <div class="m-foot"><span>dog · photo archive</span><span class="status pending">pending</span></div>
+        </a>
+        <a href="movies.html" class="module-card">
+          <div class="m-code">MOD.05</div>
+          <div class="m-name">Viewing Log</div>
+          <div class="m-foot"><span>films · notes</span><span class="status pending">pending</span></div>
+        </a>
+        <a href="books.html" class="module-card">
+          <div class="m-code">MOD.06</div>
+          <div class="m-name">Reading List</div>
+          <div class="m-foot"><span>books · notes</span><span class="status pending">pending</span></div>
+        </a>
+      </div>
+
+      <div class="viewport-foot">
+        <span class="left"><span class="dot"></span>link secure · signal nominal</span>
+        <span class="right">
+          <a href="https://www.linkedin.com/in/simrancs1998/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+          <a href="mailto:simranshah1998@gmail.com">Email</a>
+          <a href="#" onclick="window.scrollTo({top:0,behavior:'smooth'}); return false;">↑ top</a>
+        </span>
+      </div>
+    </section>
+  </main>
+
   <script>
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ@#$%&*';
-    const finalText = 'LOADING';
-    const scrambleEl = document.getElementById('scramble-text');
-    const bar = document.getElementById('loading-bar');
-    const screen = document.getElementById('loading-screen');
-
-    let progress = 0;
-    const barInterval = setInterval(() => {
-      progress = Math.min(progress + Math.random() * 18, 100);
-      bar.style.width = progress + '%';
-      if (progress >= 100) clearInterval(barInterval);
-    }, 80);
-
-    let frame = 0;
-    const scrambleInterval = setInterval(() => {
-      scrambleEl.textContent = finalText
-        .split('')
-        .map((char, i) => frame > i * 3 ? char : chars[Math.floor(Math.random() * chars.length)])
-        .join('');
-      frame++;
-      if (frame > finalText.length * 3) {
-        scrambleEl.textContent = finalText;
-        clearInterval(scrambleInterval);
-      }
-    }, 40);
-
-    window.addEventListener('load', () => {
-      setTimeout(() => {
-        bar.style.width = '100%';
-        setTimeout(() => {
-          screen.classList.add('hide');
-          setTimeout(() => screen.remove(), 700);
-        }, 300);
-      }, 600);
+    // Cursor parallax — subtle
+    const bg = document.getElementById('bg');
+    document.addEventListener('mousemove', (e) => {
+      const x = (e.clientX / window.innerWidth - 0.5) * 14;
+      const y = (e.clientY / window.innerHeight - 0.5) * 14;
+      bg.style.transform = `translate(${-x}px, ${-y}px)`;
     });
-  </script>
 
-  <script>
-    // Hamburger toggle
-    const hamburger = document.getElementById('hamburger');
-    const navLinks = document.getElementById('nav-links');
-    hamburger.addEventListener('click', () => { navLinks.classList.toggle('open'); });
+    // Live clock
+    function updateClock() {
+      const d = new Date();
+      document.getElementById('hh').textContent = String(d.getHours()).padStart(2, '0');
+      document.getElementById('mm').textContent = String(d.getMinutes()).padStart(2, '0');
+      const dateStr = d.toLocaleDateString('en-GB', {
+        weekday: 'short', day: '2-digit', month: 'short', year: 'numeric'
+      }).toUpperCase();
+      document.getElementById('dateLine').textContent = dateStr + ' · CET';
+    }
+    updateClock();
+    setInterval(updateClock, 20000);
 
-    // Page transitions
-    const overlay = document.getElementById('transition-overlay');
-    document.querySelectorAll('.nav-links a').forEach(link => {
-      link.addEventListener('click', function(e) {
-        if (this.classList.contains('active')) return;
-        e.preventDefault();
-        const href = this.getAttribute('href');
-        overlay.classList.add('fade-in');
-        setTimeout(() => { window.location.href = href; }, 500);
-      });
-    });
-    window.addEventListener('load', () => { overlay.classList.remove('fade-in'); });
+    // Time-of-day greeting
+    (function setGreeting() {
+      const hour = new Date().getHours();
+      let g;
+      if (hour < 5)  g = "Still up";
+      else if (hour < 12) g = "Good morning";
+      else if (hour < 18) g = "Good afternoon";
+      else if (hour < 22) g = "Good evening";
+      else g = "Late signal";
+      document.getElementById('greeting').textContent = g;
+    })();
 
-    // Canvas animation
-    const canvas = document.getElementById('c');
+    // Drifting leaves — cool palette
+    const canvas = document.getElementById('leaves');
     const ctx = canvas.getContext('2d');
-    let W, H;
-    function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
-    function rf(a, b) { return Math.random() * (b - a) + a; }
-    let flies = [];
-    function initFlies() {
-      flies = [];
-      for (let i = 0; i < 35; i++) {
-        flies.push({ x: rf(0,W), y: rf(H*0.2,H*0.85), vx: rf(-0.3,0.3), vy: rf(-0.25,-0.04), alpha: rf(0.1,0.8), dir: Math.random()>0.5?1:-1, spd: rf(0.005,0.018), col: Math.random()>0.5?'#c0b455':'#86b084' });
+    let W, H, leaves = [];
+    function resize() { W = canvas.width = innerWidth; H = canvas.height = innerHeight; }
+    function rand(a, b) { return Math.random() * (b - a) + a; }
+    function initLeaves() {
+      leaves = [];
+      const palette = ['#9ebf8a', '#8ab5d1', '#7fc9b3', '#7a9b8a'];
+      for (let i = 0; i < 16; i++) {
+        leaves.push({
+          x: rand(0, W), y: rand(-H, H),
+          size: rand(3, 7),
+          vx: rand(-0.3, 0.3), vy: rand(0.1, 0.35),
+          rot: rand(0, Math.PI * 2), vr: rand(-0.008, 0.008),
+          color: palette[Math.floor(Math.random() * palette.length)],
+          alpha: rand(0.2, 0.55)
+        });
       }
     }
-    function draw() {
-      ctx.clearRect(0,0,W,H);
-      flies.forEach(f => {
-        f.x+=f.vx; f.y+=f.vy; f.alpha+=f.dir*f.spd;
-        if(f.alpha>0.9) f.dir=-1; if(f.alpha<0.05) f.dir=1;
-        if(f.y<H*0.1){f.y=H*0.85;f.x=rf(0,W);} if(f.x<-10||f.x>W+10) f.x=rf(0,W);
-        ctx.save(); ctx.globalAlpha=f.alpha; ctx.fillStyle=f.col;
-        ctx.beginPath(); ctx.arc(f.x,f.y,1.8,0,Math.PI*2); ctx.fill(); ctx.restore();
-      });
-      requestAnimationFrame(draw);
+    function drawLeaf(l) {
+      ctx.save();
+      ctx.translate(l.x, l.y);
+      ctx.rotate(l.rot);
+      ctx.globalAlpha = l.alpha;
+      ctx.fillStyle = l.color;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, l.size, l.size * 0.45, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
     }
-    resize(); initFlies(); draw();
-    window.addEventListener('resize', () => { resize(); initFlies(); });
+    function animate() {
+      ctx.clearRect(0, 0, W, H);
+      leaves.forEach(l => {
+        l.x += l.vx + Math.sin(l.y * 0.008) * 0.2;
+        l.y += l.vy;
+        l.rot += l.vr;
+        if (l.y > H + 20) { l.y = -20; l.x = rand(0, W); }
+        if (l.x < -20) l.x = W + 20;
+        if (l.x > W + 20) l.x = -20;
+        drawLeaf(l);
+      });
+      requestAnimationFrame(animate);
+    }
+    resize();
+    initLeaves();
+    animate();
+    window.addEventListener('resize', () => { resize(); initLeaves(); });
   </script>
 </body>
 </html>
