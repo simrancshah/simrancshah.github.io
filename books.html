@@ -3,378 +3,1068 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>simran shah — books i'm reading</title>
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet"/>
+  <title>Reading List — Simran Shah · Station 42</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <style>
+    /* ──────────────────────────────────────────────
+       READING LIST — MOD.06
+       Same chrome as music page. Three sections:
+       currently reading (featured), top 5 (favorites),
+       recent reads (since mid 2024).
+       ────────────────────────────────────────────── */
+
+    :root {
+      --deep:      #131d1c;
+      --panel:     rgba(19, 29, 28, 0.68);
+      --panel-2:   rgba(19, 29, 28, 0.82);
+      --line:      rgba(138, 181, 209, 0.22);
+      --line-soft: rgba(138, 181, 209, 0.1);
+      --dim:       #7b9591;
+      --text:      #e8eddc;
+      --white:     #f2f5ec;
+      --sage:      #9ebf8a;
+      --blue:      #8ab5d1;
+      --aqua:      #7fc9b3;
+      --coral:     #d89985;
+    }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
     body {
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      font-family: 'Press Start 2P', monospace;
+      background: var(--deep);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 14.5px;
+      line-height: 1.7;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Background */
+    .bg-layer {
+      position: fixed; inset: -40px;
       background-image: url('bg.jpeg');
       background-size: cover;
       background-position: center;
-      background-repeat: no-repeat;
-    }
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.3);
+      filter: brightness(0.88);
       z-index: 0;
+      will-change: transform;
+      transition: transform 0.3s ease-out;
     }
-
-    /* ── Scanline overlay ── */
-    body::after {
-      content: '';
-      position: fixed;
-      inset: 0;
+    .bg-wash {
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse at 75% 25%, rgba(138, 181, 209, 0.1), transparent 55%),
+        linear-gradient(rgba(19, 29, 28, 0.5), rgba(19, 29, 28, 0.7));
+      z-index: 1; pointer-events: none;
+    }
+    .scanlines {
+      position: fixed; inset: 0;
       background: repeating-linear-gradient(
-        to bottom,
-        transparent,
-        transparent 2px,
-        rgba(0, 0, 0, 0.04) 2px,
-        rgba(0, 0, 0, 0.04) 4px
+        to bottom, transparent, transparent 3px,
+        rgba(0, 0, 0, 0.06) 3px, rgba(0, 0, 0, 0.06) 4px
       );
-      pointer-events: none;
-      z-index: 2;
+      pointer-events: none; z-index: 50;
+    }
+    .grain {
+      position: fixed; inset: 0;
+      opacity: 0.04; z-index: 51; pointer-events: none;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence baseFrequency='0.85' numOctaves='2'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>");
+    }
+    canvas.leaves {
+      position: fixed; inset: 0; z-index: 3; pointer-events: none;
     }
 
-    canvas {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      pointer-events: none;
-      z-index: 1;
-    }
+    /* Nav */
     nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 200;
-      background: rgba(21, 34, 33, 0.78);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border-top: 1px solid rgba(203, 216, 155, 0.25);
-      border-bottom: 1px solid rgba(203, 216, 155, 0.25);
-      padding: 0 2rem;
-      height: 48px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: var(--panel-2);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
+      padding: 0 32px; height: 56px;
+      display: flex; align-items: center; justify-content: space-between;
     }
-
-    /* ── Glitch on nav name ── */
-    .nav-name {
-      font-size: 0.45rem;
-      letter-spacing: 0.18em;
-      color: #c0b455;
+    .nav-brand {
+      display: flex; align-items: center; gap: 10px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.5rem;
+      color: var(--blue);
+      letter-spacing: 0.22em;
       text-transform: uppercase;
-      white-space: nowrap;
-      animation: glitch-idle 8s infinite;
     }
-    @keyframes glitch-idle {
-      0%, 90%, 100% { text-shadow: none; transform: none; }
-      91% { text-shadow: -2px 0 #86b084, 2px 0 #c0b455; transform: skewX(-2deg); }
-      92% { text-shadow: 2px 0 #86b084, -2px 0 #c0b455; transform: skewX(2deg); }
-      93% { text-shadow: none; transform: none; }
-      94% { text-shadow: -1px 0 #c0b455; transform: skewX(-1deg); }
-      95% { text-shadow: none; transform: none; }
+    .nav-brand .live-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--aqua);
+      box-shadow: 0 0 10px var(--aqua);
+      animation: breathe 3s ease-in-out infinite;
     }
-
+    @keyframes breathe {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.82); }
+    }
     .nav-links {
-      display: flex;
-      gap: 2rem;
-      list-style: none;
+      display: flex; gap: 2px; list-style: none;
     }
     .nav-links a {
-      font-size: 0.42rem;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: #cbd89b;
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 7px 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px;
+      letter-spacing: 0.08em;
+      color: var(--text);
       text-decoration: none;
-      position: relative;
-      padding-bottom: 3px;
-      transition: color 0.3s ease;
+      transition: color 0.2s;
     }
-    .nav-links a::after {
-      content: '';
-      position: absolute;
-      bottom: 0; left: 0;
-      width: 0%;
-      height: 1px;
-      background: #c0b455;
-      transition: width 0.35s ease;
-    }
-    .nav-links a:hover { color: #c0b455; }
-    .nav-links a:hover::after { width: 100%; }
-    .nav-links a.active { color: #c0b455; }
-    .nav-links a.active::after { width: 100%; background: #c0b455; opacity: 0.5; }
+    .nav-links a::before { content: '>'; color: var(--dim); }
+    .nav-links a:hover { color: var(--blue); }
+    .nav-links a:hover::before { color: var(--blue); }
+    .nav-links a.active { color: var(--blue); }
 
+    /* Hamburger */
     .hamburger {
-      display: none;
-      flex-direction: column;
-      gap: 5px;
-      cursor: pointer;
-      z-index: 300;
+      display: none; flex-direction: column; justify-content: center;
+      gap: 5px; cursor: pointer; background: transparent;
+      border: none; padding: 8px; z-index: 300;
     }
     .hamburger span {
-      display: block;
-      width: 22px;
-      height: 2px;
-      background: #cbd89b;
+      display: block; width: 22px; height: 2px;
+      background: var(--text);
       transition: all 0.3s ease;
     }
-
-    @media (max-width: 768px) {
-      .hamburger { display: flex; }
-      .nav-links {
-        display: none;
-        flex-direction: column;
-        gap: 1.5rem;
-        position: fixed;
-        top: 48px; left: 0; right: 0;
-        background: rgba(21, 34, 33, 0.97);
-        padding: 2rem;
-        z-index: 199;
-        border-bottom: 1px solid rgba(203, 216, 155, 0.25);
-      }
-      .nav-links.open { display: flex; }
+    .hamburger.open span:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+      background: var(--blue);
+    }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+      background: var(--blue);
     }
 
-    .container {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 100;
-      text-align: center;
-    }
-    .status {
-      display: inline-block;
-      font-size: 0.6rem;
-      color: #c0b455;
-      padding: 0.6rem 1.2rem;
-      border: 2px solid #c0b455;
-      box-shadow: 4px 4px 0px #7c7938, -2px -2px 0px #86b084;
-      letter-spacing: 0.12em;
-      animation: flicker 4s step-end infinite;
-    }
-    @keyframes flicker {
-      0%,94%,100% { opacity:1; }
-      95% { opacity:0.3; }
-      97% { opacity:1; }
-      98% { opacity:0.2; }
-      99% { opacity:1; }
+    /* Main */
+    main {
+      position: relative; z-index: 10;
+      max-width: 1180px; margin: 0 auto;
+      padding: 88px 28px 48px;
     }
 
-    .footer {
-      position: fixed;
-      bottom: 1.5rem;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 0.42rem;
-      letter-spacing: 0.1em;
-      color: #5c896b;
-      z-index: 100;
+    /* Header viewport */
+    .viewport {
+      position: relative;
+      padding: 48px 44px 36px;
+      background: rgba(19, 29, 28, 0.45);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      border: 1px solid var(--line);
     }
-    .footer a { color: #cbd89b; text-decoration: none; transition: color 0.3s; }
-    .footer a:hover { color: #c0b455; }
-
-    #transition-overlay {
-      position: fixed;
-      inset: 0;
-      background: #0d1a14;
-      z-index: 999;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.5s ease;
+    .viewport::before,
+    .viewport::after,
+    .viewport .bracket-bl,
+    .viewport .bracket-br {
+      content: '';
+      position: absolute;
+      width: 18px; height: 18px;
+      border: 1px solid var(--blue);
     }
-    #transition-overlay.fade-in { opacity: 1; pointer-events: all; }
+    .viewport::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+    .viewport::after  { top: -1px; right: -1px; border-left: none; border-bottom: none; }
+    .bracket-bl { bottom: -1px; left: -1px; border-right: none; border-top: none; }
+    .bracket-br { bottom: -1px; right: -1px; border-left: none; border-top: none; }
 
-    /* ── Loading Screen ── */
-    #loading-screen {
-      position: fixed;
-      inset: 0;
-      background: #0d1a14;
-      z-index: 9999;
+    .viewport-label {
+      position: absolute; top: -9px; left: 48px;
+      background: var(--deep); padding: 0 14px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.4rem; color: var(--blue);
+      letter-spacing: 0.28em;
+    }
+    .viewport-id {
+      position: absolute; top: -9px; right: 48px;
+      background: var(--deep); padding: 0 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; color: var(--dim);
+      letter-spacing: 0.18em;
+    }
+
+    .page-head {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 28px;
+      align-items: end;
+    }
+    .page-kicker {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.38rem;
+      color: var(--sage);
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .page-kicker::before {
+      content: ''; width: 24px; height: 1px; background: var(--sage);
+    }
+    .page-title {
+      font-family: 'VT323', monospace;
+      font-size: clamp(2.6rem, 5.5vw, 3.8rem);
+      line-height: 1;
+      color: var(--white);
+      letter-spacing: 0.01em;
+      margin-bottom: 8px;
+    }
+    .page-title .accent { color: var(--blue); }
+    .page-sub {
+      font-size: 14.5px;
+      color: var(--dim);
+      line-height: 1.6;
+      max-width: 52ch;
+    }
+    .page-sub em { color: var(--sage); font-style: normal; }
+    .page-meta {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--dim);
+      letter-spacing: 0.15em;
+      text-align: right;
+    }
+    .page-meta .count {
+      font-family: 'VT323', monospace;
+      font-size: 2.2rem;
+      color: var(--aqua);
+      letter-spacing: 0.02em;
+      display: block;
+      line-height: 1;
+      margin-bottom: 6px;
+      text-shadow: 0 0 12px rgba(127, 201, 179, 0.2);
+    }
+
+    /* Section label */
+    .section-label {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 56px 0 22px;
+    }
+    .section-label h2 {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.45rem;
+      color: var(--blue);
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      font-weight: 400;
+    }
+    .section-label .fill {
+      flex: 1; height: 1px;
+      background: linear-gradient(to right, var(--line), transparent);
+    }
+    .section-label .meta {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10.5px;
+      color: var(--dim);
+      letter-spacing: 0.15em;
+    }
+
+    /* Currently reading — featured card */
+    .now-reading {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 24px;
+      padding: 22px;
+      background: rgba(127, 201, 179, 0.06);
+      border: 1px solid var(--aqua);
+      margin-top: 28px;
+      position: relative;
+    }
+    .now-reading::before,
+    .now-reading::after,
+    .now-reading .card-bl,
+    .now-reading .card-br {
+      content: '';
+      position: absolute;
+      width: 12px; height: 12px;
+      border: 1px solid var(--aqua);
+    }
+    .now-reading::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+    .now-reading::after  { top: -1px; right: -1px; border-left: none; border-bottom: none; }
+    .now-reading .card-bl { bottom: -1px; left: -1px; border-right: none; border-top: none; }
+    .now-reading .card-br { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+
+    .now-cover {
+      aspect-ratio: 2 / 3;
+      overflow: hidden;
+      border: 1px solid var(--line);
+    }
+    .now-cover img {
+      width: 100%; height: 100%;
+      object-fit: cover; display: block;
+    }
+    .now-body {
       display: flex;
       flex-direction: column;
-      align-items: center;
       justify-content: center;
-      gap: 20px;
-      transition: opacity 0.6s ease;
+      gap: 8px;
     }
-    #loading-screen.hide {
-      opacity: 0;
-      pointer-events: none;
-    }
-    .loading-text {
+    .now-status {
       font-family: 'Press Start 2P', monospace;
-      font-size: 0.55rem;
-      color: #c0b455;
-      letter-spacing: 0.25em;
+      font-size: 0.34rem;
+      color: var(--aqua);
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .now-status .pulse {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--aqua);
+      box-shadow: 0 0 8px var(--aqua);
+      animation: breathe 2.5s ease-in-out infinite;
+    }
+    .now-title {
+      font-family: 'VT323', monospace;
+      font-size: 2.4rem;
+      line-height: 1;
+      color: var(--white);
+    }
+    .now-author {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--dim);
+      letter-spacing: 0.1em;
       text-transform: uppercase;
     }
-    .loading-bar-wrap {
-      width: 180px;
-      height: 3px;
-      background: rgba(203, 216, 155, 0.15);
+    .progress-row {
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--dim);
+      letter-spacing: 0.12em;
     }
-    .loading-bar {
-      height: 100%;
-      width: 0%;
-      background: #c0b455;
-      transition: width 0.2s ease;
+    .progress-bar {
+      flex: 1; height: 4px;
+      background: rgba(127, 201, 179, 0.15);
+      position: relative;
+    }
+    .progress-fill {
+      position: absolute; top: 0; left: 0; bottom: 0;
+      background: var(--aqua);
+      box-shadow: 0 0 6px var(--aqua);
+    }
+    .progress-pct { color: var(--aqua); min-width: 40px; text-align: right; }
+
+    /* Top 5 */
+    .top-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 18px;
+    }
+    .top-card {
+      display: block;
+      position: relative;
+      transition: transform 0.25s;
+    }
+    .top-card:hover { transform: translateY(-3px); }
+    .top-rank {
+      position: absolute;
+      top: -8px; left: -8px;
+      z-index: 3;
+      width: 30px; height: 30px;
+      background: var(--deep);
+      border: 1px solid var(--aqua);
+      color: var(--aqua);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'VT323', monospace;
+      font-size: 1.2rem;
+      line-height: 1;
+    }
+    .top-cover {
+      aspect-ratio: 2 / 3;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      transition: border-color 0.25s;
+    }
+    .top-card:hover .top-cover { border-color: var(--aqua); }
+    .top-cover img {
+      width: 100%; height: 100%;
+      object-fit: cover; display: block;
+      filter: brightness(0.9) saturate(0.95);
+      transition: filter 0.3s;
+    }
+    .top-card:hover .top-cover img { filter: brightness(1) saturate(1); }
+    .top-info {
+      margin-top: 10px;
+      text-align: left;
+    }
+    .top-title {
+      font-family: 'VT323', monospace;
+      font-size: 1.2rem;
+      line-height: 1.1;
+      color: var(--white);
+      margin-bottom: 2px;
+    }
+    .top-author {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10.5px;
+      color: var(--dim);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    /* Book grid (recent reads) */
+    .book-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+    }
+    .book-card {
+      background: rgba(19, 29, 28, 0.55);
+      border: 1px solid var(--line);
+      padding: 4px;
+      transition: border-color 0.25s, transform 0.25s, background 0.25s;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    .book-card:hover {
+      border-color: var(--blue);
+      background: rgba(138, 181, 209, 0.05);
+      transform: translateY(-2px);
+    }
+    .book-card::before,
+    .book-card::after,
+    .book-card .card-bl,
+    .book-card .card-br {
+      content: '';
+      position: absolute;
+      width: 10px; height: 10px;
+      border: 1px solid var(--blue);
+      opacity: 0;
+      transition: opacity 0.25s;
+      pointer-events: none;
+    }
+    .book-card::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+    .book-card::after  { top: -1px; right: -1px; border-left: none; border-bottom: none; }
+    .book-card .card-bl { bottom: -1px; left: -1px; border-right: none; border-top: none; }
+    .book-card .card-br { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+    .book-card:hover::before,
+    .book-card:hover::after,
+    .book-card:hover .card-bl,
+    .book-card:hover .card-br { opacity: 1; }
+
+    .book-num {
+      position: absolute;
+      top: 8px; left: 8px;
+      z-index: 2;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.3rem;
+      color: var(--text);
+      letter-spacing: 0.2em;
+      background: rgba(19, 29, 28, 0.75);
+      backdrop-filter: blur(4px);
+      padding: 5px 8px;
+      border: 1px solid var(--line);
+    }
+
+    .book-cover-wrap {
+      width: 100%;
+      aspect-ratio: 2 / 3;
+      overflow: hidden;
+      background: rgba(138, 181, 209, 0.04);
+    }
+    .book-cover {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: brightness(0.94);
+      transition: filter 0.3s;
+    }
+    .book-card:hover .book-cover { filter: brightness(1); }
+
+    .book-info {
+      padding: 14px;
+      border-top: 1px solid var(--line-soft);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .book-title {
+      font-family: 'VT323', monospace;
+      font-size: 1.5rem;
+      line-height: 1.05;
+      color: var(--white);
+      transition: color 0.2s;
+    }
+    .book-card:hover .book-title { color: var(--blue); }
+    .book-author {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--dim);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .book-take {
+      font-family: 'Inter', sans-serif;
+      font-size: 13.5px;
+      line-height: 1.55;
+      color: var(--text);
+      margin-top: 6px;
+    }
+
+    /* Log footer */
+    .log-foot {
+      margin-top: 56px; padding-top: 20px;
+      border-top: 1px dashed var(--line-soft);
+      display: flex; justify-content: space-between;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; color: var(--dim);
+      letter-spacing: 0.12em;
+    }
+    .log-foot .left { display: flex; align-items: center; gap: 10px; }
+    .log-foot .left .dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--aqua);
+      box-shadow: 0 0 5px var(--aqua);
+      animation: breathe 3s ease-in-out infinite;
+    }
+    .log-foot .right { color: var(--sage); font-style: italic; }
+
+    /* Subpage boot */
+    .boot {
+      position: fixed; inset: 0;
+      background: var(--deep); z-index: 9999;
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 10px;
+      font-family: 'VT323', monospace;
+      animation: bootOut 0.4s ease 0.9s forwards;
+    }
+    @keyframes bootOut { to { opacity: 0; pointer-events: none; } }
+    .boot-lines {
+      font-size: 17px; line-height: 1.7;
+      color: var(--text); text-align: left;
+    }
+    .boot-lines div { opacity: 0; animation: bootLine 0.15s forwards; }
+    .boot-lines div:nth-child(1) { animation-delay: 0.1s; color: var(--blue); }
+    .boot-lines div:nth-child(2) { animation-delay: 0.45s; color: var(--aqua); }
+    @keyframes bootLine { to { opacity: 1; } }
+
+    @media (max-width: 880px) {
+      .hamburger { display: flex; }
+      .nav-links {
+        display: none; flex-direction: column; gap: 0;
+        position: fixed;
+        top: 56px; left: 0; right: 0;
+        background: var(--panel-2);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        padding: 12px 24px 16px;
+        border-bottom: 1px solid var(--line);
+      }
+      .nav-links.open { display: flex; }
+      .nav-links li { border-bottom: 1px dashed var(--line-soft); }
+      .nav-links li:last-child { border-bottom: none; }
+      .nav-links a { padding: 12px 6px; font-size: 13px; }
+      .viewport { padding: 30px 20px 24px; }
+      main { padding: 76px 14px 32px; }
+      .page-head { grid-template-columns: 1fr; gap: 14px; }
+      .page-meta { text-align: left; }
+      .book-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+      .top-grid { grid-template-columns: repeat(3, 1fr); gap: 12px; }
+      .now-reading { grid-template-columns: 110px 1fr; padding: 16px; gap: 16px; }
+      .now-title { font-size: 1.8rem; }
+      .log-foot { flex-direction: column; gap: 8px; }
+    }
+    @media (max-width: 520px) {
+      .book-grid { grid-template-columns: 1fr; }
+      .top-grid { grid-template-columns: repeat(2, 1fr); }
     }
   </style>
 </head>
 <body>
 
-  <!-- Loading Screen -->
-  <div id="loading-screen">
-    <div class="loading-text" id="scramble-text">LOADING</div>
-    <div class="loading-bar-wrap">
-      <div class="loading-bar" id="loading-bar"></div>
+  <!-- Boot -->
+  <div class="boot">
+    <div class="boot-lines">
+      <div>▮ ACCESSING MOD.06</div>
+      <div>reading list ready.</div>
     </div>
   </div>
 
-  <div id="transition-overlay"></div>
-  <canvas id="c"></canvas>
+  <!-- Background -->
+  <div class="bg-layer" id="bg"></div>
+  <div class="bg-wash"></div>
+  <div class="scanlines"></div>
+  <div class="grain"></div>
+  <canvas class="leaves" id="leaves"></canvas>
 
+  <!-- Nav -->
   <nav>
-    <span class="nav-name">Simran Shah</span>
-    <div class="hamburger" id="hamburger">
+    <span class="nav-brand">
+      <span class="live-dot"></span>
+      Simran Shah · Station 42
+    </span>
+    <button class="hamburger" id="hamburger" aria-label="Toggle navigation menu">
       <span></span><span></span><span></span>
-    </div>
-    <ul class="nav-links" id="nav-links">
-      <li><a href="/">Home</a></li>
-      <li><a href="dog.html">Pictures of my dog</a></li>
+    </button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">field_post</a></li>
       <li><a href="cv.html">CV</a></li>
-      <li><a href="movies.html">Movie reviews</a></li>
-      <li><a href="books.html" class="active">books i'm reading</a></li>
-      <li><a href="music.html">Music i listen to</a></li>
+      <li><a href="music.html">audio_log</a></li>
+      <li><a href="books.html" class="active">reading_list</a></li>
+      <li><a href="movies.html">viewing_log</a></li>
+      <li><a href="dog.html">companion</a></li>
       <li><a href="contact.html">contact</a></li>
     </ul>
   </nav>
 
-  <div class="container">
-    <span class="status" id="status-text">WORK IN PROGRESS</span>
-  </div>
+  <main>
 
-  <p class="footer">
-    <a href="https://www.linkedin.com/in/simrancs1998/" target="_blank">LinkedIn</a>
-  </p>
+    <!-- Header viewport -->
+    <section class="viewport">
+      <span class="bracket-bl"></span>
+      <span class="bracket-br"></span>
+      <span class="viewport-label">▮ READING LIST // MOD.06</span>
+      <span class="viewport-id">SINCE · MID 2024</span>
 
-  <!-- Loading screen JS -->
+      <header class="page-head">
+        <div>
+          <div class="page-kicker">On the shelf</div>
+          <h1 class="page-title">Reading <span class="accent">list</span>.</h1>
+          <p class="page-sub">
+            What I've been reading since mid 2024, mostly <em>fantasy, mysteries, and the overlap</em>. Imperfectly kept.
+          </p>
+        </div>
+        <div class="page-meta">
+          <span class="count">19</span>
+          books on file
+        </div>
+      </header>
+    </section>
+
+    <!-- Currently reading -->
+    <div class="now-reading">
+      <span class="card-bl"></span>
+      <span class="card-br"></span>
+      <div class="now-cover">
+        <img src="https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1740827191i/219134676.jpg" alt="The Isle in the Silver Sea" loading="lazy"/>
+      </div>
+      <div class="now-body">
+        <div class="now-status"><span class="pulse"></span>now reading</div>
+        <div class="now-title">The Isle in the Silver Sea</div>
+        <div class="now-author">Tasha Suri</div>
+        <div class="progress-row">
+          <span>progress</span>
+          <div class="progress-bar"><div class="progress-fill" style="width: 35%;"></div></div>
+          <span class="progress-pct">35%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top 5 -->
+    <div class="section-label">
+      <h2>▮ all-time top 5</h2>
+      <span class="fill"></span>
+      <span class="meta">the shelf i'd grab in a fire</span>
+    </div>
+
+    <div class="top-grid">
+      <a href="#" class="top-card">
+        <span class="top-rank">01</span>
+        <div class="top-cover">
+          <img src="https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1654215925i/61215351.jpg" alt="The Lord of the Rings" loading="lazy"/>
+        </div>
+        <div class="top-info">
+          <div class="top-title">The Lord of the Rings</div>
+          <div class="top-author">J.R.R. Tolkien</div>
+        </div>
+      </a>
+
+      <a href="#" class="top-card">
+        <span class="top-rank">02</span>
+        <div class="top-cover">
+          <img src="https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1638425885i/16299.jpg" alt="And Then There Were None" loading="lazy"/>
+        </div>
+        <div class="top-info">
+          <div class="top-title">And Then There Were None</div>
+          <div class="top-author">Agatha Christie</div>
+        </div>
+      </a>
+
+      <a href="#" class="top-card">
+        <span class="top-rank">03</span>
+        <div class="top-cover">
+          <img src="https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1526486698i/37794149.jpg" alt="A Memory Called Empire" loading="lazy"/>
+        </div>
+        <div class="top-info">
+          <div class="top-title">A Memory Called Empire</div>
+          <div class="top-author">Arkady Martine</div>
+        </div>
+      </a>
+
+      <a href="#" class="top-card">
+        <span class="top-rank">04</span>
+        <div class="top-cover">
+          <img src="https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1527628141i/29774026.jpg" alt="The Priory of the Orange Tree" loading="lazy"/>
+        </div>
+        <div class="top-info">
+          <div class="top-title">The Priory of the Orange Tree</div>
+          <div class="top-author">Samantha Shannon</div>
+        </div>
+      </a>
+
+      <a href="#" class="top-card">
+        <span class="top-rank">05</span>
+        <div class="top-cover">
+          <img src="https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1546870952i/42036538.jpg" alt="Gideon the Ninth" loading="lazy"/>
+        </div>
+        <div class="top-info">
+          <div class="top-title">Gideon the Ninth</div>
+          <div class="top-author">Tamsyn Muir</div>
+        </div>
+      </a>
+    </div>
+
+    <!-- Recent reads -->
+    <div class="section-label">
+      <h2>▮ recent reads</h2>
+      <span class="fill"></span>
+      <span class="meta">since mid 2024</span>
+    </div>
+
+    <div class="book-grid">
+
+      <div class="book-card">
+        <span class="card-bl"></span><span class="card-br"></span>
+        <span class="book-num">01</span>
+        <div class="book-cover-wrap">
+          <img class="book-cover" src="https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1428577850i/25326486.jpg" alt="Orconomics" loading="lazy"/>
+        </div>
+        <div class="book-info">
+          <div class="book-title">Orconomics</div>
+          <div class="book-author">J. Zachary Pike</div>
+          <div class="book-take">Funny!</div>
+        </div>
+      </div>
+
+      <div class="book-card">
+        <span class="card-bl"></span><span class="card-br"></span>
+        <span class="book-num">02</span>
+        <div class="book-cover-wrap">
+          <img class="book-cover" src="https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1757926884i/54659324.jpg" alt="Dungeon Crawler Carl" loading="lazy"/>
+        </div>
+        <div class="book-info">
+          <div class="book-title">Dungeon Crawler Carl</div>
+          <div class="book-author">Matt Dinniman</div>
+          <div class="book-take">The audiobook is wonderful — whoever decided to give Donut an RP accent deserves an award.</div>
+        </div>
+      </div>
+
+      <div class="book-card">
+        <span class="card-bl"></span><span class="card-br"></span>
+        <span class="book-num">03</span>
+        <div class="book-cover-wrap">
+          <img class="book-cover" src="https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1580209503i/50702014.jpg" alt="Paladin's Grace" loading="lazy"/>
+        </div>
+        <div class="book-info">
+          <div class="book-title">Paladin's Grace</div>
+          <div class="book-author">T. Kingfisher</div>
+          <div class="book-take">Great romcom!</div>
+        </div>
+      </div>
+
+      <div class="book-card">
+        <span class="card-bl"></span><span class="card-br"></span>
+        <span class="book-num">04</span>
+        <div class="book-cover-wrap">
+          <img class="book-cover" src="https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1613670790i/57119466.jpg" alt="Paladin's Strength" loading="lazy"/>
+        </div>
+        <div class="book-info">
+          <div class="book-title">Paladin's Strength</div>
+          <div class="book-author">T. Kingfisher</div>
+          <div class="book-take">Decent book 2. Repetitive, but I think that's the point.</div>
+        </div>
+      </div>
+
+      <div class="book-card">
+        <span class="card-bl"></span><span class="card-br"></span>
+        <span class="book-num">05</span>
+        <div class="book-cover-wrap">
+          <img class="book-cover" src="https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1735662086i/150247395.jpg" alt="The Tainted Cup" loading="lazy"/>
+        </div>
+        <div class="book-info">
+          <div class="book-title">The Tainted Cup</div>
+          <div class="book-author">Robert Jackson Bennett</div>
+          <div class="book-take">In the Venn diagram of my interests, this sits exactly in the middle of 2 of the 3 circles (fantasy and murder mysteries).</div>
+        </div>
+      </div>
+
+      <div class="book-card">
+        <span class="card-bl"></span><span class="card-br"></span>
+        <span class="book-num">06</span>
+        <div class="book-cover-wrap">
+          <img class="book-cover" src="https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1309280346i/31300.jpg" alt="A Caribbean Mystery" loading="lazy"/>
+        </div>
+        <div class="book-info">
+          <div class="book-title">A Caribbean Mystery</div>
+          <div class="book-author">Agatha Christie</div>
+          <div class="book-take">Nostalgia pushed me more than anything. Not her best, but even her average is pretty good.</div>
+        </div>
+      </div>
+
+      <div class="book-card">
+        <span class="card-bl"></span><span class="card-br"></span>
+        <span class="book-num">07</span>
+        <div class="book-cover-wrap">
+          <img class="book-cover" src="https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1683120855i/134713381.jpg" alt="Godkiller" loading="lazy"/>
+        </div>
+        <div class="book-info">
+          <div class="book-title">Godkiller</div>
+          <div class="book-author">Hannah Kaner</div>
+          <div class="book-take">Cool worldbuilding!</div>
+        </div>
+      </div>
+
+      <div class="book-card">
+        <span class="card-bl"></span><span class="card-br"></span>
+        <span class="book-num">08</span>
+        <div class="book-cover-wrap">
+          <img class="book-cover" src="https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1698687061i/124941442.jpg" alt="Sunbringer" loading="lazy"/>
+        </div>
+        <div class="book-info">
+          <div class="book-title">Sunbringer</div>
+          <div class="book-author">Hannah Kaner</div>
+          <div class="book-take">Same as above ↑</div>
+        </div>
+      </div>
+
+      <div class="book-card">
+        <span class="card-bl"></span><span class="card-br"></span>
+        <span class="book-num">09</span>
+        <div class="book-cover-wrap">
+          <img class="book-cover" src="https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1686280863l/175740723.jpg" alt="The Kamogawa Food Detectives" loading="lazy"/>
+        </div>
+        <div class="book-info">
+          <div class="book-title">The Kamogawa Food Detectives</div>
+          <div class="book-author">Hisashi Kashiwai</div>
+          <div class="book-take">Re: Venn diagram — this covers mysteries and food.</div>
+        </div>
+      </div>
+
+      <div class="book-card">
+        <span class="card-bl"></span><span class="card-br"></span>
+        <span class="book-num">10</span>
+        <div class="book-cover-wrap">
+          <img class="book-cover" src="https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1709456551i/205063868.jpg" alt="The Restaurant of Lost Recipes" loading="lazy"/>
+        </div>
+        <div class="book-info">
+          <div class="book-title">The Restaurant of Lost Recipes</div>
+          <div class="book-author">Hisashi Kashiwai</div>
+          <div class="book-take">↑ Lighthearted and fun.</div>
+        </div>
+      </div>
+
+      <div class="book-card">
+        <span class="card-bl"></span><span class="card-br"></span>
+        <span class="book-num">11</span>
+        <div class="book-cover-wrap">
+          <img class="book-cover" src="https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1684815268i/78298448.jpg" alt="Murder Crossed Her Mind" loading="lazy"/>
+        </div>
+        <div class="book-info">
+          <div class="book-title">Murder Crossed Her Mind</div>
+          <div class="book-author">Stephen Spotswood</div>
+          <div class="book-take">Spotswood is writing my current-running Holmes-Watson-esque story.</div>
+        </div>
+      </div>
+
+      <div class="book-card">
+        <span class="card-bl"></span><span class="card-br"></span>
+        <span class="book-num">12</span>
+        <div class="book-cover-wrap">
+          <img class="book-cover" src="https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1651622856i/60657589.jpg" alt="Emily Wilde's Encyclopaedia of Faeries" loading="lazy"/>
+        </div>
+        <div class="book-info">
+          <div class="book-title">Emily Wilde's Encyclopaedia of Faeries</div>
+          <div class="book-author">Heather Fawcett</div>
+          <div class="book-take">Fun!</div>
+        </div>
+      </div>
+
+      <div class="book-card">
+        <span class="card-bl"></span><span class="card-br"></span>
+        <span class="book-num">13</span>
+        <div class="book-cover-wrap">
+          <img class="book-cover" src="https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1357609842i/9329354.jpg" alt="The Way of Kings" loading="lazy"/>
+        </div>
+        <div class="book-info">
+          <div class="book-title">The Way of Kings</div>
+          <div class="book-author">Brandon Sanderson</div>
+          <div class="book-take">Cool worldbuilding. Didn't live up to the hype.</div>
+        </div>
+      </div>
+
+      <div class="book-card">
+        <span class="card-bl"></span><span class="card-br"></span>
+        <span class="book-num">14</span>
+        <div class="book-cover-wrap">
+          <img class="book-cover" src="https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1505590203i/36223860.jpg" alt="Artificial Condition" loading="lazy"/>
+        </div>
+        <div class="book-info">
+          <div class="book-title">Artificial Condition</div>
+          <div class="book-author">Martha Wells</div>
+          <div class="book-take">This series is SO funny and for what.</div>
+        </div>
+      </div>
+
+      <div class="book-card">
+        <span class="card-bl"></span><span class="card-br"></span>
+        <span class="book-num">15</span>
+        <div class="book-cover-wrap">
+          <img class="book-cover" src="https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1523897945i/36454667.jpg" alt="Empire of Silence" loading="lazy"/>
+        </div>
+        <div class="book-info">
+          <div class="book-title">Empire of Silence</div>
+          <div class="book-author">Christopher Ruocchio</div>
+          <div class="book-take">Was alright. I think I just wasn't in the mood for it.</div>
+        </div>
+      </div>
+
+      <div class="book-card">
+        <span class="card-bl"></span><span class="card-br"></span>
+        <span class="book-num">16</span>
+        <div class="book-cover-wrap">
+          <img class="book-cover" src="https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1456172676i/28954189.jpg" alt="Scythe" loading="lazy"/>
+        </div>
+        <div class="book-info">
+          <div class="book-title">Scythe</div>
+          <div class="book-author">Neal Shusterman</div>
+          <div class="book-take">Good listening partner while doing my puzzle.</div>
+        </div>
+      </div>
+
+      <div class="book-card">
+        <span class="card-bl"></span><span class="card-br"></span>
+        <span class="book-num">17</span>
+        <div class="book-cover-wrap">
+          <img class="book-cover" src="https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1505658534i/33555224.jpg" alt="Thunderhead" loading="lazy"/>
+        </div>
+        <div class="book-info">
+          <div class="book-title">Thunderhead</div>
+          <div class="book-author">Neal Shusterman</div>
+          <div class="book-take">↑ Same.</div>
+        </div>
+      </div>
+
+      <div class="book-card">
+        <span class="card-bl"></span><span class="card-br"></span>
+        <span class="book-num">18</span>
+        <div class="book-cover-wrap">
+          <img class="book-cover" src="https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1461354651i/15839976.jpg" alt="Red Rising" loading="lazy"/>
+        </div>
+        <div class="book-info">
+          <div class="book-title">Red Rising</div>
+          <div class="book-author">Pierce Brown</div>
+          <div class="book-take">Fine, not worth the hype. It's YA but because it's written by A Man we need to pretend like it isn't.</div>
+        </div>
+      </div>
+
+      <div class="book-card">
+        <span class="card-bl"></span><span class="card-br"></span>
+        <span class="book-num">19</span>
+        <div class="book-cover-wrap">
+          <img class="book-cover" src="https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1643298298i/58662507.jpg" alt="Nona the Ninth" loading="lazy"/>
+        </div>
+        <div class="book-info">
+          <div class="book-title">Nona the Ninth</div>
+          <div class="book-author">Tamsyn Muir</div>
+          <div class="book-take">She's done it again (frustrating for most of it until it concludes and it all becomes worth it).</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Foot -->
+    <div class="log-foot">
+      <span class="left"><span class="dot"></span>log updated · by hand · imperfect</span>
+      <span class="right">signal via goodreads</span>
+    </div>
+
+  </main>
+
   <script>
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ@#$%&*';
-    const finalText = 'LOADING';
-    const scrambleEl = document.getElementById('scramble-text');
-    const bar = document.getElementById('loading-bar');
-    const screen = document.getElementById('loading-screen');
-
-    let progress = 0;
-    const barInterval = setInterval(() => {
-      progress = Math.min(progress + Math.random() * 18, 100);
-      bar.style.width = progress + '%';
-      if (progress >= 100) clearInterval(barInterval);
-    }, 80);
-
-    let frame = 0;
-    const scrambleInterval = setInterval(() => {
-      scrambleEl.textContent = finalText
-        .split('')
-        .map((char, i) => frame > i * 3 ? char : chars[Math.floor(Math.random() * chars.length)])
-        .join('');
-      frame++;
-      if (frame > finalText.length * 3) {
-        scrambleEl.textContent = finalText;
-        clearInterval(scrambleInterval);
-      }
-    }, 40);
-
-    window.addEventListener('load', () => {
-      setTimeout(() => {
-        bar.style.width = '100%';
-        setTimeout(() => {
-          screen.classList.add('hide');
-          setTimeout(() => screen.remove(), 700);
-        }, 300);
-      }, 600);
-    });
-
-    // ── Status badge scramble ──
-    const statusChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ@#$%&*';
-    const statusFinal = 'WORK IN PROGRESS';
-    const statusEl = document.getElementById('status-text');
-    setTimeout(() => {
-      let f = 0;
-      const si = setInterval(() => {
-        statusEl.textContent = statusFinal
-          .split('')
-          .map((char, i) => {
-            if (char === ' ') return ' ';
-            return f > i * 3 ? char : statusChars[Math.floor(Math.random() * statusChars.length)];
-          })
-          .join('');
-        f++;
-        if (f > statusFinal.length * 3) {
-          statusEl.textContent = statusFinal;
-          clearInterval(si);
-        }
-      }, 40);
-    }, 1600);
-  </script>
-
-  <script>
-    // Hamburger toggle
+    // Hamburger
     const hamburger = document.getElementById('hamburger');
-    const navLinks = document.getElementById('nav-links');
-    hamburger.addEventListener('click', () => { navLinks.classList.toggle('open'); });
-
-    // Page transitions
-    const overlay = document.getElementById('transition-overlay');
-    document.querySelectorAll('.nav-links a').forEach(link => {
-      link.addEventListener('click', function(e) {
-        if (this.classList.contains('active')) return;
-        e.preventDefault();
-        const href = this.getAttribute('href');
-        overlay.classList.add('fade-in');
-        setTimeout(() => { window.location.href = href; }, 500);
-      });
+    const navLinks = document.getElementById('navLinks');
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      navLinks.classList.toggle('open');
     });
-    window.addEventListener('load', () => { overlay.classList.remove('fade-in'); });
+    document.addEventListener('click', (e) => {
+      if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) {
+        hamburger.classList.remove('open');
+        navLinks.classList.remove('open');
+      }
+    });
 
-    // Canvas animation
-    const canvas = document.getElementById('c');
+    // Cursor parallax
+    const bg = document.getElementById('bg');
+    document.addEventListener('mousemove', (e) => {
+      const x = (e.clientX / window.innerWidth - 0.5) * 14;
+      const y = (e.clientY / window.innerHeight - 0.5) * 14;
+      bg.style.transform = `translate(${-x}px, ${-y}px)`;
+    });
+
+    // Leaves
+    const canvas = document.getElementById('leaves');
     const ctx = canvas.getContext('2d');
-    let W, H;
-    function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
-    function rf(a, b) { return Math.random() * (b - a) + a; }
-    let flies = [];
-    function initFlies() {
-      flies = [];
-      for (let i = 0; i < 35; i++) {
-        flies.push({ x: rf(0,W), y: rf(H*0.2,H*0.85), vx: rf(-0.3,0.3), vy: rf(-0.25,-0.04), alpha: rf(0.1,0.8), dir: Math.random()>0.5?1:-1, spd: rf(0.005,0.018), col: Math.random()>0.5?'#c0b455':'#86b084' });
+    let W, H, leaves = [];
+    function resize() { W = canvas.width = innerWidth; H = canvas.height = innerHeight; }
+    function rand(a, b) { return Math.random() * (b - a) + a; }
+    function initLeaves() {
+      leaves = [];
+      const palette = ['#9ebf8a', '#8ab5d1', '#7fc9b3', '#7a9b8a'];
+      for (let i = 0; i < 14; i++) {
+        leaves.push({
+          x: rand(0, W), y: rand(-H, H),
+          size: rand(3, 7),
+          vx: rand(-0.3, 0.3), vy: rand(0.1, 0.35),
+          rot: rand(0, Math.PI * 2), vr: rand(-0.008, 0.008),
+          color: palette[Math.floor(Math.random() * palette.length)],
+          alpha: rand(0.2, 0.5)
+        });
       }
     }
-    function draw() {
-      ctx.clearRect(0,0,W,H);
-      flies.forEach(f => {
-        f.x+=f.vx; f.y+=f.vy; f.alpha+=f.dir*f.spd;
-        if(f.alpha>0.9) f.dir=-1; if(f.alpha<0.05) f.dir=1;
-        if(f.y<H*0.1){f.y=H*0.85;f.x=rf(0,W);} if(f.x<-10||f.x>W+10) f.x=rf(0,W);
-        ctx.save(); ctx.globalAlpha=f.alpha; ctx.fillStyle=f.col;
-        ctx.beginPath(); ctx.arc(f.x,f.y,1.8,0,Math.PI*2); ctx.fill(); ctx.restore();
-      });
-      requestAnimationFrame(draw);
+    function drawLeaf(l) {
+      ctx.save();
+      ctx.translate(l.x, l.y);
+      ctx.rotate(l.rot);
+      ctx.globalAlpha = l.alpha;
+      ctx.fillStyle = l.color;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, l.size, l.size * 0.45, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
     }
-    resize(); initFlies(); draw();
-    window.addEventListener('resize', () => { resize(); initFlies(); });
+    function animate() {
+      ctx.clearRect(0, 0, W, H);
+      leaves.forEach(l => {
+        l.x += l.vx + Math.sin(l.y * 0.008) * 0.2;
+        l.y += l.vy;
+        l.rot += l.vr;
+        if (l.y > H + 20) { l.y = -20; l.x = rand(0, W); }
+        if (l.x < -20) l.x = W + 20;
+        if (l.x > W + 20) l.x = -20;
+        drawLeaf(l);
+      });
+      requestAnimationFrame(animate);
+    }
+    resize(); initLeaves(); animate();
+    window.addEventListener('resize', () => { resize(); initLeaves(); });
   </script>
 </body>
 </html>
