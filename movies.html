@@ -3,239 +3,948 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>simran shah - movie reviews</title>
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet"/>
+  <title>Viewing Log — Simran Shah · Station 42</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <style>
+    /* ──────────────────────────────────────────────
+       VIEWING LOG — MOD.05
+       Same chrome pattern. Two sections:
+       top 5 (favorites), and a masonry-ish grid of
+       informal reviews where cards grow to fit the
+       length of the take.
+       ────────────────────────────────────────────── */
+
+    :root {
+      --deep:      #131d1c;
+      --panel:     rgba(19, 29, 28, 0.68);
+      --panel-2:   rgba(19, 29, 28, 0.82);
+      --line:      rgba(138, 181, 209, 0.22);
+      --line-soft: rgba(138, 181, 209, 0.1);
+      --dim:       #7b9591;
+      --text:      #e8eddc;
+      --white:     #f2f5ec;
+      --sage:      #9ebf8a;
+      --blue:      #8ab5d1;
+      --aqua:      #7fc9b3;
+      --coral:     #d89985;
+    }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
     body {
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      font-family: 'Press Start 2P', monospace;
-      background-image: url('bg.jpeg');
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-    }
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.3);
-      z-index: 0;
-    }
-    canvas {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      pointer-events: none;
-      z-index: 1;
-    }
-    nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 200;
-      background: rgba(21, 34, 33, 0.78);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border-top: 1px solid rgba(203, 216, 155, 0.25);
-      border-bottom: 1px solid rgba(203, 216, 155, 0.25);
-      padding: 0 2rem;
-      height: 48px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .nav-name {
-      font-size: 0.45rem;
-      letter-spacing: 0.18em;
-      color: #c0b455;
-      text-transform: uppercase;
-      white-space: nowrap;
-    }
-    .nav-links {
-      display: flex;
-      gap: 2rem;
-      list-style: none;
-    }
-    .nav-links a {
-      font-size: 0.42rem;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: #cbd89b;
-      text-decoration: none;
+      background: var(--deep);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 14.5px;
+      line-height: 1.7;
+      overflow-x: hidden;
       position: relative;
-      padding-bottom: 3px;
-      transition: color 0.3s ease;
     }
-    .nav-links a::after {
-      content: '';
-      position: absolute;
-      bottom: 0; left: 0;
-      width: 0%;
-      height: 1px;
-      background: #c0b455;
-      transition: width 0.35s ease;
-    }
-    .nav-links a:hover { color: #c0b455; }
-    .nav-links a:hover::after { width: 100%; }
-    .nav-links a.active { color: #c0b455; }
-    .nav-links a.active::after { width: 100%; background: #c0b455; opacity: 0.5; }
 
-    /* Hamburger button */
+    /* Background */
+    .bg-layer {
+      position: fixed; inset: -40px;
+      background-image: url('bg.jpeg');
+      background-size: cover; background-position: center;
+      filter: brightness(0.88);
+      z-index: 0; will-change: transform;
+      transition: transform 0.3s ease-out;
+    }
+    .bg-wash {
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse at 75% 25%, rgba(138, 181, 209, 0.1), transparent 55%),
+        linear-gradient(rgba(19, 29, 28, 0.5), rgba(19, 29, 28, 0.7));
+      z-index: 1; pointer-events: none;
+    }
+    .scanlines {
+      position: fixed; inset: 0;
+      background: repeating-linear-gradient(
+        to bottom, transparent, transparent 3px,
+        rgba(0, 0, 0, 0.06) 3px, rgba(0, 0, 0, 0.06) 4px
+      );
+      pointer-events: none; z-index: 50;
+    }
+    .grain {
+      position: fixed; inset: 0;
+      opacity: 0.04; z-index: 51; pointer-events: none;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence baseFrequency='0.85' numOctaves='2'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>");
+    }
+    canvas.leaves {
+      position: fixed; inset: 0; z-index: 3; pointer-events: none;
+    }
+
+    /* Nav */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: var(--panel-2);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
+      padding: 0 32px; height: 56px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-brand {
+      display: flex; align-items: center; gap: 10px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.5rem; color: var(--blue);
+      letter-spacing: 0.22em; text-transform: uppercase;
+    }
+    .nav-brand .live-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--aqua);
+      box-shadow: 0 0 10px var(--aqua);
+      animation: breathe 3s ease-in-out infinite;
+    }
+    @keyframes breathe {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.82); }
+    }
+    .nav-links { display: flex; gap: 2px; list-style: none; }
+    .nav-links a {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 7px 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px; letter-spacing: 0.08em;
+      color: var(--text); text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a::before { content: '>'; color: var(--dim); }
+    .nav-links a:hover { color: var(--blue); }
+    .nav-links a:hover::before { color: var(--blue); }
+    .nav-links a.active { color: var(--blue); }
+
+    /* Hamburger */
     .hamburger {
-      display: none;
-      flex-direction: column;
-      gap: 5px;
-      cursor: pointer;
-      z-index: 300;
+      display: none; flex-direction: column; justify-content: center;
+      gap: 5px; cursor: pointer; background: transparent;
+      border: none; padding: 8px; z-index: 300;
     }
     .hamburger span {
-      display: block;
-      width: 22px;
-      height: 2px;
-      background: #cbd89b;
+      display: block; width: 22px; height: 2px;
+      background: var(--text);
       transition: all 0.3s ease;
     }
+    .hamburger.open span:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+      background: var(--blue);
+    }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+      background: var(--blue);
+    }
 
-    /* Mobile menu */
-    @media (max-width: 768px) {
+    /* Main */
+    main {
+      position: relative; z-index: 60;
+      max-width: 1180px; margin: 0 auto;
+      padding: 88px 28px 48px;
+    }
+
+    /* Header viewport */
+    .viewport {
+      position: relative;
+      padding: 48px 44px 36px;
+      background: rgba(19, 29, 28, 0.45);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      border: 1px solid var(--line);
+    }
+    .viewport::before,
+    .viewport::after,
+    .viewport .bracket-bl,
+    .viewport .bracket-br {
+      content: '';
+      position: absolute;
+      width: 18px; height: 18px;
+      border: 1px solid var(--blue);
+    }
+    .viewport::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+    .viewport::after  { top: -1px; right: -1px; border-left: none; border-bottom: none; }
+    .bracket-bl { bottom: -1px; left: -1px; border-right: none; border-top: none; }
+    .bracket-br { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+
+    .viewport-label {
+      position: absolute; top: -9px; left: 48px;
+      background: var(--deep); padding: 0 14px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.4rem; color: var(--blue);
+      letter-spacing: 0.28em;
+    }
+    .viewport-id {
+      position: absolute; top: -9px; right: 48px;
+      background: var(--deep); padding: 0 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; color: var(--dim);
+      letter-spacing: 0.18em;
+    }
+
+    .page-head {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 28px;
+      align-items: end;
+    }
+    .page-kicker {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.38rem; color: var(--sage);
+      letter-spacing: 0.3em; text-transform: uppercase;
+      margin-bottom: 18px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .page-kicker::before {
+      content: ''; width: 24px; height: 1px; background: var(--sage);
+    }
+    .page-title {
+      font-family: 'VT323', monospace;
+      font-size: clamp(2.6rem, 5.5vw, 3.8rem);
+      line-height: 1; color: var(--white);
+      letter-spacing: 0.01em; margin-bottom: 8px;
+    }
+    .page-title .accent { color: var(--blue); }
+    .page-sub {
+      font-size: 14.5px; color: var(--dim);
+      line-height: 1.6; max-width: 52ch;
+    }
+    .page-sub em { color: var(--sage); font-style: normal; }
+    .page-meta {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; color: var(--dim);
+      letter-spacing: 0.15em; text-align: right;
+    }
+    .page-meta .count {
+      font-family: 'VT323', monospace;
+      font-size: 2.2rem; color: var(--aqua);
+      letter-spacing: 0.02em;
+      display: block; line-height: 1;
+      margin-bottom: 6px;
+      text-shadow: 0 0 12px rgba(127, 201, 179, 0.2);
+    }
+
+    /* Section label */
+    .section-label {
+      display: flex; align-items: center;
+      gap: 16px; margin: 56px 0 22px;
+    }
+    .section-label h2 {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.45rem; color: var(--blue);
+      letter-spacing: 0.3em; text-transform: uppercase;
+      font-weight: 400;
+    }
+    .section-label .fill {
+      flex: 1; height: 1px;
+      background: linear-gradient(to right, var(--line), transparent);
+    }
+    .section-label .meta {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10.5px; color: var(--dim);
+      letter-spacing: 0.15em;
+    }
+
+    /* Top 5 — same pattern as books */
+    .top-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 18px;
+    }
+    .top-card {
+      display: block; position: relative;
+      transition: transform 0.25s;
+    }
+    .top-card:hover { transform: translateY(-3px); }
+    .top-rank {
+      position: absolute;
+      top: -8px; left: -8px;
+      z-index: 3;
+      width: 30px; height: 30px;
+      background: var(--deep);
+      border: 1px solid var(--aqua);
+      color: var(--aqua);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'VT323', monospace;
+      font-size: 1.2rem; line-height: 1;
+    }
+    .top-cover {
+      aspect-ratio: 2 / 3;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      transition: border-color 0.25s;
+    }
+    .top-card:hover .top-cover { border-color: var(--aqua); }
+    .top-cover img {
+      width: 100%; height: 100%;
+      object-fit: cover; display: block;
+      transition: transform 0.3s;
+    }
+    .top-card:hover .top-cover img {
+      transform: scale(1.02);
+    }
+    .top-info { margin-top: 10px; text-align: left; }
+    .top-title {
+      font-family: 'VT323', monospace;
+      font-size: 1.2rem; line-height: 1.1;
+      color: var(--white); margin-bottom: 2px;
+    }
+
+    /* Review grid — CSS grid for row-wise reading order.
+       Cards are sized by content. align-items:start so shorter
+       cards don't stretch to match taller ones in the same row. */
+    .review-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+      align-items: start;
+    }
+    .review-card {
+      background: rgba(19, 29, 28, 0.55);
+      border: 1px solid var(--line);
+      padding: 4px;
+      position: relative;
+      transition: border-color 0.25s, transform 0.25s, background 0.25s;
+      display: flex;
+      flex-direction: column;
+    }
+    .review-card:hover {
+      border-color: var(--blue);
+      background: rgba(138, 181, 209, 0.05);
+      transform: translateY(-2px);
+    }
+    .review-card::before,
+    .review-card::after,
+    .review-card .card-bl,
+    .review-card .card-br {
+      content: '';
+      position: absolute;
+      width: 10px; height: 10px;
+      border: 1px solid var(--blue);
+      opacity: 0;
+      transition: opacity 0.25s;
+      pointer-events: none;
+    }
+    .review-card::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+    .review-card::after  { top: -1px; right: -1px; border-left: none; border-bottom: none; }
+    .review-card .card-bl { bottom: -1px; left: -1px; border-right: none; border-top: none; }
+    .review-card .card-br { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+    .review-card:hover::before,
+    .review-card:hover::after,
+    .review-card:hover .card-bl,
+    .review-card:hover .card-br { opacity: 1; }
+
+    .review-num {
+      position: absolute;
+      top: 8px; left: 8px;
+      z-index: 2;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.3rem;
+      color: var(--text);
+      letter-spacing: 0.2em;
+      background: rgba(19, 29, 28, 0.75);
+      backdrop-filter: blur(4px);
+      padding: 5px 8px;
+      border: 1px solid var(--line);
+    }
+
+    .review-poster-wrap {
+      width: 100%;
+      aspect-ratio: 2 / 3;
+      overflow: hidden;
+      background: rgba(138, 181, 209, 0.04);
+    }
+    .review-poster {
+      width: 100%; height: 100%;
+      object-fit: cover; display: block;
+      transition: transform 0.3s;
+    }
+    .review-card:hover .review-poster { transform: scale(1.02); }
+
+    .review-body {
+      padding: 14px;
+      border-top: 1px solid var(--line-soft);
+    }
+    .review-title {
+      font-family: 'VT323', monospace;
+      font-size: 1.5rem;
+      line-height: 1.05;
+      color: var(--white);
+      margin-bottom: 10px;
+      transition: color 0.2s;
+    }
+    .review-card:hover .review-title { color: var(--blue); }
+    .review-take {
+      font-family: 'Inter', sans-serif;
+      font-size: 13.5px;
+      line-height: 1.6;
+      color: var(--text);
+    }
+    .review-take p { margin-bottom: 0.75em; }
+    .review-take p:last-child { margin-bottom: 0; }
+    .review-take + .review-take-list { margin-top: 8px; }
+    .review-take-list {
+      list-style: none;
+      padding: 0;
+      margin: 4px 0 0;
+    }
+    .review-take-list li {
+      font-family: 'Inter', sans-serif;
+      font-size: 13.5px;
+      line-height: 1.55;
+      color: var(--text);
+      padding-left: 14px;
+      position: relative;
+      margin-bottom: 4px;
+    }
+    .review-take-list li::before {
+      content: '+';
+      position: absolute;
+      left: 0;
+      color: var(--aqua);
+      font-weight: 600;
+    }
+
+    /* Log footer */
+    .log-foot {
+      margin-top: 56px; padding-top: 20px;
+      border-top: 1px dashed var(--line-soft);
+      display: flex; justify-content: space-between;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; color: var(--dim);
+      letter-spacing: 0.12em;
+    }
+    .log-foot .left { display: flex; align-items: center; gap: 10px; }
+    .log-foot .left .dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--aqua);
+      box-shadow: 0 0 5px var(--aqua);
+      animation: breathe 3s ease-in-out infinite;
+    }
+    .log-foot .right { color: var(--sage); font-style: italic; }
+
+    /* Subpage boot */
+    .boot {
+      position: fixed; inset: 0;
+      background: var(--deep); z-index: 9999;
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 10px;
+      font-family: 'VT323', monospace;
+      animation: bootOut 0.4s ease 0.9s forwards;
+    }
+    @keyframes bootOut { to { opacity: 0; pointer-events: none; } }
+    .boot-lines {
+      font-size: 17px; line-height: 1.7;
+      color: var(--text); text-align: left;
+    }
+    .boot-lines div { opacity: 0; animation: bootLine 0.15s forwards; }
+    .boot-lines div:nth-child(1) { animation-delay: 0.1s; color: var(--blue); }
+    .boot-lines div:nth-child(2) { animation-delay: 0.45s; color: var(--aqua); }
+    @keyframes bootLine { to { opacity: 1; } }
+
+    @media (max-width: 960px) {
+      .review-grid { grid-template-columns: repeat(2, 1fr); }
+      .top-grid { grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    }
+    @media (max-width: 880px) {
       .hamburger { display: flex; }
       .nav-links {
-        display: none;
-        flex-direction: column;
-        gap: 1.5rem;
+        display: none; flex-direction: column; gap: 0;
         position: fixed;
-        top: 48px; left: 0; right: 0;
-        background: rgba(21, 34, 33, 0.97);
-        padding: 2rem;
-        z-index: 199;
-        border-bottom: 1px solid rgba(203, 216, 155, 0.25);
+        top: 56px; left: 0; right: 0;
+        background: var(--panel-2);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        padding: 12px 24px 16px;
+        border-bottom: 1px solid var(--line);
       }
       .nav-links.open { display: flex; }
+      .nav-links li { border-bottom: 1px dashed var(--line-soft); }
+      .nav-links li:last-child { border-bottom: none; }
+      .nav-links a { padding: 12px 6px; font-size: 13px; }
+      .viewport { padding: 30px 20px 24px; }
+      main { padding: 76px 14px 32px; }
+      .page-head { grid-template-columns: 1fr; gap: 14px; }
+      .page-meta { text-align: left; }
+      .log-foot { flex-direction: column; gap: 8px; }
     }
-
-    .container {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 100;
-      text-align: center;
+    @media (max-width: 560px) {
+      .review-grid { grid-template-columns: 1fr; }
+      .top-grid { grid-template-columns: repeat(2, 1fr); }
     }
-    .status {
-      display: inline-block;
-      font-size: 0.6rem;
-      color: #c0b455;
-      padding: 0.6rem 1.2rem;
-      border: 2px solid #c0b455;
-      box-shadow: 4px 4px 0px #7c7938, -2px -2px 0px #86b084;
-      letter-spacing: 0.12em;
-      animation: flicker 4s step-end infinite;
-    }
-    @keyframes flicker {
-      0%,94%,100% { opacity:1; }
-      95% { opacity:0.3; }
-      97% { opacity:1; }
-      98% { opacity:0.2; }
-      99% { opacity:1; }
-    }
-    .footer {
-      position: fixed;
-      bottom: 1.5rem;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 0.42rem;
-      letter-spacing: 0.1em;
-      color: #5c896b;
-      z-index: 100;
-    }
-    .footer a { color: #cbd89b; text-decoration: none; transition: color 0.3s; }
-    .footer a:hover { color: #c0b455; }
-    #transition-overlay {
-      position: fixed;
-      inset: 0;
-      background: #0d1a14;
-      z-index: 999;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.5s ease;
-    }
-    #transition-overlay.fade-in { opacity: 1; pointer-events: all; }
   </style>
 </head>
 <body>
-  <div id="transition-overlay"></div>
-  <canvas id="c"></canvas>
-  <nav>
-    <span class="nav-name">Simran Shah</span>
-    <div class="hamburger" id="hamburger">
-      <span></span><span></span><span></span>
+
+  <!-- Boot -->
+  <div class="boot">
+    <div class="boot-lines">
+      <div>▮ ACCESSING MOD.05</div>
+      <div>viewing log ready.</div>
     </div>
-    <ul class="nav-links" id="nav-links">
-      <li><a href="/">Home</a></li>
-      <li><a href="dog.html">pictures of my dog</a></li>
+  </div>
+
+  <!-- Background -->
+  <div class="bg-layer" id="bg"></div>
+  <div class="bg-wash"></div>
+  <div class="scanlines"></div>
+  <div class="grain"></div>
+  <canvas class="leaves" id="leaves"></canvas>
+
+  <!-- Nav -->
+  <nav>
+    <span class="nav-brand">
+      <span class="live-dot"></span>
+      Simran Shah · Station 42
+    </span>
+    <button class="hamburger" id="hamburger" aria-label="Toggle navigation menu">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">field_post</a></li>
       <li><a href="cv.html">CV</a></li>
-      <li><a href="movies.html" class="active">movie reviews</a></li>
-      <li><a href="books.html">books i'm reading</a></li>
-      <li><a href="music.html">Music i listen to</a></li>
+      <li><a href="music.html">audio_log</a></li>
+      <li><a href="books.html">reading_list</a></li>
+      <li><a href="movies.html" class="active">viewing_log</a></li>
+      <li><a href="dog.html">companion</a></li>
       <li><a href="contact.html">contact</a></li>
     </ul>
   </nav>
-  <div class="container">
-    <span class="status">WORK IN PROGRESS</span>
-  </div>
-  <p class="footer">
-    <a href="https://www.linkedin.com/in/simrancs1998/" target="_blank">LinkedIn</a>
-  </p>
+
+  <main>
+
+    <!-- Header viewport -->
+    <section class="viewport">
+      <span class="bracket-bl"></span>
+      <span class="bracket-br"></span>
+      <span class="viewport-label">▮ VIEWING LOG // MOD.05</span>
+      <span class="viewport-id">FEED · 2025</span>
+
+      <header class="page-head">
+        <div>
+          <div class="page-kicker">On screen</div>
+          <h1 class="page-title">Viewing <span class="accent">log</span>.</h1>
+          <p class="page-sub">
+            Singlehandedly keeping my local movie theater in business.
+          </p>
+        </div>
+        <div class="page-meta">
+          <span class="count">18</span>
+          films on file
+        </div>
+      </header>
+    </section>
+
+    <!-- Top 5 -->
+    <div class="section-label">
+      <h2>▮ all-time top 5</h2>
+      <span class="fill"></span>
+      <span class="meta">rewatched until the dvd warps</span>
+    </div>
+
+    <div class="top-grid">
+      <a href="#" class="top-card">
+        <span class="top-rank">01</span>
+        <div class="top-cover">
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRZJN9fdGN50-DMaLXrnLvvwhf9WXEldTBQXQ&s" alt="The Two Towers" loading="lazy"/>
+        </div>
+        <div class="top-info">
+          <div class="top-title">LOTR: The Two Towers</div>
+        </div>
+      </a>
+
+      <a href="#" class="top-card">
+        <span class="top-rank">02</span>
+        <div class="top-cover">
+          <img src="https://m.media-amazon.com/images/M/MV5BNWIyNmU5MGYtZDZmNi00ZjAwLWJlYjgtZTc0ZGIxMDE4ZGYwXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg" alt="Dune" loading="lazy"/>
+        </div>
+        <div class="top-info">
+          <div class="top-title">Dune</div>
+        </div>
+      </a>
+
+      <a href="#" class="top-card">
+        <span class="top-rank">03</span>
+        <div class="top-cover">
+          <img src="https://m.media-amazon.com/images/M/MV5BYmNlZjNiYjgtOWZmMy00ZGQ5LTkzNDUtMTQ3Mzc3YjEwOTc0XkEyXkFqcGc@._V1_.jpg" alt="The Batman" loading="lazy"/>
+        </div>
+        <div class="top-info">
+          <div class="top-title">The Batman (2022)</div>
+        </div>
+      </a>
+
+      <a href="#" class="top-card">
+        <span class="top-rank">04</span>
+        <div class="top-cover">
+          <img src="https://m.media-amazon.com/images/M/MV5BZTgyNWUxNjItYTgxNi00ZDMzLThiMGItYjVlMjQ4NzkzOThlXkEyXkFqcGc@._V1_.jpg" alt="Om Shanti Om" loading="lazy"/>
+        </div>
+        <div class="top-info">
+          <div class="top-title">Om Shanti Om</div>
+        </div>
+      </a>
+
+      <a href="#" class="top-card">
+        <span class="top-rank">05</span>
+        <div class="top-cover">
+          <img src="https://m.media-amazon.com/images/I/516P7x+34HL._AC_UF894,1000_QL80_.jpg" alt="Mamma Mia" loading="lazy"/>
+        </div>
+        <div class="top-info">
+          <div class="top-title">Mamma Mia</div>
+        </div>
+      </a>
+    </div>
+
+    <!-- Reviews masonry -->
+    <div class="section-label">
+      <h2>▮ recent viewings</h2>
+      <span class="fill"></span>
+      <span class="meta">2025 · informal</span>
+    </div>
+
+    <div class="review-grid">
+
+      <div class="review-card">
+        <span class="card-bl"></span><span class="card-br"></span>
+        <span class="review-num">01</span>
+        <div class="review-poster-wrap">
+          <img class="review-poster" src="https://m.media-amazon.com/images/M/MV5BNTkwNzJiYTctNzI3NC00NjE1LTlhYjktY2Q5MTdmMWFmNzcxXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg" alt="Project Hail Mary" loading="lazy"/>
+        </div>
+        <div class="review-body">
+          <div class="review-title">Project Hail Mary</div>
+          <div class="review-take">
+            <p>project hail mary is genuinely great. being alone in space is my personal hell.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="review-card">
+        <span class="card-bl"></span><span class="card-br"></span>
+        <span class="review-num">02</span>
+        <div class="review-poster-wrap">
+          <img class="review-poster" src="https://m.media-amazon.com/images/M/MV5BZDYxY2I1OGMtN2Y4MS00ZmU1LTgyNDAtODA0MzAyYjI0N2Y2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg" alt="Avatar: Fire and Ash" loading="lazy"/>
+        </div>
+        <div class="review-body">
+          <div class="review-title">Avatar 3</div>
+          <div class="review-take">
+            <p>in avatar 3, there's a scene where zoe saldana's character is talking about how much she hates humans for like destroying her home and killing everyone she knows and her husband, jake sully, responds with "but what about me i'm human too 🥺👉🏼👈🏼" which does tell you everything you need to know about him</p>
+            <p>also despite being a teenager, sigourney weaver's character still sounds like an old woman, so its really jarring when she kisses one of the other teenagers</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="review-card">
+        <span class="card-bl"></span><span class="card-br"></span>
+        <span class="review-num">03</span>
+        <div class="review-poster-wrap">
+          <img class="review-poster" src="https://m.media-amazon.com/images/M/MV5BNzlmZTNiOTAtNzhlOC00ZTA1LWJhNTgtMDQ4YmY4NWIyNTA4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg" alt="Eternity" loading="lazy"/>
+        </div>
+        <div class="review-body">
+          <div class="review-title">Eternity</div>
+          <div class="review-take">
+            <p>actually very nice, would recommend watching 10/10</p>
+            <p>should've just been a throuple high key best solution</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="review-card">
+        <span class="card-bl"></span><span class="card-br"></span>
+        <span class="review-num">04</span>
+        <div class="review-poster-wrap">
+          <img class="review-poster" src="https://m.media-amazon.com/images/M/MV5BYjg1Mjc3MjQtMTZjNy00YWVlLWFhMWEtMWI3ZTgxYjJmNmRlXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg" alt="Zootopia 2" loading="lazy"/>
+        </div>
+        <div class="review-body">
+          <div class="review-title">Zootopia 2</div>
+          <div class="review-take">
+            <p>straight baiting in zootopia 2 is so funny to me actually</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="review-card">
+        <span class="card-bl"></span><span class="card-br"></span>
+        <span class="review-num">05</span>
+        <div class="review-poster-wrap">
+          <img class="review-poster" src="https://m.media-amazon.com/images/M/MV5BNzRhNTE4ZTYtNTM0Mi00MzU3LTk4MTktYWE3MzQ2NTU0MDNlXkEyXkFqcGc@._V1_.jpg" alt="Wicked: For Good" loading="lazy"/>
+        </div>
+        <div class="review-body">
+          <div class="review-title">Wicked 2</div>
+          <div class="review-take">
+            <p>wicked 2 proudly taking a stance in not casting taylor swift as dorothy. the rest was fine, all the good songs are in part 1.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="review-card">
+        <span class="card-bl"></span><span class="card-br"></span>
+        <span class="review-num">06</span>
+        <div class="review-poster-wrap">
+          <img class="review-poster" src="https://m.media-amazon.com/images/M/MV5BNTZlYzdjMzgtYjU2ZC00MGQ5LWFiMDYtOTIwNzQ0M2MyNmU2XkEyXkFqcGc@._V1_.jpg" alt="Now You See Me 3" loading="lazy"/>
+        </div>
+        <div class="review-body">
+          <div class="review-title">Now You See Me 3</div>
+          <div class="review-take">
+            <p>a lot of now you see me 3 is rosamund pike doing the worst accent i have ever heard in my life, though i have also never actually heard a real afrikaans (dutch south african) accent so maybe they all just Talk Like That. i trust her enough as an actress to believe that she is doing a good impression of it. maybe if elon musk talked like this people would take him less seriously</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="review-card">
+        <span class="card-bl"></span><span class="card-br"></span>
+        <span class="review-num">07</span>
+        <div class="review-poster-wrap">
+          <img class="review-poster" src="https://m.media-amazon.com/images/M/MV5BYzYzNDYxMTQtMTU4OS00MTdlLThhMTQtZjI4NGJmMTZmNmRiXkEyXkFqcGc@._V1_.jpg" alt="Frankenstein" loading="lazy"/>
+        </div>
+        <div class="review-body">
+          <div class="review-title">Frankenstein</div>
+          <div class="review-take">
+            <p>frankenstein bringing the real truths about how jacob elordi is freakishly tall</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="review-card">
+        <span class="card-bl"></span><span class="card-br"></span>
+        <span class="review-num">08</span>
+        <div class="review-poster-wrap">
+          <img class="review-poster" src="https://m.media-amazon.com/images/M/MV5BNzNiYjZiMDMtYjliOS00ZmNlLTlmNzQtMzdhNGEzNTVlMTZmXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg" alt="Freakier Friday" loading="lazy"/>
+        </div>
+        <div class="review-body">
+          <div class="review-title">Freakier Friday</div>
+          <div class="review-take">
+            <p>freakier friday was really good and i would recommend watching if you liked the original</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="review-card">
+        <span class="card-bl"></span><span class="card-br"></span>
+        <span class="review-num">09</span>
+        <div class="review-poster-wrap">
+          <img class="review-poster" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1pIjaMsTBTV4pdL0DApE1-zTYbddta9MtoA&s" alt="Flow" loading="lazy"/>
+        </div>
+        <div class="review-body">
+          <div class="review-title">Flow</div>
+          <div class="review-take">
+            <p>flow was great even if you spend the whole time worrying that the cat is going to die (despite knowing that it doesnt)</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="review-card">
+        <span class="card-bl"></span><span class="card-br"></span>
+        <span class="review-num">10</span>
+        <div class="review-poster-wrap">
+          <img class="review-poster" src="https://m.media-amazon.com/images/M/MV5BOWRiOTg1YTctNDk4Yi00ZjlhLThhNzEtZTVlMThkN2JkYTE0XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg" alt="Superman" loading="lazy"/>
+        </div>
+        <div class="review-body">
+          <div class="review-title">Superman</div>
+          <div class="review-take">
+            <p>superman was great, hopecore maxxing</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="review-card">
+        <span class="card-bl"></span><span class="card-br"></span>
+        <span class="review-num">11</span>
+        <div class="review-poster-wrap">
+          <img class="review-poster" src="https://m.media-amazon.com/images/M/MV5BNjg2NTcwYWQtYzk4NS00MTJhLWEzZjItMzIxNjk3YzlkYzU0XkEyXkFqcGc@._V1_.jpg" alt="Jurassic World Rebirth" loading="lazy"/>
+        </div>
+        <div class="review-body">
+          <div class="review-title">Jurassic World Rebirth</div>
+          <div class="review-take">
+            <p>jurassic world starts with a star wars type exposition card explaining that dinosaurs cannot survive outside of equatorial regions because of weather reasons and this is further drilled into our heads with a long scene of a bronciosaurus dying in new york as the backdrop for an important conversation.</p>
+            <p>after all this, the main characters travel to an equatorial island for the plot, find a puppy like triceratops as a sidekick (so they can sell merch about it irl), and at the end when they leave the island, they TAKE HER WITH THEM (presumably to live a short sad life)</p>
+            <p>the rest of it was decent, jonathan bailey's american accent is really bad 7/10</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="review-card">
+        <span class="card-bl"></span><span class="card-br"></span>
+        <span class="review-num">12</span>
+        <div class="review-poster-wrap">
+          <img class="review-poster" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRYFKFaFPpECFbrvIE1guk7XrFzrNoqMwA8wA&s" alt="Mission: Impossible — The Final Reckoning" loading="lazy"/>
+        </div>
+        <div class="review-body">
+          <div class="review-title">Mission: Impossible — The Final Reckoning</div>
+          <div class="review-take">
+            <p>despite all the cult stuff, tom cruise still knows how to make a good movie i fear.</p>
+            <p>but watch the previous mission impossible first to understand what's happening bc they throw you into the deep end for this one</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="review-card">
+        <span class="card-bl"></span><span class="card-br"></span>
+        <span class="review-num">13</span>
+        <div class="review-poster-wrap">
+          <img class="review-poster" src="https://lh4.googleusercontent.com/proxy/y1INP4XK0QYR0Na0BD4NZafVD35q02BL5oyjXNr2710BkioyCnKYJoPsGYT4HX9MXMUxt9Wepo1O7dP2C3QDi-31QTDPBar3_g" alt="Thunderbolts*" loading="lazy"/>
+        </div>
+        <div class="review-body">
+          <div class="review-title">Thunderbolts*</div>
+          <div class="review-take">
+            <p>unfortunately the new marvel thunderbolts movie is actually pretty good all things considered</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="review-card">
+        <span class="card-bl"></span><span class="card-br"></span>
+        <span class="review-num">14</span>
+        <div class="review-poster-wrap">
+          <img class="review-poster" src="https://m.media-amazon.com/images/M/MV5BNWQyYWE4MzgtYjM3Mi00ZTU5LTgwZTAtZDg5ZDZmMTkxNWJlXkEyXkFqcGc@._V1_.jpg" alt="Mickey 17" loading="lazy"/>
+        </div>
+        <div class="review-body">
+          <div class="review-title">Mickey 17</div>
+          <div class="review-take">
+            <p>mickey 17 was great!! would recommend, robert pattinson does a dumb voice and you kinda get used to it by the end</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="review-card">
+        <span class="card-bl"></span><span class="card-br"></span>
+        <span class="review-num">15</span>
+        <div class="review-poster-wrap">
+          <img class="review-poster" src="https://m.media-amazon.com/images/M/MV5BMDdlY2Y2ZWEtYjk4Mi00Yjg3LWFlM2MtMWI1ZjVlNGQ5NTNjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg" alt="Bridget Jones: Mad About the Boy" loading="lazy"/>
+        </div>
+        <div class="review-body">
+          <div class="review-title">Bridget Jones: Mad About the Boy</div>
+          <div class="review-take">
+            <p>went to see new bridget jones movie and it's shocking how much renee zellweger's face does not move. and they added a subplot of bridget getting an allergic reaction from a lip filler/serum thing and it was WILD</p>
+            <p>i liked it 6/10 but the only two other people in the theater left halfway through so make of that what you will</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="review-card">
+        <span class="card-bl"></span><span class="card-br"></span>
+        <span class="review-num">16</span>
+        <div class="review-poster-wrap">
+          <img class="review-poster" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS67jTlYMbSKa5UPWG53_Cno2SANVwkFrXrDA&s" alt="Yaadon Ki Baaraat" loading="lazy"/>
+        </div>
+        <div class="review-body">
+          <div class="review-title">Yaadon Ki Baaraat</div>
+          <div class="review-take">
+            <p>yaadon ki baaraat is too long, we've been sitting here for ten years</p>
+          </div>
+          <ul class="review-take-list">
+            <li>mom is also sitting here singing along to every song</li>
+            <li>they really hired any rando to be in movies back in the day</li>
+            <li>the main climax is the same three camera shots again and again</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="review-card">
+        <span class="card-bl"></span><span class="card-br"></span>
+        <span class="review-num">17</span>
+        <div class="review-poster-wrap">
+          <img class="review-poster" src="https://i.redd.it/72taqblnvdqd1.jpeg" alt="The War of the Rohirrim" loading="lazy"/>
+        </div>
+        <div class="review-body">
+          <div class="review-title">LOTR: The War of the Rohirrim</div>
+          <div class="review-take">
+            <p>went to see animated lotr movie and I was the only person in the theater because I was the only person jobless enough to go see this on a weekday afternoon</p>
+            <p>movie 5/10</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="review-card">
+        <span class="card-bl"></span><span class="card-br"></span>
+        <span class="review-num">18</span>
+        <div class="review-poster-wrap">
+          <img class="review-poster" src="https://m.media-amazon.com/images/M/MV5BYjgxMDI5NmMtNTU3OS00ZDQxLTgxZmEtNzY1ZTBmMDY4NDRkXkEyXkFqcGc@._V1_.jpg" alt="Conclave" loading="lazy"/>
+        </div>
+        <div class="review-body">
+          <div class="review-title">Conclave</div>
+          <div class="review-take">
+            <p>conclave was really good actually 10/10 would recommend watching</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Foot -->
+    <div class="log-foot">
+      <span class="left"><span class="dot"></span>log updated · by hand · imperfect</span>
+      <span class="right">lifted from a private instagram</span>
+    </div>
+
+  </main>
+
   <script>
-    // Hamburger toggle
+    // Hamburger
     const hamburger = document.getElementById('hamburger');
-    const navLinks = document.getElementById('nav-links');
-    hamburger.addEventListener('click', () => { navLinks.classList.toggle('open'); });
-
-    // Page transitions
-    const overlay = document.getElementById('transition-overlay');
-    document.querySelectorAll('.nav-links a').forEach(link => {
-      link.addEventListener('click', function(e) {
-        if (this.classList.contains('active')) return;
-        e.preventDefault();
-        const href = this.getAttribute('href');
-        overlay.classList.add('fade-in');
-        setTimeout(() => { window.location.href = href; }, 500);
-      });
+    const navLinks = document.getElementById('navLinks');
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      navLinks.classList.toggle('open');
     });
-    window.addEventListener('load', () => { overlay.classList.remove('fade-in'); });
+    document.addEventListener('click', (e) => {
+      if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) {
+        hamburger.classList.remove('open');
+        navLinks.classList.remove('open');
+      }
+    });
 
-    // Canvas animation
-    const canvas = document.getElementById('c');
+    // Cursor parallax
+    const bg = document.getElementById('bg');
+    document.addEventListener('mousemove', (e) => {
+      const x = (e.clientX / window.innerWidth - 0.5) * 14;
+      const y = (e.clientY / window.innerHeight - 0.5) * 14;
+      bg.style.transform = `translate(${-x}px, ${-y}px)`;
+    });
+
+    // Leaves
+    const canvas = document.getElementById('leaves');
     const ctx = canvas.getContext('2d');
-    let W, H;
-    function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
-    function rf(a, b) { return Math.random() * (b - a) + a; }
-    let flies = [];
-    function initFlies() {
-      flies = [];
-      for (let i = 0; i < 35; i++) {
-        flies.push({ x: rf(0,W), y: rf(H*0.2,H*0.85), vx: rf(-0.3,0.3), vy: rf(-0.25,-0.04), alpha: rf(0.1,0.8), dir: Math.random()>0.5?1:-1, spd: rf(0.005,0.018), col: Math.random()>0.5?'#c0b455':'#86b084' });
+    let W, H, leaves = [];
+    function resize() { W = canvas.width = innerWidth; H = canvas.height = innerHeight; }
+    function rand(a, b) { return Math.random() * (b - a) + a; }
+    function initLeaves() {
+      leaves = [];
+      const palette = ['#9ebf8a', '#8ab5d1', '#7fc9b3', '#7a9b8a'];
+      for (let i = 0; i < 14; i++) {
+        leaves.push({
+          x: rand(0, W), y: rand(-H, H),
+          size: rand(3, 7),
+          vx: rand(-0.3, 0.3), vy: rand(0.1, 0.35),
+          rot: rand(0, Math.PI * 2), vr: rand(-0.008, 0.008),
+          color: palette[Math.floor(Math.random() * palette.length)],
+          alpha: rand(0.2, 0.5)
+        });
       }
     }
-    function draw() {
-      ctx.clearRect(0,0,W,H);
-      flies.forEach(f => {
-        f.x+=f.vx; f.y+=f.vy; f.alpha+=f.dir*f.spd;
-        if(f.alpha>0.9) f.dir=-1; if(f.alpha<0.05) f.dir=1;
-        if(f.y<H*0.1){f.y=H*0.85;f.x=rf(0,W);} if(f.x<-10||f.x>W+10) f.x=rf(0,W);
-        ctx.save(); ctx.globalAlpha=f.alpha; ctx.fillStyle=f.col;
-        ctx.beginPath(); ctx.arc(f.x,f.y,1.8,0,Math.PI*2); ctx.fill(); ctx.restore();
-      });
-      requestAnimationFrame(draw);
+    function drawLeaf(l) {
+      ctx.save();
+      ctx.translate(l.x, l.y);
+      ctx.rotate(l.rot);
+      ctx.globalAlpha = l.alpha;
+      ctx.fillStyle = l.color;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, l.size, l.size * 0.45, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
     }
-    resize(); initFlies(); draw();
-    window.addEventListener('resize', () => { resize(); initFlies(); });
+    function animate() {
+      ctx.clearRect(0, 0, W, H);
+      leaves.forEach(l => {
+        l.x += l.vx + Math.sin(l.y * 0.008) * 0.2;
+        l.y += l.vy;
+        l.rot += l.vr;
+        if (l.y > H + 20) { l.y = -20; l.x = rand(0, W); }
+        if (l.x < -20) l.x = W + 20;
+        if (l.x > W + 20) l.x = -20;
+        drawLeaf(l);
+      });
+      requestAnimationFrame(animate);
+    }
+    resize(); initLeaves(); animate();
+    window.addEventListener('resize', () => { resize(); initLeaves(); });
   </script>
 </body>
 </html>
