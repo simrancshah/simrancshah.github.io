@@ -3,556 +3,798 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>simran shah — CV</title>
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <title>CV — Simran Shah · Station 42</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
   <style>
+    /* ──────────────────────────────────────────────
+       CV — PERSONNEL FILE · MOD.01
+       Framed approach: field-post chrome (nav,
+       viewport, brackets, bg, leaves) but CV content
+       in Inter so it reads fast. Print stylesheet
+       at the bottom handles PDF export.
+       ────────────────────────────────────────────── */
+
+    :root {
+      --deep:      #131d1c;
+      --panel:     rgba(19, 29, 28, 0.68);
+      --panel-2:   rgba(19, 29, 28, 0.82);
+      --line:      rgba(138, 181, 209, 0.22);
+      --line-soft: rgba(138, 181, 209, 0.1);
+      --dim:       #7b9591;
+      --text:      #e8eddc;
+      --white:     #f2f5ec;
+      --sage:      #9ebf8a;
+      --blue:      #8ab5d1;
+      --aqua:      #7fc9b3;
+      --coral:     #d89985;
+    }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
     body {
       min-height: 100vh;
+      background: var(--deep);
+      color: var(--text);
       font-family: 'Inter', sans-serif;
+      font-size: 14.5px;
+      line-height: 1.7;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* ── Background layers ── */
+    .bg-layer {
+      position: fixed; inset: -40px;
       background-image: url('bg.jpeg');
       background-size: cover;
       background-position: center;
-      background-repeat: no-repeat;
-      background-attachment: fixed;
-    }
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.3);
+      filter: brightness(0.88);
       z-index: 0;
+      will-change: transform;
+      transition: transform 0.3s ease-out;
     }
-    canvas {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      pointer-events: none;
-      z-index: 1;
+    .bg-wash {
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse at 75% 25%, rgba(138, 181, 209, 0.1), transparent 55%),
+        linear-gradient(rgba(19, 29, 28, 0.5), rgba(19, 29, 28, 0.7));
+      z-index: 1; pointer-events: none;
     }
-nav {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 200;
-  background: rgba(21, 34, 33, 0.78);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-top: 1px solid rgba(203, 216, 155, 0.25);
-  border-bottom: 1px solid rgba(203, 216, 155, 0.25);
-  padding: 0 2rem;
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-family: 'Press Start 2P', monospace; 
+    .scanlines {
+      position: fixed; inset: 0;
+      background: repeating-linear-gradient(
+        to bottom, transparent, transparent 3px,
+        rgba(0, 0, 0, 0.06) 3px, rgba(0, 0, 0, 0.06) 4px
+      );
+      pointer-events: none; z-index: 50;
     }
-    .nav-name {
+    .grain {
+      position: fixed; inset: 0;
+      opacity: 0.04; z-index: 51; pointer-events: none;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence baseFrequency='0.85' numOctaves='2'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>");
+    }
+    canvas.leaves {
+      position: fixed; inset: 0; z-index: 3; pointer-events: none;
+    }
+
+    /* ── Nav (identical to home) ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: var(--panel-2);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
+      padding: 0 32px; height: 56px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-brand {
+      display: flex; align-items: center; gap: 10px;
       font-family: 'Press Start 2P', monospace;
-      font-size: 0.45rem;
-      letter-spacing: 0.18em;
-      color: #c0b455;
+      font-size: 0.5rem;
+      color: var(--blue);
+      letter-spacing: 0.22em;
       text-transform: uppercase;
-      white-space: nowrap;
+    }
+    .nav-brand .live-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--aqua);
+      box-shadow: 0 0 10px var(--aqua);
+      animation: breathe 3s ease-in-out infinite;
+    }
+    @keyframes breathe {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.82); }
     }
     .nav-links {
-      display: flex;
-      gap: 2rem;
-      list-style: none;
-      align-items: center;
-      height: 100%;
+      display: flex; gap: 2px; list-style: none;
     }
     .nav-links a {
-      font-family: 'Press Start 2P', monospace;
-      font-size: 0.42rem;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: #cbd89b;
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 7px 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px;
+      letter-spacing: 0.08em;
+      color: var(--text);
       text-decoration: none;
-      position: relative;
-      padding-bottom: 3px;
-      transition: color 0.3s ease;
+      transition: color 0.2s;
     }
-    .nav-links a::after {
-      content: '';
-      position: absolute;
-      bottom: 0; left: 0;
-      width: 0%;
-      height: 1px;
-      background: #c0b455;
-      transition: width 0.35s ease;
-    }
-    .nav-links a:hover { color: #c0b455; }
-    .nav-links a:hover::after { width: 100%; }
-    .nav-links a.active { color: #c0b455; }
-    .nav-links a.active::after { width: 100%; background: #c0b455; opacity: 0.5; }
+    .nav-links a::before { content: '>'; color: var(--dim); }
+    .nav-links a:hover { color: var(--blue); }
+    .nav-links a:hover::before { color: var(--blue); }
+    .nav-links a.active { color: var(--blue); }
 
+    /* ── Hamburger (mobile only) ── */
     .hamburger {
       display: none;
       flex-direction: column;
+      justify-content: center;
       gap: 5px;
       cursor: pointer;
-      z-index: 300;
-      background: none;
+      background: transparent;
       border: none;
-      padding: 0;
+      padding: 8px;
+      z-index: 300;
     }
     .hamburger span {
       display: block;
       width: 22px;
       height: 2px;
-      background: #cbd89b;
+      background: var(--text);
       transition: all 0.3s ease;
     }
-
-    @media (max-width: 768px) {
-      .hamburger { display: flex; }
-      .nav-links {
-        display: none;
-        flex-direction: column;
-        gap: 1.5rem;
-        position: fixed;
-        top: 48px; left: 0; right: 0;
-        background: rgba(21, 34, 33, 0.97);
-        padding: 2rem;
-        z-index: 199;
-        border-bottom: 1px solid rgba(203, 216, 155, 0.25);
-        height: auto;
-        align-items: flex-start;
-      }
-      .nav-links.open { display: flex; }
+    .hamburger.open span:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+      background: var(--blue);
+    }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+      background: var(--blue);
     }
 
-    .cv-wrap {
-      position: relative;
-      z-index: 100;
-      max-width: 760px;
-      margin: 0 auto;
-      padding: 88px 24px 80px;
+    /* ── Main + viewport frame ── */
+    main {
+      position: relative; z-index: 10;
+      max-width: 900px; margin: 0 auto;
+      padding: 88px 28px 48px;
+    }
+
+    /* Top action bar (outside the viewport) — module label + download */
+    .action-bar {
       display: flex;
-      flex-direction: column;
-      gap: 16px;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      padding: 0 4px;
     }
-    .cv-card {
-      background: rgba(21, 34, 33, 0.78);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border: 1px solid rgba(203, 216, 155, 0.15);
-      padding: 28px 32px;
+    .module-tag {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.38rem;
+      color: var(--dim);
+      letter-spacing: 0.28em;
     }
-    .cv-download {
+    .module-tag .code { color: var(--blue); }
+    .download-btn {
       display: inline-flex;
       align-items: center;
       gap: 8px;
+      padding: 8px 14px;
       font-family: 'Press Start 2P', monospace;
-      font-size: 0.38rem;
-      letter-spacing: 0.15em;
+      font-size: 0.36rem;
+      letter-spacing: 0.22em;
       text-transform: uppercase;
-      color: #c0b455;
-      border: 1px solid #c0b455;
-      padding: 8px 16px;
+      color: var(--aqua);
       text-decoration: none;
-      transition: background 0.2s, color 0.2s;
-      align-self: flex-start;
+      border: 1px solid var(--aqua);
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.2s;
     }
-    .cv-download:hover { background: #c0b455; color: #0d1a14; }
-    .cv-header-inner {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 20px;
+    .download-btn:hover {
+      background: var(--aqua);
+      color: var(--deep);
     }
-    .cv-header-left { flex: 1; }
-    .cv-header-visuals {
-      display: flex;
-      gap: 12px;
-      align-items: flex-start;
-      flex-shrink: 0;
+    .download-btn::before { content: '↓'; font-family: 'JetBrains Mono', monospace; }
+
+    .viewport {
+      position: relative;
+      padding: 48px 52px 40px;
+      background: rgba(19, 29, 28, 0.45);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      border: 1px solid var(--line);
     }
-    .cv-photo {
-      width: 90px;
-      height: 90px;
-      border: 1px solid rgba(203, 216, 155, 0.3);
-      overflow: hidden;
-      flex-shrink: 0;
+    .viewport::before,
+    .viewport::after,
+    .viewport .bracket-bl,
+    .viewport .bracket-br {
+      content: '';
+      position: absolute;
+      width: 18px; height: 18px;
+      border: 1px solid var(--blue);
     }
-    .cv-photo img { width: 100%; height: 100%; object-fit: cover; }
-    .cv-qr {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 5px;
-      flex-shrink: 0;
-    }
-    .cv-qr img {
-      width: 70px;
-      height: 70px;
-      border: 1px solid rgba(203, 216, 155, 0.2);
-      display: block;
-    }
-    .cv-qr-label {
+    .viewport::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+    .viewport::after  { top: -1px; right: -1px; border-left: none; border-bottom: none; }
+    .bracket-bl { bottom: -1px; left: -1px; border-right: none; border-top: none; }
+    .bracket-br { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+
+    .viewport-label {
+      position: absolute; top: -9px; left: 48px;
+      background: var(--deep); padding: 0 14px;
       font-family: 'Press Start 2P', monospace;
-      font-size: 0.28rem;
-      color: #5c896b;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      text-align: center;
+      font-size: 0.4rem; color: var(--blue);
+      letter-spacing: 0.28em;
+    }
+    .viewport-id {
+      position: absolute; top: -9px; right: 48px;
+      background: var(--deep); padding: 0 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; color: var(--dim);
+      letter-spacing: 0.18em;
+    }
+
+    /* ── CV Header ── */
+    .cv-header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 36px;
+      align-items: start;
+      padding-bottom: 28px;
+      border-bottom: 1px dashed var(--line-soft);
+      margin-bottom: 36px;
     }
     .cv-name {
-      font-family: 'Press Start 2P', monospace;
-      font-size: clamp(0.9rem, 3vw, 1.4rem);
-      color: #f0f0e8;
-      letter-spacing: 0.05em;
-      line-height: 1.5;
+      font-family: 'VT323', monospace;
+      font-size: clamp(2.6rem, 6vw, 3.8rem);
+      line-height: 1;
+      color: var(--white);
       margin-bottom: 10px;
+      letter-spacing: 0.01em;
     }
     .cv-role {
       font-family: 'Press Start 2P', monospace;
       font-size: 0.42rem;
-      color: #9ecf9b;
-      letter-spacing: 0.2em;
+      color: var(--sage);
+      letter-spacing: 0.26em;
       text-transform: uppercase;
-      margin-bottom: 16px;
+      margin-bottom: 24px;
     }
-    .cv-contact { font-size: 13.5px; color: #c8d8b0; line-height: 2; }
+    .cv-contact {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12.5px;
+      color: var(--text);
+      line-height: 1.9;
+    }
     .cv-contact a {
-      color: #e0ecc8;
+      color: var(--text);
       text-decoration: none;
-      border-bottom: 1px solid rgba(203,216,155,0.3);
-      transition: color 0.2s;
+      border-bottom: 1px solid var(--line);
+      transition: color 0.2s, border-color 0.2s;
     }
-    .cv-contact a:hover { color: #c0b455; }
-    .cv-summary {
-      font-size: 14.5px;
-      color: #d0e0c0;
-      line-height: 1.85;
-      border-left: 2px solid #86b084;
-      padding-left: 16px;
-      text-align: justify;
+    .cv-contact a:hover { color: var(--blue); border-color: var(--blue); }
+    .cv-contact .label {
+      display: inline-block;
+      min-width: 80px;
+      color: var(--dim);
+      font-size: 10.5px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
     }
-    .cv-summary strong { color: #f0f0e8; }
-    .lang-badges { margin-top: 16px; display: flex; gap: 8px; flex-wrap: wrap; }
+
+    /* Language badges */
+    .lang-badges {
+      margin-top: 20px;
+      display: flex; gap: 6px; flex-wrap: wrap;
+    }
     .lang-badge {
       font-family: 'Press Start 2P', monospace;
-      font-size: 0.32rem;
-      letter-spacing: 0.1em;
+      font-size: 0.3rem;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
-      padding: 4px 10px;
-      background: rgba(134, 176, 132, 0.15);
-      color: #9ecf9b;
-      border: 1px solid rgba(134, 176, 132, 0.35);
+      padding: 5px 10px;
+      background: rgba(138, 181, 209, 0.08);
+      color: var(--blue);
+      border: 1px solid var(--line);
     }
-    .cv-section-title {
+
+    /* QR + photo column */
+    .cv-visuals {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+    .cv-photo {
+      width: 100px; height: 100px;
+      border: 1px solid var(--line);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .cv-photo img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .cv-qr {
+      width: 100px; height: 100px;
+      border: 1px solid var(--line);
+      padding: 4px;
+      background: var(--white);
+    }
+    .cv-qr img { width: 100%; height: 100%; display: block; }
+    .cv-qr-label {
       font-family: 'Press Start 2P', monospace;
-      font-size: 0.42rem;
-      letter-spacing: 0.25em;
-      text-transform: uppercase;
-      color: #c0b455;
-      margin-bottom: 20px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid rgba(192, 180, 85, 0.2);
+      font-size: 0.28rem;
+      color: var(--dim);
+      letter-spacing: 0.2em;
+      text-align: center;
     }
-    .cv-entry { margin-bottom: 22px; padding-bottom: 22px; border-bottom: 1px solid rgba(203,216,155,0.08); }
+
+    /* ── Section labels ── */
+    .section-head {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 40px 0 22px;
+    }
+    .section-head h2 {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.45rem;
+      color: var(--blue);
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      font-weight: 400;
+    }
+    .section-head .fill {
+      flex: 1; height: 1px;
+      background: linear-gradient(to right, var(--line), transparent);
+    }
+    .section-head .meta {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10.5px;
+      color: var(--dim);
+      letter-spacing: 0.15em;
+    }
+
+    /* ── Summary ── */
+    .summary {
+      font-size: 15px;
+      line-height: 1.85;
+      color: var(--text);
+      border-left: 2px solid var(--sage);
+      padding-left: 18px;
+    }
+    .summary strong { color: var(--white); font-weight: 600; }
+    .summary .hl { color: var(--aqua); font-weight: 500; }
+
+    /* ── CV entries (experience, education, projects) ── */
+    .cv-entry {
+      margin-bottom: 30px;
+      padding-bottom: 30px;
+      border-bottom: 1px dashed var(--line-soft);
+    }
     .cv-entry:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-    .cv-entry-header {
+
+    .entry-head {
       display: flex;
       justify-content: space-between;
       align-items: baseline;
-      gap: 12px;
+      gap: 16px;
       flex-wrap: wrap;
       margin-bottom: 4px;
     }
-    .cv-entry-role { font-size: 14px; font-weight: 700; color: #f0f0e8; }
-    .cv-entry-date {
-      font-family: 'Press Start 2P', monospace;
-      font-size: 0.42rem;
-      color: #8aaa8a;
+    .entry-role {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--white);
+      line-height: 1.3;
+    }
+    .entry-date {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px;
+      color: var(--sage);
+      letter-spacing: 0.12em;
       white-space: nowrap;
       flex-shrink: 0;
+      text-transform: uppercase;
     }
-    .cv-entry-company {
-      font-size: 13.5px;
+    .entry-company {
+      font-size: 14px;
+      color: var(--blue);
       font-style: italic;
-      color: #9ecf9b;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       display: block;
     }
-    .cv-entry-desc {
+    .entry-desc {
       font-size: 14.5px;
-      color: #c0d4a8;
+      color: var(--text);
       line-height: 1.75;
-      margin-bottom: 10px;
-      text-align: justify;
+      margin-bottom: 12px;
     }
-    .cv-entry ul { padding-left: 18px; margin: 0; }
+    .entry-desc strong { color: var(--white); }
+    .cv-entry ul {
+      padding-left: 20px;
+      margin: 0;
+    }
     .cv-entry ul li {
       font-size: 14.5px;
-      color: #c0d4a8;
+      color: var(--text);
       line-height: 1.75;
-      margin-bottom: 6px;
-      padding-left: 4px;
-      text-align: justify;
+      margin-bottom: 8px;
     }
-    .cv-entry ul li::marker { color: #c0b455; }
+    .cv-entry ul li::marker { color: var(--aqua); }
+
+    /* ── Skills grid ── */
     .skills-grid {
       display: grid;
-      grid-template-columns: 160px 1fr;
-      gap: 16px 20px;
+      grid-template-columns: 180px 1fr;
+      gap: 18px 24px;
     }
     .skill-cat {
       font-family: 'Press Start 2P', monospace;
-      font-size: 0.42rem;
-      letter-spacing: 0.1em;
+      font-size: 0.38rem;
+      color: var(--sage);
+      letter-spacing: 0.15em;
       text-transform: uppercase;
-      color: #86b084;
+      line-height: 1.7;
       padding-top: 2px;
-      line-height: 1.8;
     }
-    .skill-val { color: #c0d4a8; line-height: 1.75; font-size: 14.5px; text-align: justify; }
-    .footer {
-      position: fixed;
-      bottom: 1.5rem;
-      left: 50%;
-      transform: translateX(-50%);
-      font-family: 'Press Start 2P', monospace;
-      font-size: 0.42rem;
-      letter-spacing: 0.1em;
-      color: #5c896b;
-      z-index: 100;
+    .skill-val {
+      font-size: 14.5px;
+      color: var(--text);
+      line-height: 1.75;
     }
-    .footer a { color: #cbd89b; text-decoration: none; transition: color 0.3s; }
-    .footer a:hover { color: #c0b455; }
-    #transition-overlay {
-      position: fixed;
-      inset: 0;
-      background: #0d1a14;
-      z-index: 999;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.5s ease;
-    }
-    #transition-overlay.fade-in { opacity: 1; pointer-events: all; }
 
-    @media (max-width: 600px) {
-      .cv-card { padding: 20px 18px; }
-      .cv-header-inner { flex-direction: column-reverse; }
-      .cv-header-visuals { align-self: flex-end; }
-      .skills-grid { grid-template-columns: 1fr; gap: 4px; }
-      .skill-cat { margin-top: 12px; }
-      .cv-entry-header { flex-direction: column; gap: 4px; }
+    /* ── Viewport footer ── */
+    .viewport-foot {
+      margin-top: 40px; padding-top: 20px;
+      border-top: 1px dashed var(--line-soft);
+      display: flex; justify-content: space-between;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; color: var(--dim);
+      letter-spacing: 0.12em;
     }
+    .viewport-foot .left { display: flex; align-items: center; gap: 10px; }
+    .viewport-foot .left .dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--aqua);
+      box-shadow: 0 0 5px var(--aqua);
+      animation: breathe 3s ease-in-out infinite;
+    }
+    .viewport-foot .right a {
+      color: var(--text);
+      text-decoration: none;
+      margin-left: 18px;
+      transition: color 0.2s;
+    }
+    .viewport-foot .right a:hover { color: var(--blue); }
+
+    @media (max-width: 780px) {
+      .hamburger { display: flex; }
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        gap: 0;
+        position: fixed;
+        top: 56px; left: 0; right: 0;
+        background: var(--panel-2);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        padding: 12px 24px 16px;
+        border-bottom: 1px solid var(--line);
+      }
+      .nav-links.open { display: flex; }
+      .nav-links li {
+        border-bottom: 1px dashed var(--line-soft);
+      }
+      .nav-links li:last-child { border-bottom: none; }
+      .nav-links a {
+        padding: 12px 6px;
+        font-size: 13px;
+      }
+      .viewport { padding: 30px 22px 26px; }
+      main { padding: 76px 14px 32px; }
+      .cv-header { grid-template-columns: 1fr; }
+      .cv-visuals { flex-direction: row; justify-content: flex-start; align-items: center; }
+      .skills-grid { grid-template-columns: 1fr; gap: 4px; }
+      .skill-cat { margin-top: 10px; }
+      .entry-head { flex-direction: column; gap: 4px; }
+      .viewport-foot { flex-direction: column; gap: 8px; }
+      .action-bar { flex-direction: column; align-items: flex-start; gap: 10px; }
+    }
+
   </style>
 </head>
 <body>
-  <div id="transition-overlay"></div>
-  <canvas id="c"></canvas>
 
+  <!-- Background -->
+  <div class="bg-layer" id="bg"></div>
+  <div class="bg-wash"></div>
+  <div class="scanlines"></div>
+  <div class="grain"></div>
+  <canvas class="leaves" id="leaves"></canvas>
+
+  <!-- Nav -->
   <nav>
-    <span class="nav-name">Simran Shah</span>
-    <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+    <span class="nav-brand">
+      <span class="live-dot"></span>
+      Simran Shah · Station 42
+    </span>
+    <button class="hamburger" id="hamburger" aria-label="Toggle navigation menu">
       <span></span><span></span><span></span>
     </button>
-    <ul class="nav-links" id="nav-links">
-      <li><a href="/">Home</a></li>
-      <li><a href="dog.html">pictures of my dog</a></li>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">field_post</a></li>
       <li><a href="cv.html" class="active">CV</a></li>
-      <li><a href="movies.html">movie reviews</a></li>
-      <li><a href="books.html">books i'm reading</a></li>
-      <li><a href="music.html">music i listen to</a></li>
+      <li><a href="music.html">audio_log</a></li>
+      <li><a href="books.html">reading_list</a></li>
+      <li><a href="movies.html">viewing_log</a></li>
+      <li><a href="dog.html">companion</a></li>
       <li><a href="contact.html">contact</a></li>
     </ul>
   </nav>
 
-  <div class="cv-wrap">
+  <main>
 
-    <a class="cv-download" href="Simran Shah - Resume.pdf" download target="_blank">↓ download pdf</a>
+    <!-- Action bar -->
+    <div class="action-bar">
+      <span class="module-tag"><span class="code">MOD.01</span> · personnel file · cv</span>
+      <a class="download-btn" href="cv.pdf" download="Simran-Shah-Resume.pdf">Download PDF</a>
+    </div>
 
-    <div class="cv-card">
-      <div class="cv-header-inner">
-        <div class="cv-header-left">
-          <div class="cv-name">Simran Shah</div>
+    <!-- Viewport -->
+    <section class="viewport">
+      <span class="bracket-bl"></span>
+      <span class="bracket-br"></span>
+      <span class="viewport-label">▮ PERSONNEL FILE // MOD.01</span>
+      <span class="viewport-id">0xSH-1998 · CLASSIFIED: OPEN</span>
+
+      <!-- Header -->
+      <header class="cv-header">
+        <div>
+          <h1 class="cv-name">Simran Shah</h1>
           <div class="cv-role">Strategic Marketing &amp; Product Professional</div>
+
           <div class="cv-contact">
-            Gotenstr 50, 10829 Berlin, Germany &bull; +49 1520 2163 924<br>
-            <a href="mailto:simranshah1998@gmail.com">simranshah1998@gmail.com</a> &bull;
-            <a href="https://linkedin.com/in/simrancs1998" target="_blank" rel="noopener">linkedin.com/in/simrancs1998</a>
+            <div><span class="label">Loc</span> Gotenstr 50, 10829 Berlin, Germany</div>
+            <div><span class="label">Phone</span> +49 1520 2163 924</div>
+            <div><span class="label">Email</span> <a href="mailto:simranshah1998@gmail.com">simranshah1998@gmail.com</a></div>
+            <div><span class="label">LinkedIn</span> <a href="https://linkedin.com/in/simrancs1998" target="_blank" rel="noopener">linkedin.com/in/simrancs1998</a></div>
+          </div>
+
+          <div class="lang-badges">
+            <span class="lang-badge">English · C2</span>
+            <span class="lang-badge">German · B2</span>
+            <span class="lang-badge">Hindi · C2</span>
           </div>
         </div>
-        <div class="cv-header-visuals">
-          <div class="cv-qr">
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://www.linkedin.com/in/simrancs1998/" alt="LinkedIn QR Code">
-            <span class="cv-qr-label">LinkedIn</span>
-          </div>
+
+        <div class="cv-visuals">
           <div class="cv-photo">
-            <img src="picture.jpg" alt="Simran Shah" onerror="this.parentElement.style.display='none'">
+            <img src="picture.jpeg" alt="Simran Shah">
           </div>
+          <div class="cv-qr">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://www.linkedin.com/in/simrancs1998/" alt="LinkedIn QR Code">
+          </div>
+          <span class="cv-qr-label">scan · linkedin</span>
         </div>
-      </div>
-    </div>
+      </header>
 
-    <div class="cv-card">
-      <div class="cv-summary">
-        <strong>Strategic marketing and product professional</strong> with 4+ years of B2B commercial experience spanning solution sales, go-to-market strategy, enterprise pipeline management, and cross-functional stakeholder engagement. Proven track record of driving pipeline growth and revenue outcomes — including 15% YoY revenue growth and a 25% uplift in qualified pipeline — through data-driven campaigns, structured testing, and CXO-level client advisory. Complementary experience in the German B2B market through a consulting engagement with PIK AG, alongside academic research into AI-driven personalisation and privacy in marketing. Based in Berlin with conversational German and full fluency in English and Hindi. MA in Strategic Marketing Management, ISM Berlin (Grade: 1.91).
-        <div class="lang-badges">
-          <span class="lang-badge">English: Native / C2</span>
-          <span class="lang-badge">German: B2</span>
-          <span class="lang-badge">Hindi: Native / C2</span>
-        </div>
+      <!-- Summary -->
+      <div class="section-head">
+        <h2>▮ Summary</h2>
+        <span class="fill"></span>
       </div>
-    </div>
+      <p class="summary">
+        <strong>Strategic marketing and product professional</strong> with 4+ years of B2B commercial experience spanning solution sales, go-to-market strategy, enterprise pipeline management, and cross-functional stakeholder engagement. Proven track record of driving pipeline growth and revenue outcomes — including <span class="hl">15% YoY revenue growth</span> and a <span class="hl">25% uplift in qualified pipeline</span> — through data-driven campaigns, structured testing, and CXO-level client advisory. Complementary experience in the German B2B market through a consulting engagement with PIK AG, alongside academic research into AI-driven personalisation and privacy in marketing. Based in Berlin with conversational German and full fluency in English and Hindi.
+      </p>
 
-    <div class="cv-card">
-      <div class="cv-section-title">Professional Experience</div>
+      <!-- Experience -->
+      <div class="section-head">
+        <h2>▮ Professional Experience</h2>
+        <span class="fill"></span>
+        <span class="meta">4+ years</span>
+      </div>
+
       <div class="cv-entry">
-        <div class="cv-entry-header">
-          <span class="cv-entry-role">Marketing &amp; Product Manager — Cloud Sales</span>
-          <span class="cv-entry-date">Jan 2020 – Mar 2024</span>
+        <div class="entry-head">
+          <span class="entry-role">Marketing &amp; Product Manager — Cloud Sales</span>
+          <span class="entry-date">Jan 2020 – Mar 2024</span>
         </div>
-        <span class="cv-entry-company">Xpress Computers Ltd. (Microsoft Modern Workplace Certified Solutions Partner), Mumbai</span>
-        <p class="cv-entry-desc">Owned end-to-end B2B marketing and solution sales for a Microsoft-certified partner, running paid campaigns across Google Ads and LinkedIn Ads and managing the full commercial cycle from lead generation through to client onboarding and account growth across Azure, Copilot, and Modern Workplace.</p>
+        <span class="entry-company">Xpress Computers Ltd. (Microsoft Modern Workplace Certified Solutions Partner) · Mumbai</span>
+        <p class="entry-desc">Owned end-to-end B2B marketing and solution sales for a Microsoft-certified partner, running paid campaigns across Google Ads and LinkedIn Ads and managing the full commercial cycle from lead generation through to client onboarding and account growth across Azure, Copilot, and Modern Workplace.</p>
         <ul>
-          <li>Planned, launched, and optimised Google Ads and LinkedIn Ads campaigns targeting enterprise decision-makers — managing audience segmentation, bidding strategies, budget allocation, and ad creative testing cycles to deliver 15% YoY revenue growth and a 25% increase in qualified pipeline.</li>
+          <li>Planned, launched, and optimised Google Ads and LinkedIn Ads campaigns targeting enterprise decision-makers — managing audience segmentation, bidding strategies, budget allocation, and ad creative testing cycles to deliver <strong>15% YoY revenue growth</strong> and a <strong>25% increase in qualified pipeline</strong>.</li>
           <li>Ran structured A/B tests across creatives, messaging, and targeting parameters, applying results iteratively to reduce cost per acquisition and improve conversion rates across campaigns.</li>
           <li>Collaborated with design and technical teams on creative production, tracking setup, and attribution — making sure what we were measuring actually connected to revenue, not just clicks.</li>
           <li>Built trusted CXO-level relationships across key enterprise accounts, translating complex product capabilities into clear commercial value and managing long-term account health and expansion.</li>
         </ul>
       </div>
+
       <div class="cv-entry">
-        <div class="cv-entry-header">
-          <span class="cv-entry-role">Public Relations &amp; Communications Intern</span>
-          <span class="cv-entry-date">Aug 2019 – Oct 2019</span>
+        <div class="entry-head">
+          <span class="entry-role">Public Relations &amp; Communications Intern</span>
+          <span class="entry-date">Aug 2019 – Oct 2019</span>
         </div>
-        <span class="cv-entry-company">StudioTalkPR, Mumbai — Client: Population Foundation of India</span>
+        <span class="entry-company">StudioTalkPR · Mumbai — Client: Population Foundation of India</span>
         <ul>
           <li>Managed media relations and press outreach for the Population Foundation of India, writing releases and coordinating editorial coverage across print and digital channels.</li>
         </ul>
       </div>
-    </div>
 
-    <div class="cv-card">
-      <div class="cv-section-title">Education</div>
-      <div class="cv-entry">
-        <div class="cv-entry-header">
-          <span class="cv-entry-role">M.A. Strategic Marketing Management</span>
-          <span class="cv-entry-date">Sep 2024 – Mar 2026</span>
-        </div>
-        <span class="cv-entry-company">International School of Management (ISM), Berlin &nbsp;|&nbsp; Final Grade: 1.91</span>
-        <p class="cv-entry-desc"><strong style="color:#e0ecc8">Thesis:</strong> AI Marketing Personalisation in Privacy-Conscious B2B Markets: A German Perspective — focused on how AI-driven targeting and attribution work in practice when data regulations constrain what you can track and personalise.</p>
+      <!-- Education -->
+      <div class="section-head">
+        <h2>▮ Education</h2>
+        <span class="fill"></span>
       </div>
-      <div class="cv-entry">
-        <div class="cv-entry-header">
-          <span class="cv-entry-role">Pre-Master Programme — International Business</span>
-          <span class="cv-entry-date">Mar 2024 – Aug 2024</span>
-        </div>
-        <span class="cv-entry-company">International School of Management (ISM), Berlin</span>
-        <p class="cv-entry-desc">Modules: Corporate Management, Intercultural Management, Financial Reporting, Investment Theory, Business Mathematics.</p>
-      </div>
-      <div class="cv-entry">
-        <div class="cv-entry-header">
-          <span class="cv-entry-role">B.A. Sociology</span>
-          <span class="cv-entry-date">Jun 2016 – Oct 2020</span>
-        </div>
-        <span class="cv-entry-company">L.S. Raheja College of Commerce and Arts, Mumbai</span>
-        <p class="cv-entry-desc">Focus on social dynamics, behavioural research, and quantitative and qualitative data analysis methodologies.</p>
-      </div>
-    </div>
 
-    <div class="cv-card">
-      <div class="cv-section-title">Projects &amp; Courses</div>
       <div class="cv-entry">
-        <div class="cv-entry-header">
-          <span class="cv-entry-role">McKinsey Forward Program</span>
-          <span class="cv-entry-date">April 2026</span>
+        <div class="entry-head">
+          <span class="entry-role">M.A. Strategic Marketing Management</span>
+          <span class="entry-date">Sep 2024 – Mar 2026</span>
         </div>
-        <span class="cv-entry-company">McKinsey &amp; Company</span>
-        <p class="cv-entry-desc">Selective professional development program covering structured problem-solving, leadership, and business strategy.</p>
+        <span class="entry-company">International School of Management (ISM), Berlin &nbsp;|&nbsp; Final Grade: 1.91</span>
+        <p class="entry-desc"><strong>Thesis:</strong> AI Marketing Personalisation in Privacy-Conscious B2B Markets: A German Perspective — focused on how AI-driven targeting and attribution work in practice when data regulations constrain what you can track and personalise.</p>
       </div>
+
       <div class="cv-entry">
-        <div class="cv-entry-header">
-          <span class="cv-entry-role">B2B Market Analyst &amp; Strategy Consultant</span>
-          <span class="cv-entry-date">Mar 2025 – Jun 2025</span>
+        <div class="entry-head">
+          <span class="entry-role">Pre-Master Programme — International Business</span>
+          <span class="entry-date">Mar 2024 – Aug 2024</span>
         </div>
-        <span class="cv-entry-company">Consulting Project — PIK AG via ISM Berlin</span>
+        <span class="entry-company">International School of Management (ISM), Berlin</span>
+        <p class="entry-desc">Modules: Corporate Management, Intercultural Management, Financial Reporting, Investment Theory, Business Mathematics.</p>
+      </div>
+
+      <div class="cv-entry">
+        <div class="entry-head">
+          <span class="entry-role">B.A. Sociology</span>
+          <span class="entry-date">Jun 2016 – Oct 2020</span>
+        </div>
+        <span class="entry-company">L.S. Raheja College of Commerce and Arts · Mumbai</span>
+        <p class="entry-desc">Focus on social dynamics, behavioural research, and quantitative and qualitative data analysis methodologies.</p>
+      </div>
+
+      <!-- Projects -->
+      <div class="section-head">
+        <h2>▮ Projects &amp; Courses</h2>
+        <span class="fill"></span>
+      </div>
+
+      <div class="cv-entry">
+        <div class="entry-head">
+          <span class="entry-role">McKinsey Forward Program</span>
+          <span class="entry-date">April 2026</span>
+        </div>
+        <span class="entry-company">McKinsey &amp; Company</span>
+        <p class="entry-desc">Selective professional development program covering structured problem-solving, leadership, and business strategy.</p>
+      </div>
+
+      <div class="cv-entry">
+        <div class="entry-head">
+          <span class="entry-role">B2B Market Analyst &amp; Strategy Consultant</span>
+          <span class="entry-date">Mar 2025 – Jun 2025</span>
+        </div>
+        <span class="entry-company">Consulting Project — PIK AG via ISM Berlin</span>
         <ul>
           <li>Analysed the German B2B market across 1,000+ employee accounts, identifying growth opportunities and building a structured lead generation strategy with business cases presented to senior management.</li>
           <li>Identified gaps in how teams were communicating internally and recommended practical fixes to improve cross-departmental execution.</li>
         </ul>
       </div>
+
       <div class="cv-entry">
-        <div class="cv-entry-header">
-          <span class="cv-entry-role">International Buddy &amp; Event Coordinator</span>
-          <span class="cv-entry-date">Sep 2024 – Feb 2025</span>
+        <div class="entry-head">
+          <span class="entry-role">International Buddy &amp; Event Coordinator</span>
+          <span class="entry-date">Sep 2024 – Feb 2025</span>
         </div>
-        <span class="cv-entry-company">ISM Berlin — International Student Services</span>
+        <span class="entry-company">ISM Berlin · International Student Services</span>
         <ul>
           <li>Planned and delivered 6 large-scale networking events end-to-end, coordinating cross-functional teams across logistics, communications, and stakeholder management.</li>
           <li>First point of contact for incoming international students throughout the semester, managing a high volume of queries with patience and follow-through.</li>
         </ul>
       </div>
-    </div>
 
-    <div class="cv-card">
-      <div class="cv-section-title">Competencies &amp; Tools</div>
+      <!-- Skills -->
+      <div class="section-head">
+        <h2>▮ Competencies &amp; Tools</h2>
+        <span class="fill"></span>
+      </div>
+
       <div class="skills-grid">
         <span class="skill-cat">Research &amp; Analytics</span>
         <span class="skill-val">SPSS (Advanced), Google Sheets &amp; Excel, KPI reporting, market &amp; competitor analysis, data-driven decision making.</span>
+
         <span class="skill-cat">Platforms &amp; Tools</span>
         <span class="skill-val">Google Ads, LinkedIn Ads, Microsoft Suite (Certified), Google Suite (Certified), Microsoft Azure, Microsoft Copilot, Canva, Figma, Adobe Photoshop (Certified), After Effects, CapCut.</span>
+
         <span class="skill-cat">Languages</span>
         <span class="skill-val">English (Native / C2), German (B2), Hindi (Native / C2).</span>
       </div>
-    </div>
 
-  </div>
-
-  <p class="footer">
-    <a href="https://www.linkedin.com/in/simrancs1998/" target="_blank">LinkedIn</a>
-  </p>
+      <!-- Foot -->
+      <div class="viewport-foot">
+        <span class="left"><span class="dot"></span>file last updated · apr 2026</span>
+        <span class="right">
+          <a href="mailto:simranshah1998@gmail.com">Email</a>
+          <a href="https://linkedin.com/in/simrancs1998" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+          <a href="cv.pdf" download="Simran-Shah-Resume.pdf">Download PDF</a>
+        </span>
+      </div>
+    </section>
+  </main>
 
   <script>
-    // Hamburger toggle
+    // Hamburger menu toggle (mobile)
     const hamburger = document.getElementById('hamburger');
-    const navLinks = document.getElementById('nav-links');
-    hamburger.addEventListener('click', () => { navLinks.classList.toggle('open'); });
-
-    // Page transitions
-    const overlay = document.getElementById('transition-overlay');
-    document.querySelectorAll('.nav-links a').forEach(link => {
-      link.addEventListener('click', function(e) {
-        if (this.classList.contains('active')) return;
-        e.preventDefault();
-        const href = this.getAttribute('href');
-        overlay.classList.add('fade-in');
-        setTimeout(() => { window.location.href = href; }, 500);
-      });
+    const navLinks = document.getElementById('navLinks');
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      navLinks.classList.toggle('open');
     });
-    window.addEventListener('load', () => { overlay.classList.remove('fade-in'); });
+    // Close menu if user taps outside it
+    document.addEventListener('click', (e) => {
+      if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) {
+        hamburger.classList.remove('open');
+        navLinks.classList.remove('open');
+      }
+    });
 
-    // Canvas animation
-    const canvas = document.getElementById('c');
+    // Cursor parallax
+    const bg = document.getElementById('bg');
+    document.addEventListener('mousemove', (e) => {
+      const x = (e.clientX / window.innerWidth - 0.5) * 14;
+      const y = (e.clientY / window.innerHeight - 0.5) * 14;
+      bg.style.transform = `translate(${-x}px, ${-y}px)`;
+    });
+
+    // Drifting leaves
+    const canvas = document.getElementById('leaves');
     const ctx = canvas.getContext('2d');
-    let W, H;
-    function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
-    function rf(a, b) { return Math.random() * (b - a) + a; }
-    let flies = [];
-    function initFlies() {
-      flies = [];
-      for (let i = 0; i < 35; i++) {
-        flies.push({ x: rf(0,W), y: rf(H*0.2,H*0.85), vx: rf(-0.3,0.3), vy: rf(-0.25,-0.04), alpha: rf(0.1,0.8), dir: Math.random()>0.5?1:-1, spd: rf(0.005,0.018), col: Math.random()>0.5?'#c0b455':'#86b084' });
+    let W, H, leaves = [];
+    function resize() { W = canvas.width = innerWidth; H = canvas.height = innerHeight; }
+    function rand(a, b) { return Math.random() * (b - a) + a; }
+    function initLeaves() {
+      leaves = [];
+      const palette = ['#9ebf8a', '#8ab5d1', '#7fc9b3', '#7a9b8a'];
+      for (let i = 0; i < 14; i++) {
+        leaves.push({
+          x: rand(0, W), y: rand(-H, H),
+          size: rand(3, 7),
+          vx: rand(-0.3, 0.3), vy: rand(0.1, 0.35),
+          rot: rand(0, Math.PI * 2), vr: rand(-0.008, 0.008),
+          color: palette[Math.floor(Math.random() * palette.length)],
+          alpha: rand(0.2, 0.5)
+        });
       }
     }
-    function draw() {
-      ctx.clearRect(0,0,W,H);
-      flies.forEach(f => {
-        f.x+=f.vx; f.y+=f.vy; f.alpha+=f.dir*f.spd;
-        if(f.alpha>0.9) f.dir=-1; if(f.alpha<0.05) f.dir=1;
-        if(f.y<H*0.1){f.y=H*0.85;f.x=rf(0,W);} if(f.x<-10||f.x>W+10) f.x=rf(0,W);
-        ctx.save(); ctx.globalAlpha=f.alpha; ctx.fillStyle=f.col;
-        ctx.beginPath(); ctx.arc(f.x,f.y,1.8,0,Math.PI*2); ctx.fill(); ctx.restore();
-      });
-      requestAnimationFrame(draw);
+    function drawLeaf(l) {
+      ctx.save();
+      ctx.translate(l.x, l.y);
+      ctx.rotate(l.rot);
+      ctx.globalAlpha = l.alpha;
+      ctx.fillStyle = l.color;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, l.size, l.size * 0.45, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
     }
-    resize(); initFlies(); draw();
-    window.addEventListener('resize', () => { resize(); initFlies(); });
+    function animate() {
+      ctx.clearRect(0, 0, W, H);
+      leaves.forEach(l => {
+        l.x += l.vx + Math.sin(l.y * 0.008) * 0.2;
+        l.y += l.vy;
+        l.rot += l.vr;
+        if (l.y > H + 20) { l.y = -20; l.x = rand(0, W); }
+        if (l.x < -20) l.x = W + 20;
+        if (l.x > W + 20) l.x = -20;
+        drawLeaf(l);
+      });
+      requestAnimationFrame(animate);
+    }
+    resize();
+    initLeaves();
+    animate();
+    window.addEventListener('resize', () => { resize(); initLeaves(); });
   </script>
 </body>
 </html>
