@@ -31,13 +31,13 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body {
-      min-height: 100vh;
+      height: 100vh;
       background: var(--deep);
       color: var(--text);
       font-family: 'Inter', sans-serif;
       font-size: 14.5px;
       line-height: 1.7;
-      overflow-x: hidden;
+      overflow: hidden;
       position: relative;
       display: flex;
       flex-direction: column;
@@ -160,8 +160,9 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 88px 28px 48px;
+      padding: 76px 28px 28px;
       width: 100%;
+      overflow: hidden;
     }
 
     .contact-wrap {
@@ -171,7 +172,7 @@
 
     .viewport {
       position: relative;
-      padding: 48px 44px 36px;
+      padding: 36px 40px 28px;
       background: rgba(19, 29, 28, 0.45);
       backdrop-filter: blur(4px);
       -webkit-backdrop-filter: blur(4px);
@@ -213,7 +214,7 @@
       color: var(--sage);
       letter-spacing: 0.3em;
       text-transform: uppercase;
-      margin-bottom: 20px;
+      margin-bottom: 14px;
       display: flex; align-items: center; gap: 12px;
     }
     .contact-kicker::before {
@@ -224,28 +225,28 @@
       font-size: clamp(2.4rem, 5.5vw, 3.2rem);
       line-height: 1;
       color: var(--white);
-      margin-bottom: 14px;
+      margin-bottom: 10px;
     }
     .contact-heading .accent { color: var(--blue); }
     .contact-sub {
       font-size: 14.5px;
       color: var(--text);
-      line-height: 1.7;
-      margin-bottom: 32px;
+      line-height: 1.6;
+      margin-bottom: 22px;
       max-width: 44ch;
     }
 
     .contact-divider {
       border: none;
       border-top: 1px dashed var(--line-soft);
-      margin-bottom: 28px;
+      margin-bottom: 18px;
     }
 
     .contact-row {
       display: flex;
       align-items: baseline;
       gap: 16px;
-      padding: 14px 0;
+      padding: 11px 0;
       border-bottom: 1px dashed var(--line-soft);
     }
     .contact-row:last-child { border-bottom: none; }
@@ -277,7 +278,7 @@
 
     /* ── Viewport footer ── */
     .viewport-foot {
-      margin-top: 32px; padding-top: 18px;
+      margin-top: 22px; padding-top: 14px;
       border-top: 1px dashed var(--line-soft);
       display: flex; justify-content: space-between;
       font-family: 'JetBrains Mono', monospace;
@@ -319,6 +320,8 @@
     @keyframes bootLine { to { opacity: 1; } }
 
     @media (max-width: 780px) {
+      body { height: auto; min-height: 100vh; overflow: auto; }
+      main { overflow: visible; }
       .hamburger { display: flex; }
       .nav-links {
         display: none;
@@ -341,8 +344,8 @@
         padding: 12px 6px;
         font-size: 13px;
       }
-      .viewport { padding: 36px 22px 28px; }
-      main { padding: 80px 14px 36px; }
+      .viewport { padding: 30px 22px 24px; }
+      main { padding: 76px 14px 28px; }
       .contact-row { flex-direction: column; gap: 4px; }
       .contact-label { min-width: unset; }
       .viewport-foot { flex-direction: column; gap: 8px; }
