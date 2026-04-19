@@ -3,14 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>simran shah - audio log</title>
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <title>simran shah - portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
   <style>
     /* ──────────────────────────────────────────────
-       AUDIO LOG — MOD.02
-       Album grid in field-post aesthetic.
-       Click an album card to expand its Spotify
-       embed inline. Same chrome as home/cv/contact.
+       PORTFOLIO — MOD.02
+       Two sections: case studies (coral-accented,
+       real client work) and academic projects
+       (sage-accented, MA Berlin). Cards stack
+       vertically like CV entries but visually
+       distinct per section. Anchor nav at top.
        ────────────────────────────────────────────── */
 
     :root {
@@ -41,7 +43,7 @@
       position: relative;
     }
 
-    /* Background layers — same as home */
+    /* ── Background layers ── */
     .bg-layer {
       position: fixed; inset: -40px;
       background-image: url('bg.jpeg');
@@ -76,7 +78,7 @@
       position: fixed; inset: 0; z-index: 3; pointer-events: none;
     }
 
-    /* Nav */
+    /* ── Nav ── */
     nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
       background: var(--panel-2);
@@ -122,7 +124,7 @@
     .nav-links a:hover::before { color: var(--blue); }
     .nav-links a.active { color: var(--blue); }
 
-    /* Hamburger */
+    /* ── Hamburger (mobile) ── */
     .hamburger {
       display: none;
       flex-direction: column;
@@ -136,8 +138,7 @@
     }
     .hamburger span {
       display: block;
-      width: 22px;
-      height: 2px;
+      width: 22px; height: 2px;
       background: var(--text);
       transition: all 0.3s ease;
     }
@@ -151,16 +152,31 @@
       background: var(--blue);
     }
 
-    /* Main + viewport */
+    /* ── Main + viewport frame ── */
     main {
       position: relative; z-index: 10;
-      max-width: 1180px; margin: 0 auto;
+      max-width: 900px; margin: 0 auto;
       padding: 88px 28px 48px;
     }
 
+    .action-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      padding: 0 4px;
+    }
+    .module-tag {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.38rem;
+      color: var(--dim);
+      letter-spacing: 0.28em;
+    }
+    .module-tag .code { color: var(--blue); }
+
     .viewport {
       position: relative;
-      padding: 48px 44px 36px;
+      padding: 48px 52px 40px;
       background: rgba(19, 29, 28, 0.45);
       backdrop-filter: blur(4px);
       -webkit-backdrop-filter: blur(4px);
@@ -195,215 +211,213 @@
       letter-spacing: 0.18em;
     }
 
-    /* Page header */
-    .page-head {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 28px;
-      align-items: end;
-      padding-bottom: 24px;
+    /* ── Header ── */
+    .pf-header {
+      position: relative;
+      z-index: 2;
+      padding-bottom: 28px;
       border-bottom: 1px dashed var(--line-soft);
-      margin-bottom: 36px;
+      margin-bottom: 30px;
     }
-    .page-kicker {
+    .pf-kicker {
       font-family: 'Press Start 2P', monospace;
-      font-size: 0.38rem;
+      font-size: 0.42rem;
       color: var(--sage);
-      letter-spacing: 0.3em;
+      letter-spacing: 0.26em;
       text-transform: uppercase;
       margin-bottom: 18px;
-      display: flex; align-items: center; gap: 12px;
     }
-    .page-kicker::before {
-      content: ''; width: 24px; height: 1px; background: var(--sage);
-    }
-    .page-title {
+    .pf-title {
       font-family: 'VT323', monospace;
-      font-size: clamp(2.6rem, 5.5vw, 3.8rem);
+      font-size: clamp(2.6rem, 6vw, 3.8rem);
       line-height: 1;
       color: var(--white);
+      margin-bottom: 12px;
       letter-spacing: 0.01em;
-      margin-bottom: 8px;
     }
-    .page-title .accent { color: var(--blue); }
-    .page-sub {
-      font-size: 14.5px;
-      color: var(--dim);
-      line-height: 1.6;
-      max-width: 52ch;
-    }
-    .page-sub em { color: var(--sage); font-style: normal; }
-    .page-meta {
+    .pf-sub {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
+      font-size: 13px;
+      color: var(--blue);
+      font-style: italic;
+      margin-bottom: 10px;
+    }
+    .pf-meta {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10.5px;
       color: var(--dim);
       letter-spacing: 0.15em;
-      text-align: right;
-    }
-    .page-meta .count {
-      font-family: 'VT323', monospace;
-      font-size: 2.2rem;
-      color: var(--aqua);
-      letter-spacing: 0.02em;
-      display: block;
-      line-height: 1;
-      margin-bottom: 6px;
-      text-shadow: 0 0 12px rgba(127, 201, 179, 0.2);
-    }
-
-    /* Album grid */
-    .album-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 22px;
-      margin-top: 28px;
-    }
-    .album-card {
-      background: rgba(19, 29, 28, 0.55);
-      border: 1px solid var(--line);
-      cursor: pointer;
-      transition: border-color 0.25s, transform 0.25s, background 0.25s;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-      padding: 4px;
-    }
-    .album-card:hover {
-      border-color: var(--blue);
-      background: rgba(138, 181, 209, 0.05);
-      transform: translateY(-2px);
-    }
-    .album-card.open {
-      border-color: var(--aqua);
-      background: rgba(127, 201, 179, 0.06);
-    }
-    .album-card.open:hover { transform: none; }
-
-    /* Corner brackets — small mini-viewports */
-    .album-card::before,
-    .album-card::after,
-    .album-card .card-bl,
-    .album-card .card-br {
-      content: '';
-      position: absolute;
-      width: 10px; height: 10px;
-      border: 1px solid var(--blue);
-      opacity: 0;
-      transition: opacity 0.25s;
-      pointer-events: none;
-    }
-    .album-card::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
-    .album-card::after  { top: -1px; right: -1px; border-left: none; border-bottom: none; }
-    .album-card .card-bl { bottom: -1px; left: -1px; border-right: none; border-top: none; }
-    .album-card .card-br { bottom: -1px; right: -1px; border-left: none; border-top: none; }
-    .album-card:hover::before,
-    .album-card:hover::after,
-    .album-card:hover .card-bl,
-    .album-card:hover .card-br { opacity: 1; }
-    .album-card.open::before,
-    .album-card.open::after,
-    .album-card.open .card-bl,
-    .album-card.open .card-br { opacity: 1; border-color: var(--aqua); }
-
-    /* Track number badge */
-    .album-num {
-      position: absolute;
-      top: 8px; left: 8px;
-      z-index: 2;
-      font-family: 'Press Start 2P', monospace;
-      font-size: 0.3rem;
-      color: var(--text);
-      letter-spacing: 0.2em;
-      background: rgba(19, 29, 28, 0.75);
-      backdrop-filter: blur(4px);
-      padding: 5px 8px;
-      border: 1px solid var(--line);
-    }
-    .album-card.open .album-num { color: var(--aqua); border-color: var(--aqua); }
-
-    .album-cover-wrap {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 1;
-      overflow: hidden;
-    }
-    .album-cover {
-      width: 100%; height: 100%;
-      object-fit: cover;
-      display: block;
-      filter: brightness(0.92) saturate(0.92);
-      transition: filter 0.3s;
-    }
-    .album-card:hover .album-cover,
-    .album-card.open .album-cover { filter: brightness(1) saturate(1); }
-
-    /* Expand indicator over the cover */
-    .album-expand {
-      position: absolute;
-      bottom: 8px; right: 8px;
-      width: 28px; height: 28px;
-      display: flex; align-items: center; justify-content: center;
-      background: rgba(19, 29, 28, 0.75);
-      backdrop-filter: blur(4px);
-      border: 1px solid var(--line);
-      color: var(--text);
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 14px;
-      line-height: 1;
-      transition: all 0.2s;
-    }
-    .album-card:hover .album-expand {
-      border-color: var(--blue);
-      color: var(--blue);
-    }
-    .album-card.open .album-expand {
-      border-color: var(--aqua);
-      color: var(--aqua);
-      transform: rotate(45deg);
-    }
-
-    .album-info {
-      padding: 14px 14px 12px;
-      border-top: 1px solid var(--line-soft);
-    }
-    .album-title {
-      font-family: 'VT323', monospace;
-      font-size: 1.4rem;
-      line-height: 1.1;
-      color: var(--white);
-      margin-bottom: 4px;
-      transition: color 0.2s;
-    }
-    .album-card:hover .album-title { color: var(--blue); }
-    .album-card.open .album-title { color: var(--aqua); }
-    .album-artist {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      color: var(--dim);
-      letter-spacing: 0.08em;
       text-transform: uppercase;
     }
 
-    /* Spotify embed expand area */
-    .album-embed {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.5s ease;
-      border-top: 0 solid var(--aqua);
+    /* ── Intro ── */
+    .pf-intro {
+      position: relative;
+      z-index: 2;
+      font-size: 15px;
+      line-height: 1.85;
+      color: var(--text);
+      border-left: 2px solid var(--aqua);
+      padding-left: 18px;
+      margin-bottom: 30px;
     }
-    .album-card.open .album-embed {
-      max-height: 380px;
-      border-top: 1px solid rgba(127, 201, 179, 0.3);
+    .pf-intro a {
+      color: var(--aqua);
+      text-decoration: none;
+      border-bottom: 1px solid var(--line);
+      transition: color 0.2s, border-color 0.2s;
     }
-    .album-embed iframe {
-      width: 100%;
-      border: none;
-      display: block;
+    .pf-intro a:hover { color: var(--blue); border-color: var(--blue); }
+
+    /* ── Anchor nav ── */
+    .anchor-nav {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      padding: 12px 18px;
+      margin-top: 4px;
+      margin-bottom: 38px;
+      background: rgba(127, 201, 179, 0.05);
+      border: 1px solid rgba(127, 201, 179, 0.25);
+    }
+    .anchor-nav .anchor-label {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.32rem;
+      color: var(--aqua);
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      margin-right: 8px;
+    }
+    .anchor-nav a {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: 0.08em;
+      padding: 4px 10px;
+      transition: color 0.2s, background 0.2s;
+    }
+    .anchor-nav a::before { content: '> '; color: var(--dim); }
+    .anchor-nav a:hover { color: var(--aqua); background: rgba(127, 201, 179, 0.08); }
+    .anchor-nav a:hover::before { color: var(--aqua); }
+
+    /* ── Section headers ── */
+    .section-head {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 46px 0 10px;
+      scroll-margin-top: 80px;
+    }
+    .section-head h2 {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.5rem;
+      color: var(--blue);
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      font-weight: 400;
+    }
+    .section-head .fill {
+      flex: 1; height: 1px;
+      background: linear-gradient(to right, var(--line), transparent);
+    }
+    .section-head .count {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10.5px;
+      color: var(--dim);
+      letter-spacing: 0.15em;
+    }
+    .section-note {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--dim);
+      font-style: italic;
+      margin-bottom: 22px;
+      padding-left: 2px;
     }
 
-    /* Viewport footer */
+    /* ── Project cards ── */
+    .project-card {
+      position: relative;
+      padding: 28px 30px 28px 32px;
+      margin-bottom: 20px;
+      background: rgba(19, 29, 28, 0.55);
+      border: 1px solid var(--line-soft);
+      border-left: 3px solid var(--sage);
+      transition: border-color 0.25s, background 0.25s;
+    }
+    .project-card:hover {
+      background: rgba(19, 29, 28, 0.72);
+      border-color: var(--line);
+    }
+    /* Case study variant — coral accent */
+    .project-card.case-study {
+      border-left-color: var(--coral);
+    }
+
+    .card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .card-tag {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.32rem;
+      color: var(--sage);
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border: 1px solid var(--line-soft);
+      background: rgba(158, 191, 138, 0.06);
+    }
+    .project-card.case-study .card-tag {
+      color: var(--coral);
+      background: rgba(216, 153, 133, 0.06);
+    }
+    .card-meta {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--dim);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .card-title {
+      font-family: 'Inter', sans-serif;
+      font-size: 19px;
+      font-weight: 600;
+      color: var(--white);
+      line-height: 1.35;
+      margin-bottom: 4px;
+    }
+    .card-subtitle {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12.5px;
+      color: var(--blue);
+      font-style: italic;
+      margin-bottom: 18px;
+      line-height: 1.5;
+    }
+
+    .card-body p {
+      font-size: 14.5px;
+      color: var(--text);
+      line-height: 1.8;
+      margin-bottom: 14px;
+    }
+    .card-body p:last-child { margin-bottom: 0; }
+    .card-body strong { color: var(--white); font-weight: 600; }
+    .card-body em { color: var(--blue); font-style: italic; }
+
+    /* ── Footer ── */
     .viewport-foot {
-      margin-top: 40px; padding-top: 20px;
+      margin-top: 48px; padding-top: 22px;
       border-top: 1px dashed var(--line-soft);
       display: flex; justify-content: space-between;
       font-family: 'JetBrains Mono', monospace;
@@ -417,38 +431,18 @@
       box-shadow: 0 0 5px var(--aqua);
       animation: breathe 3s ease-in-out infinite;
     }
-    .viewport-foot .right {
-      color: var(--sage);
-      font-style: italic;
+    .viewport-foot .right a {
+      color: var(--text);
+      text-decoration: none;
+      margin-left: 18px;
+      transition: color 0.2s;
     }
+    .viewport-foot .right a:hover { color: var(--blue); }
 
-    /* Log footer — sits outside the viewport, below the album grid */
-    .log-foot {
-      margin-top: 36px;
-      padding-top: 20px;
-      border-top: 1px dashed var(--line-soft);
-      display: flex;
-      justify-content: space-between;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      color: var(--dim);
-      letter-spacing: 0.12em;
-    }
-    .log-foot .left { display: flex; align-items: center; gap: 10px; }
-    .log-foot .left .dot {
-      width: 5px; height: 5px; border-radius: 50%;
-      background: var(--aqua);
-      box-shadow: 0 0 5px var(--aqua);
-      animation: breathe 3s ease-in-out infinite;
-    }
-    .log-foot .right {
-      color: var(--sage);
-      font-style: italic;
-    }
-
-    /* Subpage boot */
+    /* ── Boot ── */
     .boot {
-      position: fixed; inset: 0;
+      position: fixed;
+      inset: 0;
       background: var(--deep);
       z-index: 9999;
       display: flex;
@@ -469,7 +463,8 @@
     .boot-lines div:nth-child(2) { animation-delay: 0.45s; color: var(--aqua); }
     @keyframes bootLine { to { opacity: 1; } }
 
-    @media (max-width: 880px) {
+    /* ── Mobile ── */
+    @media (max-width: 780px) {
       .hamburger { display: flex; }
       .nav-links {
         display: none;
@@ -484,20 +479,26 @@
         border-bottom: 1px solid var(--line);
       }
       .nav-links.open { display: flex; }
-      .nav-links li { border-bottom: 1px dashed var(--line-soft); }
+      .nav-links li {
+        border-bottom: 1px dashed var(--line-soft);
+      }
       .nav-links li:last-child { border-bottom: none; }
-      .nav-links a { padding: 12px 6px; font-size: 13px; }
-      .viewport { padding: 30px 20px 24px; }
+      .nav-links a {
+        padding: 12px 6px;
+        font-size: 13px;
+      }
       main { padding: 76px 14px 32px; }
-      .page-head { grid-template-columns: 1fr; gap: 14px; }
-      .page-meta { text-align: left; }
-      .album-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-      .viewport-foot { flex-direction: column; gap: 8px; }
-      .log-foot { flex-direction: column; gap: 8px; }
+      .viewport { padding: 30px 22px 26px; }
+      .viewport-label { left: 20px; font-size: 0.34rem; }
+      .viewport-id { right: 20px; font-size: 10px; }
+      .project-card { padding: 22px 20px 22px 22px; }
+      .card-head { flex-direction: column; align-items: flex-start; gap: 8px; }
+      .anchor-nav { flex-direction: column; align-items: flex-start; gap: 4px; }
+      .anchor-nav .anchor-label { margin-right: 0; margin-bottom: 4px; }
+      .viewport-foot { flex-direction: column; gap: 10px; }
+      .viewport-foot .right a { margin-left: 0; margin-right: 14px; }
     }
-    @media (max-width: 480px) {
-      .album-grid { grid-template-columns: 1fr; }
-    }
+
   </style>
 </head>
 <body>
@@ -506,7 +507,7 @@
   <div class="boot">
     <div class="boot-lines">
       <div>▮ ACCESSING MOD.02</div>
-      <div>audio log ready.</div>
+      <div>portfolio uplinked.</div>
     </div>
   </div>
 
@@ -529,7 +530,7 @@
     <ul class="nav-links" id="navLinks">
       <li><a href="index.html">field_post</a></li>
       <li><a href="cv.html">CV</a></li>
-      <li><a href="music.html" class="active">audio_log</a></li>
+      <li><a href="portfolio.html" class="active">portfolio</a></li>
       <li><a href="books.html">reading_list</a></li>
       <li><a href="movies.html">viewing_log</a></li>
       <li><a href="dog.html">companion</a></li>
@@ -538,347 +539,152 @@
   </nav>
 
   <main>
+
+    <!-- Action bar -->
+    <div class="action-bar">
+      <span class="module-tag"><span class="code">MOD.02</span> · portfolio · selected work</span>
+    </div>
+
+    <!-- Viewport -->
     <section class="viewport">
       <span class="bracket-bl"></span>
       <span class="bracket-br"></span>
-      <span class="viewport-label">▮ AUDIO LOG // MOD.02</span>
-      <span class="viewport-id">FORMAT · SPOTIFY</span>
+      <span class="viewport-label">▮ PORTFOLIO // MOD.02</span>
+      <span class="viewport-id">0xPF-01 · CLASSIFIED: OPEN</span>
 
-      <header class="page-head">
-        <div>
-          <div class="page-kicker">In current rotation</div>
-          <h1 class="page-title">audio <span class="accent">log</span>.</h1>
-          <p class="page-sub">
-            tunes</em>.
-          </p>
-        </div>
-        <div class="page-meta">
-          <span class="count">19</span>
-          albums on file
-        </div>
+      <!-- Header -->
+      <header class="pf-header">
+        <div class="pf-kicker">▮ SELECTED WORK // 5 ENTRIES</div>
+        <h1 class="pf-title">The Work.</h1>
+        <div class="pf-sub">// case studies and academic projects, pulled from the archive</div>
+        <div class="pf-meta">Last updated · Apr 2026</div>
       </header>
+
+      <!-- Anchor nav -->
+      <div class="anchor-nav" role="navigation" aria-label="Jump to section">
+        <span class="anchor-label">▮ jump to</span>
+        <a href="#case-studies">case_studies</a>
+        <a href="#academic">academic_projects</a>
+      </div>
+
+      <!-- Intro -->
+      <p class="pf-intro">
+        This is the work. Case studies first from live client engagements, academic projects after from my MA at ISM Berlin. The summaries are short on purpose because the full decks and documents are available on request, so if something catches your attention just <a href="mailto:simranshah1998@gmail.com">email</a> or <a href="https://linkedin.com/in/simrancs1998" target="_blank" rel="noopener">message me on LinkedIn</a> and I'll walk you through it properly.
+      </p>
+
+      <!-- ═══════════════════════════════════════
+           CASE STUDIES
+           ═══════════════════════════════════════ -->
+      <div class="section-head" id="case-studies">
+        <h2>▮ Case Studies</h2>
+        <span class="fill"></span>
+        <span class="count">01 / 01</span>
+      </div>
+      <p class="section-note">Real client work. Anonymised where NDAs require it.</p>
+
+      <!-- Xpress / Company A -->
+      <article class="project-card case-study">
+        <div class="card-head">
+          <span class="card-tag">CASE.01 · client</span>
+          <span class="card-meta">2020 – 2024 · Mumbai</span>
+        </div>
+        <h3 class="card-title">Company A — Case Study</h3>
+        <p class="card-subtitle">Marketing &amp; Business Development · B2B technology reseller, Microsoft partner</p>
+        <div class="card-body">
+          <p>During the pandemic, a mid-sized customer came to us wanting to buy Zoom licences and Google Drive cloud storage. He was the CEO, managing IT himself because the company wasn't big enough to justify a dedicated IT officer. Our technical team could see immediately that he didn't need any of it, but the conversation kept stalling because the jargon wasn't landing and he was getting frustrated, so eventually they assigned him to me.</p>
+          <p>My background isn't technical, and in this case that turned out to be the asset. I sat with him and explained, in plain language, that his existing Microsoft Enterprise licence already included pretty much everything he was about to pay twice for. He had Teams, he had OneDrive, he just hadn't looked at what his package covered because nobody had walked him through it in a way that didn't feel like being talked down to.</p>
+          <p>We ended up helping him set up Teams and OneDrive across his team, at no additional software cost to him.</p>
+          <p>The takeaway I've carried from this is that technical jargon can be a wall, and customers who feel overwhelmed tend to shut down, and once they've shut down even good advice stops landing. Meeting someone where they are, in language they actually use, isn't a soft skill sitting next to the real work. A lot of the time it is the real work. The deal we didn't close that day turned into a customer who trusted us on bigger things later.</p>
+        </div>
+      </article>
+
+      <!-- ═══════════════════════════════════════
+           ACADEMIC PROJECTS
+           ═══════════════════════════════════════ -->
+      <div class="section-head" id="academic">
+        <h2>▮ Academic Projects</h2>
+        <span class="fill"></span>
+        <span class="count">04 / 04</span>
+      </div>
+      <p class="section-note">MA Strategic Marketing Management · ISM Berlin · 2024 – 2026</p>
+
+      <!-- Thesis -->
+      <article class="project-card">
+        <div class="card-head">
+          <span class="card-tag">ACAD.01 · thesis</span>
+          <span class="card-meta">2026 · solo</span>
+        </div>
+        <h3 class="card-title">Thesis — AI marketing in privacy-conscious B2B</h3>
+        <p class="card-subtitle">MA Strategic Marketing Management · ISM Berlin · 2026</p>
+        <div class="card-body">
+          <p>A qualitative study of how German B2B firms actually evaluate AI-powered marketing tools (predictive lead scoring, automated LinkedIn outreach, the full pitch) in a market where data privacy and institutional trust change every adoption decision.</p>
+          <p>Twelve expert interviews across marketing, sales, IT, and procurement. The core finding was that adoption isn't a yes/no decision, it's a five-layer filter: infrastructure fit, relational appropriateness, governance alignment, regulatory conformity, and reputational credibility. AI tools stall because they fail at one of these checkpoints, not because they lack capability. I built this into a framework I'm calling the <strong>Negotiated Institutional Adoption Framework (NIAF)</strong>.</p>
+          <p>The practical upshot is that firms accept AI when it augments analytical work inside their CRM, and reject it pretty hard the moment it tries to execute anything client-facing. Regulation turns out to be doing double duty here, because it slows adoption down but it also signals trust, which is an interesting tension. Vendors selling into Germany should lead with compliance, prioritise integration, and partner with incumbents rather than trying to disrupt them.</p>
+        </div>
+      </article>
+
+      <!-- L'Oréal Brandstorm -->
+      <article class="project-card">
+        <div class="card-head">
+          <span class="card-tag">ACAD.02 · competition</span>
+          <span class="card-meta">2026 · group of 3</span>
+        </div>
+        <h3 class="card-title">L'Oréal Brandstorm — [ intentionally blank ]</h3>
+        <p class="card-subtitle">Case competition entry · 2026</p>
+        <div class="card-body">
+          <p>A modular fragrance composition system designed for Maison Margiela Fragrances under L'Oréal Luxe. The starting question was simple: what would fragrance look like if Margiela's house philosophy of unfinished identity was taken seriously instead of treated as an aesthetic reference? We proposed a permanent, refillable object that lets you stack scent accords like building blocks and compose a new fragrance every day from your own collection.</p>
+          <p>The product is a matte black aluminium tower. Each half-block holds one curated accord inside a lifetime casing, and you stack them on a Bluetooth rod to build your collection. Twenty blocks yield around 1,140 three-accord compositions. An archive app reads each block passively through NFC and remembers every scent you've ever made, private by default, stored locally. The idea is that some compositions you can reproduce and some you can't, which basically mirrors how memory actually works.</p>
+          <p>The system also delivers on L'Oréal's 2030 sustainability targets. Where Margiela's existing REPLICA refill cuts packaging by 32%, ours gets closer to 80-90% because the casing never leaves circulation, and we built out the pricing architecture, unit economics, three-stream revenue model, persona work, and a DTC refill logistics model to back it up. The wider bet was that this could become brand-agnostic infrastructure across L'Oréal Luxe's 27 brands rather than just a Margiela product.</p>
+        </div>
+      </article>
+
+      <!-- Consulting -->
+      <article class="project-card">
+        <div class="card-head">
+          <span class="card-tag">ACAD.03 · consulting</span>
+          <span class="card-meta">2025 · group of 5</span>
+        </div>
+        <h3 class="card-title">Consulting Project — B2B Enterprise Technology Client</h3>
+        <p class="card-subtitle">Group project · MA Strategic Marketing Management · ISM Berlin</p>
+        <div class="card-body">
+          <p>A consulting engagement for a German B2B enterprise technology firm that wanted to reposition itself as a strategic technology partner for DACH-region clients with 1,000+ employees. My team and I delivered two linked pieces of work: a full marketing and communications strategy, and an employer branding strategy for the client's satellite employees.</p>
+          <p>On the marketing side, I worked on target market analysis and competitive benchmarking. We mapped what large enterprises actually need from a media tech partner (integration, reliability, compliance, transparent pricing) and where incumbents were falling short, and from there we built a go-to-market plan covering ATL channels like DOOH and business press, plus BTL tactics including whitepapers, LinkedIn ABM, enterprise dinners, and sponsored podcasts. The plan came with a <strong>€52K budget</strong> and a KPI framework spanning brand awareness, lead generation, revenue impact, and long-term trust.</p>
+          <p>On the employer branding side, we tackled the satellite employee problem, which is basically how to build belonging when half your workforce sits away from HQ. We proposed a tooling stack (Leapsome, Viva Engage, Coffeepals) tied to rituals that scale across locations, measured through pulse surveys and engagement KPIs.</p>
+        </div>
+      </article>
+
+      <!-- Spotify -->
+      <article class="project-card">
+        <div class="card-head">
+          <span class="card-tag">ACAD.04 · teardown</span>
+          <span class="card-meta">2025 · group project</span>
+        </div>
+        <h3 class="card-title">Spotify CRM Teardown</h3>
+        <p class="card-subtitle">Group project · MA Strategic Marketing Management · ISM Berlin</p>
+        <div class="card-body">
+          <p>A deep-dive into how Spotify uses CRM as a strategic engine rather than a customer support tool. My team and I mapped Spotify's full customer lifecycle across four lenses: how they acquire users (partnerships, freemium, virality), how they build relationships through data (the part I owned), how to calculate customer lifetime value across premium vs. ad-supported tiers, and where generative AI could extend the CRM stack.</p>
+          <p>My section focused on hyper-personalisation, specifically how Spotify combines collaborative filtering (what similar users listened to) with content-based filtering (audio signal analysis of danceability, tempo, key) to produce outputs like Discover Weekly, Daily Mix, and Spotify Wrapped. I also analysed their Graph Neural Network work on audiobook recommendations, which is a pretty concrete example of how CRM data becomes competitive advantage when a platform expands into adjacent content categories.</p>
+          <p>The core takeaway for me was that Spotify Wrapped isn't really a marketing stunt, it's user-facing CRM, turning invisible data collection into an emotional reason for users to stay subscribed.</p>
+        </div>
+      </article>
+
+      <!-- Footer -->
+      <div class="viewport-foot">
+        <span class="left"><span class="dot"></span>archive status · 5 entries logged · open to discuss</span>
+        <span class="right">
+          <a href="mailto:simranshah1998@gmail.com">Email</a>
+          <a href="https://linkedin.com/in/simrancs1998" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+        </span>
+      </div>
     </section>
-
-    <div class="album-grid">
-
-        <!-- Bad Bunny -->
-        <div class="album-card" onclick="toggleAlbum(this)"><span class="card-bl"></span><span class="card-br"></span>
-          <span class="album-num">01</span>
-          <div class="album-cover-wrap">
-            <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b273bbd45c8d36e0e045ef640411" alt="Debí Tirar Más Fotos" loading="lazy"/>
-            <span class="album-expand">+</span>
-          </div>
-          <div class="album-info">
-            <div class="album-title">Debí Tirar Más Fotos</div>
-            <div class="album-artist">Bad Bunny</div>
-          </div>
-          <div class="album-embed">
-            <iframe src="https://open.spotify.com/embed/album/5K79FLRUCSysQnVESLcTdb?utm_source=generator" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-          </div>
-        </div>
-
-        <!-- Clairo -->
-        <div class="album-card" onclick="toggleAlbum(this)"><span class="card-bl"></span><span class="card-br"></span>
-          <span class="album-num">02</span>
-          <div class="album-cover-wrap">
-            <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b273193c2fafdce8f116b5ca0a78" alt="Charm" loading="lazy"/>
-            <span class="album-expand">+</span>
-          </div>
-          <div class="album-info">
-            <div class="album-title">Charm</div>
-            <div class="album-artist">Clairo</div>
-          </div>
-          <div class="album-embed">
-            <iframe src="https://open.spotify.com/embed/album/1KNUCVXgIxKUGiuEB8eG0i?utm_source=generator" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-          </div>
-        </div>
-
-        <!-- ROSALÍA -->
-        <div class="album-card" onclick="toggleAlbum(this)"><span class="card-bl"></span><span class="card-br"></span>
-          <span class="album-num">03</span>
-          <div class="album-cover-wrap">
-            <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b27393ee2e2f2dfb7de9befcc164" alt="LUX" loading="lazy"/>
-            <span class="album-expand">+</span>
-          </div>
-          <div class="album-info">
-            <div class="album-title">LUX</div>
-            <div class="album-artist">ROSALÍA</div>
-          </div>
-          <div class="album-embed">
-            <iframe src="https://open.spotify.com/embed/album/3SUEJULSGgBDG1j4GQhfYY?utm_source=generator" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-          </div>
-        </div>
-
-        <!-- Project Hail Mary -->
-        <div class="album-card" onclick="toggleAlbum(this)"><span class="card-bl"></span><span class="card-br"></span>
-          <span class="album-num">04</span>
-          <div class="album-cover-wrap">
-            <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b273386bb0988c7e5707d90f4f59" alt="Project Hail Mary" loading="lazy"/>
-            <span class="album-expand">+</span>
-          </div>
-          <div class="album-info">
-            <div class="album-title">Project Hail Mary</div>
-            <div class="album-artist">Original Motion Picture Score</div>
-          </div>
-          <div class="album-embed">
-            <iframe src="https://open.spotify.com/embed/album/47Kmv7voPLipz2zbyD8v84?utm_source=generator" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-          </div>
-        </div>
-
-        <!-- Kylie Minogue -->
-        <div class="album-card" onclick="toggleAlbum(this)"><span class="card-bl"></span><span class="card-br"></span>
-          <span class="album-num">05</span>
-          <div class="album-cover-wrap">
-            <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b2736531dcfcbc99b82be7eec9f0" alt="Fever (Deluxe Edition)" loading="lazy"/>
-            <span class="album-expand">+</span>
-          </div>
-          <div class="album-info">
-            <div class="album-title">Fever (Deluxe Edition)</div>
-            <div class="album-artist">Kylie Minogue</div>
-          </div>
-          <div class="album-embed">
-            <iframe src="https://open.spotify.com/embed/track/2HpWHLtZldOcDn5qzX8kb2?utm_source=generator" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-          </div>
-        </div>
-
-        <!-- MARINA -->
-        <div class="album-card" onclick="toggleAlbum(this)"><span class="card-bl"></span><span class="card-br"></span>
-          <span class="album-num">06</span>
-          <div class="album-cover-wrap">
-            <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b2737ce4002911f389a2a4465d6f" alt="Princess of Power" loading="lazy"/>
-            <span class="album-expand">+</span>
-          </div>
-          <div class="album-info">
-            <div class="album-title">Princess of Power</div>
-            <div class="album-artist">MARINA</div>
-          </div>
-          <div class="album-embed">
-            <iframe src="https://open.spotify.com/embed/album/2rjfRdmVDBMFT5mamSsVeU?utm_source=generator" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-          </div>
-        </div>
-
-        <!-- Son Lux -->
-        <div class="album-card" onclick="toggleAlbum(this)"><span class="card-bl"></span><span class="card-br"></span>
-          <span class="album-num">07</span>
-          <div class="album-cover-wrap">
-            <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b273ff1e91752a8e5e88ef9d179b" alt="Thunderbolts* OST" loading="lazy"/>
-            <span class="album-expand">+</span>
-          </div>
-          <div class="album-info">
-            <div class="album-title">Thunderbolts* (OST)</div>
-            <div class="album-artist">Son Lux</div>
-          </div>
-          <div class="album-embed">
-            <iframe src="https://open.spotify.com/embed/album/5JTAY7hOUdzJx2GslB4nwc?utm_source=generator" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-          </div>
-        </div>
-
-        <!-- Frou Frou -->
-        <div class="album-card" onclick="toggleAlbum(this)"><span class="card-bl"></span><span class="card-br"></span>
-          <span class="album-num">08</span>
-          <div class="album-cover-wrap">
-            <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b2732d0c0ef37bf28fe4b2b35789" alt="Details" loading="lazy"/>
-            <span class="album-expand">+</span>
-          </div>
-          <div class="album-info">
-            <div class="album-title">Details</div>
-            <div class="album-artist">Frou Frou</div>
-          </div>
-          <div class="album-embed">
-            <iframe src="https://open.spotify.com/embed/track/3xKTpGCsafXzV4muM1Hpl3?utm_source=generator" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-          </div>
-        </div>
-
-        <!-- Everything Everything -->
-        <div class="album-card" onclick="toggleAlbum(this)"><span class="card-bl"></span><span class="card-br"></span>
-          <span class="album-num">09</span>
-          <div class="album-cover-wrap">
-            <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b27373d50b9ec2d2a127a06d21d3" alt="Mountainhead" loading="lazy"/>
-            <span class="album-expand">+</span>
-          </div>
-          <div class="album-info">
-            <div class="album-title">Mountainhead</div>
-            <div class="album-artist">Everything Everything</div>
-          </div>
-          <div class="album-embed">
-            <iframe src="https://open.spotify.com/embed/album/1s3ypfinSBGQl36cJSRjOv?utm_source=generator" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-          </div>
-        </div>
-
-        <!-- West Side Story -->
-        <div class="album-card" onclick="toggleAlbum(this)"><span class="card-bl"></span><span class="card-br"></span>
-          <span class="album-num">10</span>
-          <div class="album-cover-wrap">
-            <img class="album-cover" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRJJQpmM8dCY387lE5NicQ5x4I7CibsEwW1_g&s" alt="West Side Story 2021" loading="lazy"/>
-            <span class="album-expand">+</span>
-          </div>
-          <div class="album-info">
-            <div class="album-title">West Side Story (2021 OST)</div>
-            <div class="album-artist">Various Artists</div>
-          </div>
-          <div class="album-embed">
-            <iframe src="https://open.spotify.com/embed/album/16oKZSg3msLgn69IK1puzi?utm_source=generator" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-          </div>
-        </div>
-
-        <!-- Fontaines D.C. -->
-        <div class="album-card" onclick="toggleAlbum(this)"><span class="card-bl"></span><span class="card-br"></span>
-          <span class="album-num">11</span>
-          <div class="album-cover-wrap">
-            <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b273f69e28716be1331924f25f2e" alt="Romance" loading="lazy"/>
-            <span class="album-expand">+</span>
-          </div>
-          <div class="album-info">
-            <div class="album-title">Romance</div>
-            <div class="album-artist">Fontaines D.C.</div>
-          </div>
-          <div class="album-embed">
-            <iframe src="https://open.spotify.com/embed/album/287QQ922OsJYh8aFNGdJG5?utm_source=generator" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-          </div>
-        </div>
-
-        <!-- Company -->
-        <div class="album-card" onclick="toggleAlbum(this)"><span class="card-bl"></span><span class="card-br"></span>
-          <span class="album-num">12</span>
-          <div class="album-cover-wrap">
-            <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b2730c16402a73f6074645d694bf" alt="Company 2006 Broadway Revival Cast" loading="lazy"/>
-            <span class="album-expand">+</span>
-          </div>
-          <div class="album-info">
-            <div class="album-title">Company (2006 Revival)</div>
-            <div class="album-artist">Original Broadway Cast</div>
-          </div>
-          <div class="album-embed">
-            <iframe src="https://open.spotify.com/embed/track/4GDSnxxtmIyVS4Twl7Y7UB?utm_source=generator" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-          </div>
-        </div>
-
-        <!-- Charli xcx -->
-        <div class="album-card" onclick="toggleAlbum(this)"><span class="card-bl"></span><span class="card-br"></span>
-          <span class="album-num">13</span>
-          <div class="album-cover-wrap">
-            <img class="album-cover" src="https://i.scdn.co/image/ab67616d00001e02fa1fb2582857abf6fbc01248" alt="Brat" loading="lazy"/>
-            <span class="album-expand">+</span>
-          </div>
-          <div class="album-info">
-            <div class="album-title">Brat and it's the same but there's three more songs so it's not</div>
-            <div class="album-artist">Charli xcx</div>
-          </div>
-          <div class="album-embed">
-            <iframe src="https://open.spotify.com/embed/album/316O0Xetgx2NJLRgJBw4uq?utm_source=generator" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-          </div>
-        </div>
-
-        <!-- Spice Girls -->
-        <div class="album-card" onclick="toggleAlbum(this)"><span class="card-bl"></span><span class="card-br"></span>
-          <span class="album-num">14</span>
-          <div class="album-cover-wrap">
-            <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b273f660420bcef3b16b4c7e5f2b" alt="Spiceworld" loading="lazy"/>
-            <span class="album-expand">+</span>
-          </div>
-          <div class="album-info">
-            <div class="album-title">Spiceworld</div>
-            <div class="album-artist">Spice Girls</div>
-          </div>
-          <div class="album-embed">
-            <iframe src="https://open.spotify.com/embed/track/3FteycP8CaXS1MhjcXekVT?utm_source=generator" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-          </div>
-        </div>
-
-        <!-- Laufey -->
-        <div class="album-card" onclick="toggleAlbum(this)"><span class="card-bl"></span><span class="card-br"></span>
-          <span class="album-num">15</span>
-          <div class="album-cover-wrap">
-            <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b2736ec6bdb1b31c8cb6b1d3511f" alt="A Matter of Time: The Final Hour" loading="lazy"/>
-            <span class="album-expand">+</span>
-          </div>
-          <div class="album-info">
-            <div class="album-title">A Matter of Time: The Final Hour</div>
-            <div class="album-artist">Laufey</div>
-          </div>
-          <div class="album-embed">
-            <iframe src="https://open.spotify.com/embed/album/4DWK6TLXHl1fly2zi5RlO7?utm_source=generator" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-          </div>
-        </div>
-
-        <!-- Harry Styles -->
-        <div class="album-card" onclick="toggleAlbum(this)"><span class="card-bl"></span><span class="card-br"></span>
-          <span class="album-num">16</span>
-          <div class="album-cover-wrap">
-            <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b27374959140f550b11049c18a38" alt="Kiss All The Time. Disco, Occasionally." loading="lazy"/>
-            <span class="album-expand">+</span>
-          </div>
-          <div class="album-info">
-            <div class="album-title">Kiss All The Time. Disco, Occasionally.</div>
-            <div class="album-artist">Harry Styles</div>
-          </div>
-          <div class="album-embed">
-            <iframe src="https://open.spotify.com/embed/album/69BqE1V8Bzb9GCyeP1fFeR?utm_source=generator" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-          </div>
-        </div>
-
-        <!-- Ariana Grande -->
-        <div class="album-card" onclick="toggleAlbum(this)"><span class="card-bl"></span><span class="card-br"></span>
-          <span class="album-num">17</span>
-          <div class="album-cover-wrap">
-            <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b2735ab3c842fde848df7a4ee6d9" alt="Eternal Sunshine Deluxe" loading="lazy"/>
-            <span class="album-expand">+</span>
-          </div>
-          <div class="album-info">
-            <div class="album-title">Eternal Sunshine Deluxe: Brighter Days Ahead</div>
-            <div class="album-artist">Ariana Grande</div>
-          </div>
-          <div class="album-embed">
-            <iframe src="https://open.spotify.com/embed/album/6cbwstHlsAIIWurIIXXBPd?utm_source=generator" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-          </div>
-        </div>
-
-        <!-- twenty one pilots -->
-        <div class="album-card" onclick="toggleAlbum(this)"><span class="card-bl"></span><span class="card-br"></span>
-          <span class="album-num">18</span>
-          <div class="album-cover-wrap">
-            <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b273b5b991fd65053a3acb8c2db2" alt="Drag Path" loading="lazy"/>
-            <span class="album-expand">+</span>
-          </div>
-          <div class="album-info">
-            <div class="album-title">Drag Path</div>
-            <div class="album-artist">twenty one pilots</div>
-          </div>
-          <div class="album-embed">
-            <iframe src="https://open.spotify.com/embed/album/27KwvdCscr3IQtSbnyAZpo?utm_source=generator" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-          </div>
-        </div>
-
-        <!-- Hayley Williams -->
-        <div class="album-card" onclick="toggleAlbum(this)"><span class="card-bl"></span><span class="card-br"></span>
-          <span class="album-num">19</span>
-          <div class="album-cover-wrap">
-            <img class="album-cover" src="https://i.scdn.co/image/ab67616d0000b273850c0e3fdd3b3b5cb0b7fa63" alt="Ego Death at a Bachelorette Party" loading="lazy"/>
-            <span class="album-expand">+</span>
-          </div>
-          <div class="album-info">
-            <div class="album-title">Ego Death at a Bachelorette Party</div>
-            <div class="album-artist">Hayley Williams</div>
-          </div>
-          <div class="album-embed">
-            <iframe src="https://open.spotify.com/embed/album/3MROTtttK946gHaTkXeP8b?utm_source=generator" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Foot -->
-      <div class="log-foot">
-        <span class="left"><span class="dot"></span>log updated · by hand · imperfect</span>
-        <span class="right">signal via spotify</span>
-      </div>
   </main>
 
   <script>
-    // Hamburger toggle
+    // Hamburger menu toggle (mobile)
     const hamburger = document.getElementById('hamburger');
     const navLinks = document.getElementById('navLinks');
-    hamburger.addEventListener('click', () => {
+    hamburger.addEventListener('click', (e) => {
+      e.stopPropagation();
       hamburger.classList.toggle('open');
       navLinks.classList.toggle('open');
     });
@@ -888,13 +694,6 @@
         navLinks.classList.remove('open');
       }
     });
-
-    // Album expand — one at a time
-    function toggleAlbum(card) {
-      const wasOpen = card.classList.contains('open');
-      document.querySelectorAll('.album-card.open').forEach(c => c.classList.remove('open'));
-      if (!wasOpen) card.classList.add('open');
-    }
 
     // Cursor parallax
     const bg = document.getElementById('bg');
