@@ -752,5 +752,58 @@
     animate();
     window.addEventListener('resize', () => { resize(); initLeaves(); });
   </script>
+
+  <script>
+    /* Card-expand page transition */
+    (function () {
+      var overlay = document.createElement('div');
+      overlay.style.cssText = 'position:fixed;z-index:99999;background:#0e1a15;border-radius:10px;pointer-events:none;opacity:0;top:0;left:0;width:0;height:0;will-change:transform';
+      document.body.appendChild(overlay);
+
+      function isInternal(href) {
+        if (!href) return false;
+        if (href.startsWith('http') || href.startsWith('//')) return false;
+        if (href.startsWith('mailto') || href.startsWith('tel')) return false;
+        if (href.endsWith('.pdf') || href.endsWith('.jpg') || href.endsWith('.png')) return false;
+        if (href === '#' || href.startsWith('#')) return false;
+        return true;
+      }
+
+      function expand(el, href) {
+        var r  = el.getBoundingClientRect();
+        var vw = window.innerWidth;
+        var vh = window.innerHeight;
+        overlay.style.transition   = 'none';
+        overlay.style.opacity      = '1';
+        overlay.style.borderRadius = '10px';
+        overlay.style.left   = r.left   + 'px';
+        overlay.style.top    = r.top    + 'px';
+        overlay.style.width  = r.width  + 'px';
+        overlay.style.height = r.height + 'px';
+        overlay.getBoundingClientRect();
+        var ease = 'cubic-bezier(0.76,0,0.24,1)';
+        var dur  = '0.44s';
+        overlay.style.transition = 'left '+dur+' '+ease+',top '+dur+' '+ease+',width '+dur+' '+ease+',height '+dur+' '+ease+',border-radius '+dur+' '+ease;
+        overlay.style.left         = '0px';
+        overlay.style.top          = '0px';
+        overlay.style.width        = vw + 'px';
+        overlay.style.height       = vh + 'px';
+        overlay.style.borderRadius = '0px';
+        setTimeout(function () { window.location.href = href; }, 460);
+      }
+
+      var sel = '.module-card,.widget,.project-card,.now-card,.index-card,.hero-cta-card,nav a,.nav-links a,.footer-links a';
+      document.querySelectorAll(sel).forEach(function (el) {
+        var href = el.getAttribute('href');
+        if (!isInternal(href)) return;
+        el.addEventListener('click', function (e) {
+          if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+          e.preventDefault();
+          expand(el, href);
+        });
+      });
+    })();
+  </script>
+
 </body>
 </html>
