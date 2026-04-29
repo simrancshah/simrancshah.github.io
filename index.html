@@ -83,7 +83,7 @@
       0%,100%{opacity:1;transform:scale(1);}
       50%{opacity:0.5;transform:scale(0.82);}
     }
-    .nav-links { display: flex; gap: 2px; list-style: none; }
+    .nav-links { display: flex; gap: 2px; list-style: none; align-items: center; }
     .nav-links a {
       display: inline-flex; align-items: center; gap: 6px;
       padding: 7px 14px;
@@ -94,6 +94,58 @@
     .nav-links a::before { content: '>'; color: var(--dim); }
     .nav-links a:hover { color: var(--blue); }
     .nav-links a:hover::before { color: var(--blue); }
+
+    /* Dropdown nav items */
+    .nav-item { position: relative; }
+    .nav-item > .nav-trigger {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 7px 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px; letter-spacing: 0.08em;
+      color: var(--text); text-decoration: none;
+      cursor: pointer; background: none; border: none;
+      transition: color 0.2s; white-space: nowrap;
+    }
+    .nav-item > .nav-trigger::before { content: '>'; color: var(--dim); margin-right: 2px; }
+    .nav-item > .nav-trigger::after  { content: '▾'; font-size: 9px; color: var(--dim); margin-left: 2px; transition: color 0.2s; }
+    .nav-item:hover > .nav-trigger,
+    .nav-item.open  > .nav-trigger   { color: var(--blue); }
+    .nav-item:hover > .nav-trigger::before,
+    .nav-item.open  > .nav-trigger::before,
+    .nav-item:hover > .nav-trigger::after,
+    .nav-item.open  > .nav-trigger::after { color: var(--blue); }
+
+    .nav-dropdown {
+      position: absolute; top: calc(100% + 4px); right: 0;
+      min-width: 180px;
+      background: rgba(10, 18, 16, 0.97);
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--line);
+      padding: 6px 0;
+      opacity: 0; pointer-events: none;
+      transform: translateY(-6px);
+      transition: opacity 0.18s ease, transform 0.18s ease;
+      z-index: 200;
+    }
+    .nav-item:hover .nav-dropdown,
+    .nav-item.open  .nav-dropdown {
+      opacity: 1; pointer-events: auto; transform: translateY(0);
+    }
+    .nav-dropdown a {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; letter-spacing: 0.08em;
+      color: var(--dim); text-decoration: none;
+      transition: color 0.15s, background 0.15s;
+      white-space: nowrap;
+    }
+    .nav-dropdown a::before { content: '·'; color: var(--line); }
+    .nav-dropdown a:hover { color: var(--blue); background: rgba(127, 201, 179, 0.05); }
+    .nav-dropdown a:hover::before { color: var(--blue); }
+    .nav-dropdown-sep {
+      height: 1px; background: var(--line-soft); margin: 4px 0;
+    }
 
     .hamburger {
       display: none; flex-direction: column; justify-content: center;
@@ -618,6 +670,17 @@
       .nav-links li:last-child { border-bottom: none; }
       .nav-links a { padding: 12px 6px; font-size: 13px; }
       .nav-clock { display: none; }
+      /* Mobile dropdowns: flat list, no float */
+      .nav-item { position: static; }
+      .nav-item > .nav-trigger { padding: 12px 6px; font-size: 13px; width: 100%; text-align: left; color: var(--text); }
+      .nav-dropdown {
+        position: static; opacity: 1; pointer-events: auto;
+        transform: none; border: none; background: transparent;
+        backdrop-filter: none; padding: 0 0 0 16px;
+        display: none;
+      }
+      .nav-item.open .nav-dropdown { display: block; }
+      .nav-dropdown a { padding: 8px 6px; font-size: 12px; }
       .ch-viewport { padding: 24px 18px 20px; height: 92%; }
       .channel { padding: 0 14px; }
       .dash-head { grid-template-columns: 1fr; }
@@ -678,7 +741,21 @@
     </button>
     <ul class="nav-links" id="navLinks">
       <li><a href="index.html" class="active">home</a></li>
-      <li><a href="portfolio.html">work</a></li>
+      <li class="nav-item" id="navWork">
+        <button class="nav-trigger" aria-haspopup="true" aria-expanded="false">work</button>
+        <div class="nav-dropdown" role="menu">
+          <a href="cv.html" role="menuitem">CV</a>
+          <a href="portfolio.html" role="menuitem">portfolio</a>
+        </div>
+      </li>
+      <li class="nav-item" id="navArchive">
+        <button class="nav-trigger" aria-haspopup="true" aria-expanded="false">archive</button>
+        <div class="nav-dropdown" role="menu">
+          <a href="books.html" role="menuitem">reading list</a>
+          <a href="movies.html" role="menuitem">viewing log</a>
+          <a href="dog.html" role="menuitem">companion</a>
+        </div>
+      </li>
       <li><a href="contact.html">contact</a></li>
     </ul>
   </nav>
@@ -927,6 +1004,33 @@
         navLinksEl.classList.remove('open');
       }
     });
+
+    // ── Dropdown menus (work + archive) ──
+    document.querySelectorAll('.nav-item').forEach(item => {
+      const trigger = item.querySelector('.nav-trigger');
+      // Toggle on click/tap (works on touch devices too)
+      trigger.addEventListener('click', e => {
+        e.stopPropagation();
+        const isOpen = item.classList.contains('open');
+        // Close all others first
+        document.querySelectorAll('.nav-item.open').forEach(i => {
+          i.classList.remove('open');
+          i.querySelector('.nav-trigger').setAttribute('aria-expanded', 'false');
+        });
+        if (!isOpen) {
+          item.classList.add('open');
+          trigger.setAttribute('aria-expanded', 'true');
+        }
+      });
+    });
+    // Close dropdowns on outside click
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.nav-item.open').forEach(i => {
+        i.classList.remove('open');
+        i.querySelector('.nav-trigger').setAttribute('aria-expanded', 'false');
+      });
+    });
+
 
     // ── Clock (now in nav) ──
     function updateClock() {
