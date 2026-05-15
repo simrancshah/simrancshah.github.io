@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-HL8TMPEN43"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-HL8TMPEN43');
+  </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>n8n Story Pipeline · Simran Shah</title>
+  <meta name="description" content="A weekly automation that surfaces customer story candidates from the n8n builder community using the Discourse API and keyword scoring." />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --deep:      #0a1210;
+      --deep-2:    #0e1916;
+      --panel-2:   rgba(10, 18, 16, 0.95);
+      --line:      rgba(127, 201, 179, 0.2);
+      --line-soft: rgba(127, 201, 179, 0.1);
+      --dim:       #9bbfb8;
+      --text:      #f0fdf8;
+      --white:     #ffffff;
+      --sage:      #9ebf8a;
+      --blue:      #7ecff0;
+      --aqua:      #5de8c8;
+      --coral:     #e8a090;
+      --n8n:       #EA4B71;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+
+    body {
+      background: var(--deep);
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: radial-gradient(circle, rgba(93, 232, 200, 0.45) 1px, transparent 1px);
+      background-size: 36px 36px;
+      pointer-events: none; z-index: 0;
+    }
+
+    .scanlines {
+      position: fixed; inset: 0;
+      background: repeating-linear-gradient(
+        to bottom, transparent, transparent 3px,
+        rgba(0,0,0,0.02) 3px, rgba(0,0,0,0.02) 4px
+      );
+      pointer-events: none; z-index: 50;
+    }
+    .grain {
+      position: fixed; inset: 0; opacity: 0.035; z-index: 51; pointer-events: none;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence baseFrequency='0.85' numOctaves='2'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>");
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(13, 22, 20, 0.4);
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(138, 181, 209, 0.1);
+      padding: 0 32px; height: 56px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-brand {
+      display: flex; align-items: center; gap: 10px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.5rem; color: var(--blue);
+      letter-spacing: 0.22em; text-transform: uppercase;
+      text-decoration: none;
+    }
+    .nav-brand:hover { color: var(--aqua); }
+    .live-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--aqua); box-shadow: 0 0 10px var(--aqua);
+      animation: breathe 3s ease-in-out infinite;
+    }
+    @keyframes breathe {
+      0%,100%{opacity:1;transform:scale(1);}
+      50%{opacity:0.5;transform:scale(0.82);}
+    }
+    .nav-links { display: flex; gap: 2px; list-style: none; align-items: center; }
+    .nav-links a {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 7px 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px; letter-spacing: 0.08em;
+      color: var(--text); text-decoration: none; transition: color 0.2s;
+    }
+    .nav-links a::before { content: '>'; color: var(--dim); }
+    .nav-links a:hover { color: var(--blue); }
+    .nav-links a:hover::before { color: var(--blue); }
+    .nav-links a.back-link { color: var(--aqua); }
+    .nav-links a.back-link::before { content: '←'; color: var(--aqua); }
+    .nav-links a.back-link:hover { color: var(--blue); }
+    .nav-links a.back-link:hover::before { color: var(--blue); }
+
+    .nav-clock {
+      display: flex; align-items: center; gap: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; color: var(--dim); letter-spacing: 0.14em;
+    }
+    .nav-clock-time {
+      font-family: 'VT323', monospace;
+      font-size: 1.25rem; line-height: 1; color: var(--aqua);
+    }
+    .nav-clock-time .blink { animation: blink 1.2s steps(2) infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+    .nav-clock-sep { width: 1px; height: 14px; background: var(--line); }
+
+    .scroll-progress {
+      position: fixed; top: 0; left: 0;
+      height: 2px; width: 0%;
+      background: linear-gradient(to right, var(--aqua), var(--blue));
+      z-index: 200;
+      transition: width 0.1s ease-out;
+      box-shadow: 0 0 10px var(--aqua);
+    }
+
+    /* ── Page layout ── */
+    .page-wrap {
+      position: relative;
+      z-index: 10;
+      padding-top: 56px;
+    }
+
+    /* ── Channel sections ── */
+    .section {
+      padding: 32px 28px;
+      min-height: calc(100vh - 56px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .ch-viewport {
+      position: relative;
+      padding: 28px 36px 22px;
+      background: rgba(13,22,20,0.55);
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    .ch-viewport::before {
+      content: '';
+      position: absolute;
+      width: 22px; height: 22px;
+      top: -1px; left: -1px;
+      border-top: 1px solid var(--blue);
+      border-left: 1px solid var(--blue);
+    }
+    .ch-viewport .br-br {
+      position: absolute;
+      width: 22px; height: 22px;
+      bottom: -1px; right: -1px;
+      border-bottom: 1px solid var(--blue);
+      border-right: 1px solid var(--blue);
+    }
+    .ch-label {
+      position: absolute; top: -9px; left: 32px;
+      background: #0a1210; padding: 0 10px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.4rem; color: var(--aqua); letter-spacing: 0.28em;
+      z-index: 2;
+    }
+    .ch-id {
+      position: absolute; top: -9px; right: 32px;
+      background: #0a1210; padding: 0 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; color: var(--dim); letter-spacing: 0.18em;
+      z-index: 2;
+    }
+    .ch-foot {
+      margin-top: 16px; padding-top: 10px;
+      border-top: 1px dashed var(--line-soft);
+      display: flex; justify-content: space-between;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; color: var(--dim); letter-spacing: 0.12em;
+      flex-shrink: 0;
+    }
+    .ch-foot .left { display: flex; align-items: center; gap: 10px; }
+    .ch-foot .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--aqua); box-shadow: 0 0 5px var(--aqua); animation: breathe 3s ease-in-out infinite; }
+    .ch-foot .right a { color: var(--text); text-decoration: none; margin-left: 18px; transition: color 0.2s; }
+    .ch-foot .right a:hover { color: var(--blue); }
+
+    .section-label {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.4rem; color: var(--blue);
+      letter-spacing: 0.3em; margin-bottom: 16px;
+      display: flex; align-items: center; gap: 14px;
+    }
+    .section-label .fill { flex: 1; height: 1px; background: linear-gradient(to right, var(--line), transparent); }
+    .section-label .meta { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--dim); letter-spacing: 0.15em; }
+
+    /* ── Reveal animations ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(14px);
+      transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+                  transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+      transition-delay: calc(var(--d, 0) * 80ms);
+    }
+    .in-view .reveal { opacity: 1; transform: translateY(0); }
+
+    .stagger > * { opacity: 0; }
+    .in-view .stagger > * { animation: revealUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    .in-view .stagger > *:nth-child(1) { animation-delay: 0.05s; }
+    .in-view .stagger > *:nth-child(2) { animation-delay: 0.13s; }
+    .in-view .stagger > *:nth-child(3) { animation-delay: 0.21s; }
+    .in-view .stagger > *:nth-child(4) { animation-delay: 0.29s; }
+    .in-view .stagger > *:nth-child(5) { animation-delay: 0.37s; }
+    .in-view .stagger > *:nth-child(6) { animation-delay: 0.45s; }
+    .in-view .stagger > *:nth-child(7) { animation-delay: 0.53s; }
+    @keyframes revealUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Hero section ── */
+    .hero-kicker {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.38rem; color: var(--n8n);
+      letter-spacing: 0.3em; text-transform: uppercase;
+      margin-bottom: 16px; display: flex; align-items: center; gap: 12px;
+    }
+    .hero-kicker::before { content: ''; width: 24px; height: 1px; background: var(--n8n); }
+    .hero-title {
+      font-family: 'VT323', monospace;
+      font-size: clamp(2.4rem, 5vw, 4.2rem);
+      line-height: 1; color: var(--white); margin-bottom: 14px;
+    }
+    .hero-title .accent { color: var(--aqua); }
+    .hero-desc {
+      font-size: 13px; color: var(--dim); line-height: 1.8;
+      max-width: 600px; margin-bottom: 28px;
+    }
+    .hero-stats {
+      display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 28px;
+    }
+    .stat-pill {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 5px 14px;
+      border: 1px solid var(--line);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; color: var(--dim); letter-spacing: 0.08em;
+    }
+    .stat-pill .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--aqua); }
+    .stat-pill.highlight { border-color: rgba(93, 232, 200, 0.3); color: var(--aqua); }
+    .hero-links { display: flex; gap: 12px; flex-wrap: wrap; }
+    .ch-link {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 9px 20px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px; letter-spacing: 0.08em;
+      text-decoration: none; transition: all 0.2s;
+    }
+    .ch-link.primary { background: var(--aqua); color: var(--deep); }
+    .ch-link.primary:hover { background: var(--sage); }
+    .ch-link.secondary { border: 1px solid var(--line); color: var(--text); }
+    .ch-link.secondary:hover { border-color: var(--blue); color: var(--blue); }
+    .ch-link.n8n-link { border: 1px solid rgba(234, 75, 113, 0.4); color: var(--n8n); }
+    .ch-link.n8n-link:hover { border-color: var(--n8n); background: rgba(234, 75, 113, 0.08); }
+
+    /* ── Problem section ── */
+    .problem-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      flex: 1;
+      align-items: start;
+    }
+    .problem-col h3 {
+      font-family: 'VT323', monospace;
+      font-size: 1.6rem; color: var(--white); margin-bottom: 12px; line-height: 1;
+    }
+    .problem-col p {
+      font-size: 12.5px; color: var(--dim); line-height: 1.8; margin-bottom: 10px;
+    }
+    .problem-col p .hl { color: var(--aqua); }
+    .problem-col p .warn { color: var(--coral); }
+    .problem-col p .good { color: var(--sage); }
+
+    .signal-box {
+      background: rgba(19, 29, 28, 0.6);
+      border: 1px solid var(--line-soft);
+      border-left: 2px solid var(--aqua);
+      padding: 14px 18px;
+      margin-top: 12px;
+    }
+    .signal-box .label {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.3rem; color: var(--aqua);
+      letter-spacing: 0.2em; margin-bottom: 8px;
+    }
+    .signal-box p {
+      font-size: 12px; color: var(--dim); line-height: 1.7; margin-bottom: 0;
+    }
+
+    .stats-col { display: flex; flex-direction: column; gap: 12px; }
+    .stat-card {
+      background: rgba(19, 29, 28, 0.6);
+      border: 1px solid var(--line);
+      padding: 16px 20px;
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .stat-card .num {
+      font-family: 'VT323', monospace;
+      font-size: 2.4rem; color: var(--white); line-height: 1;
+    }
+    .stat-card .num .unit { font-size: 1.2rem; color: var(--aqua); }
+    .stat-card .label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10.5px; color: var(--dim); letter-spacing: 0.1em;
+    }
+
+    /* ── Workflow diagram ── */
+    .wf-canvas {
+      background: rgba(8, 14, 12, 0.8);
+      border: 1px solid var(--line);
+      padding: 28px 24px;
+      position: relative;
+      overflow-x: auto;
+    }
+    .wf-canvas-label {
+      position: absolute; top: -9px; left: 18px;
+      background: #0a1210; padding: 0 8px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.32rem; color: var(--dim); letter-spacing: 0.2em;
+    }
+
+    .wf-row {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin-bottom: 4px;
+    }
+
+    .wf-node {
+      flex-shrink: 0;
+      background: rgba(19, 30, 28, 0.95);
+      border: 1.5px solid rgba(93, 232, 200, 0.35);
+      border-radius: 6px;
+      padding: 10px 10px 8px;
+      width: 100px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      cursor: default;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+      position: relative;
+    }
+    .wf-node:hover {
+      border-color: rgba(93, 232, 200, 0.8);
+      box-shadow: 0 0 20px -4px rgba(93, 232, 200, 0.25);
+      transform: translateY(-2px);
+    }
+    .wf-node.active { border-color: var(--aqua); box-shadow: 0 0 16px -4px rgba(93, 232, 200, 0.3); }
+    .wf-node.sheets-node { border-color: rgba(52, 168, 83, 0.5); }
+    .wf-node.sheets-node:hover { border-color: rgba(52, 168, 83, 0.9); box-shadow: 0 0 20px -4px rgba(52, 168, 83, 0.2); }
+    .wf-node.gmail-node { border-color: rgba(234, 67, 53, 0.4); }
+    .wf-node.gmail-node:hover { border-color: rgba(234, 67, 53, 0.85); box-shadow: 0 0 20px -4px rgba(234, 67, 53, 0.2); }
+    .wf-node.if-node { border-color: rgba(126, 207, 240, 0.4); }
+    .wf-node.if-node:hover { border-color: rgba(126, 207, 240, 0.85); box-shadow: 0 0 20px -4px rgba(126, 207, 240, 0.2); }
+
+    .wf-icon {
+      width: 36px; height: 36px;
+      border-radius: 6px;
+      background: rgba(93, 232, 200, 0.08);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px;
+    }
+    .wf-icon.sheets { background: rgba(52, 168, 83, 0.1); }
+    .wf-icon.gmail  { background: rgba(234, 67, 53, 0.1); }
+    .wf-icon.branch { background: rgba(126, 207, 240, 0.1); }
+
+    .wf-name {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8.5px; color: var(--text);
+      text-align: center; line-height: 1.3;
+      letter-spacing: 0.02em;
+    }
+    .wf-sub {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 7.5px; color: var(--dim);
+      text-align: center; line-height: 1.2;
+    }
+    .wf-check {
+      position: absolute; bottom: -8px; right: -6px;
+      width: 14px; height: 14px; border-radius: 50%;
+      background: var(--aqua); color: var(--deep);
+      font-size: 8px; display: flex; align-items: center; justify-content: center;
+      font-weight: bold;
+    }
+    .wf-check.green { background: #34a853; }
+
+    /* ── Arrows + electric pulse ── */
+    .wf-arrow {
+      flex-shrink: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      width: 36px; gap: 1px;
+    }
+    .wf-arrow-line {
+      width: 100%; height: 1.5px;
+      background: linear-gradient(to right, rgba(93, 232, 200, 0.4), rgba(93, 232, 200, 0.6));
+      position: relative;
+      overflow: hidden;
+    }
+    .wf-arrow-line::after {
+      content: '';
+      position: absolute; right: -1px; top: 50%;
+      transform: translateY(-50%);
+      border-left: 6px solid rgba(93, 232, 200, 0.6);
+      border-top: 4px solid transparent;
+      border-bottom: 4px solid transparent;
+    }
+    /* The electric pulse dot that travels along each arrow */
+    .pulse-dot {
+      position: absolute;
+      top: 50%;
+      left: -24px;
+      transform: translateY(-50%);
+      width: 22px; height: 3px;
+      border-radius: 2px;
+      background: linear-gradient(to right, transparent, rgba(93, 232, 200, 1), transparent);
+      box-shadow: 0 0 8px 1px rgba(93, 232, 200, 0.7);
+      animation: electricPulse 2.4s ease-in-out infinite;
+      pointer-events: none;
+    }
+    .pulse-dot.green {
+      background: linear-gradient(to right, transparent, rgba(158, 191, 138, 1), transparent);
+      box-shadow: 0 0 8px 1px rgba(158, 191, 138, 0.7);
+    }
+    @keyframes electricPulse {
+      0%   { left: -24px; opacity: 0; }
+      8%   { opacity: 1; }
+      92%  { opacity: 1; }
+      100% { left: calc(100% + 4px); opacity: 0; }
+    }
+
+    /* Vertical pulse for the Sheets → Aggregate drop */
+    .pulse-dot-vert {
+      position: absolute;
+      left: 50%;
+      top: -16px;
+      width: 3px; height: 16px;
+      transform: translateX(-50%);
+      border-radius: 2px;
+      background: linear-gradient(to bottom, transparent, rgba(93, 232, 200, 1), transparent);
+      box-shadow: 0 0 8px 1px rgba(93, 232, 200, 0.7);
+      animation: electricPulseVert 2.4s ease-in-out infinite;
+      animation-delay: 1.6s;
+      pointer-events: none;
+    }
+    @keyframes electricPulseVert {
+      0%   { top: -16px; opacity: 0; }
+      8%   { opacity: 1; }
+      92%  { opacity: 1; }
+      100% { top: calc(100% + 4px); opacity: 0; }
+    }
+
+    .wf-count {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 7.5px; color: var(--dim); letter-spacing: 0.05em;
+      white-space: nowrap;
+    }
+
+    /* ── Workflow tooltip ── */
+    .wf-tooltip {
+      position: fixed;
+      z-index: 500;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.18s ease, transform 0.18s ease;
+      width: 260px;
+      background: rgba(8, 14, 12, 0.97);
+      border: 1px solid rgba(93, 232, 200, 0.4);
+      padding: 13px 15px 11px;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .wf-tooltip::before {
+      content: '';
+      position: absolute;
+      top: -1px; left: -1px;
+      width: 12px; height: 12px;
+      border-top: 1px solid var(--aqua);
+      border-left: 1px solid var(--aqua);
+    }
+    .wf-tooltip::after {
+      content: '';
+      position: absolute;
+      bottom: -1px; right: -1px;
+      width: 12px; height: 12px;
+      border-bottom: 1px solid var(--aqua);
+      border-right: 1px solid var(--aqua);
+    }
+    .wf-tooltip.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .wf-tooltip.sheets-tip { border-color: rgba(52, 168, 83, 0.5); }
+    .wf-tooltip.sheets-tip::before,
+    .wf-tooltip.sheets-tip::after { border-color: #34a853; }
+    .wf-tooltip.gmail-tip { border-color: rgba(234, 67, 53, 0.5); }
+    .wf-tooltip.gmail-tip::before,
+    .wf-tooltip.gmail-tip::after { border-color: #ea4335; }
+    .wf-tooltip.if-tip { border-color: rgba(126, 207, 240, 0.5); }
+    .wf-tooltip.if-tip::before,
+    .wf-tooltip.if-tip::after { border-color: var(--blue); }
+    .tip-num {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.28rem; color: var(--dim); letter-spacing: 0.15em;
+      margin-bottom: 5px;
+    }
+    .tip-name {
+      font-family: 'VT323', monospace;
+      font-size: 1.25rem; color: var(--white); line-height: 1;
+      margin-bottom: 2px;
+    }
+    .tip-type {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px; color: var(--aqua); letter-spacing: 0.08em;
+      margin-bottom: 9px;
+    }
+    .tip-type.sheets { color: #34a853; }
+    .tip-type.gmail  { color: #ea4335; }
+    .tip-type.branch { color: var(--blue); }
+    .tip-desc {
+      font-size: 11px; color: var(--dim); line-height: 1.65;
+      margin-bottom: 8px;
+    }
+    .tip-desc .code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9.5px; color: var(--sage);
+      background: rgba(158, 191, 138, 0.08);
+      padding: 1px 4px;
+    }
+    .tip-output {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9.5px; color: var(--dim);
+      border-top: 1px solid var(--line-soft);
+      padding-top: 6px;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .tip-output::before { content: '→'; color: var(--aqua); }
+
+    /* ── Thinking section ── */
+    .thinking-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      max-width: 780px;
+    }
+    .thinking-body p {
+      font-family: 'VT323', monospace;
+      font-size: clamp(1.1rem, 1.7vw, 1.5rem);
+      line-height: 1.35; color: var(--text); margin-bottom: 14px;
+    }
+    .thinking-body p .hl   { color: var(--aqua); }
+    .thinking-body p .sage { color: var(--sage); }
+    .thinking-body p .pink { color: var(--n8n); }
+    .thinking-meta {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px; color: var(--dim); letter-spacing: 0.1em; line-height: 1.65;
+      border-left: 2px solid var(--line-soft); padding-left: 16px; margin-top: 8px;
+    }
+    .thinking-links {
+      display: flex; gap: 12px; flex-wrap: wrap;
+      margin-top: 24px;
+    }
+
+    /* ── n8n badge ── */
+    .n8n-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 4px 12px 4px 8px;
+      border: 1px solid rgba(234, 75, 113, 0.35);
+      background: rgba(234, 75, 113, 0.06);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10.5px; color: var(--n8n); letter-spacing: 0.08em;
+    }
+    .n8n-badge::before {
+      content: '';
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--n8n);
+      box-shadow: 0 0 6px var(--n8n);
+      animation: breathe 2s ease-in-out infinite;
+    }
+
+    /* ── Page transition overlay ── */
+    .pt-overlay {
+      position: fixed; inset: 0;
+      background: var(--deep);
+      z-index: 99999;
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    /* ── Mobile ── */
+    @media (max-width: 860px) {
+      .section { padding: 24px 14px; }
+      .ch-viewport { padding: 24px 16px 18px; }
+      .ch-label { left: 16px; font-size: 0.32rem; }
+      .ch-id { right: 16px; font-size: 10px; }
+      .problem-grid { grid-template-columns: 1fr; gap: 20px; }
+      .nav-clock { display: none; }
+      .wf-canvas { overflow-x: scroll; }
+      .wf-tooltip { display: none; }
+    }
+    @media (max-width: 560px) {
+      .hero-stats { flex-direction: column; align-items: flex-start; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .reveal, .stagger > * { opacity: 1 !important; transform: none !important; animation: none !important; }
+      .pulse-dot { animation: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="pt-overlay" id="ptOverlay"></div>
+  <div class="scroll-progress" id="scrollProgress"></div>
+  <div class="scanlines"></div>
+  <div class="grain"></div>
+
+  <!-- Tooltip (shared, repositioned by JS) -->
+  <div class="wf-tooltip" id="wfTooltip" role="tooltip" aria-hidden="true">
+    <div class="tip-num" id="tipNum"></div>
+    <div class="tip-name" id="tipName"></div>
+    <div class="tip-type" id="tipType"></div>
+    <div class="tip-desc" id="tipDesc"></div>
+    <div class="tip-output" id="tipOutput"></div>
+  </div>
+
+  <!-- Nav -->
+  <nav>
+    <a href="https://simrancshah.github.io/" class="nav-brand">
+      <span class="live-dot"></span>
+      Simran Shah · Station 42
+    </a>
+    <div class="nav-clock">
+      <span class="nav-clock-time"><span id="hh">00</span><span class="blink">:</span><span id="mm">00</span></span>
+      <span class="nav-clock-sep"></span>
+      <span id="dateLine">—</span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="https://simrancshah.github.io/portfolio.html" class="back-link">portfolio</a></li>
+      <li><a href="https://simrancshah.github.io/">home</a></li>
+      <li><a href="https://simrancshah.github.io/contact.html">contact</a></li>
+    </ul>
+  </nav>
+
+  <div class="page-wrap">
+
+    <!-- ── HERO ── -->
+    <section class="section" id="sec0">
+      <div class="ch-viewport">
+        <span class="br-br"></span>
+        <span class="ch-label">▮ PROJECT // WORKFLOW AUTOMATION</span>
+        <span class="ch-id">n8n · CUSTOMER MARKETING</span>
+
+        <div class="reveal" style="--d:0">
+          <div class="hero-kicker">Built for n8n</div>
+        </div>
+
+        <h1 class="hero-title reveal" style="--d:1">
+          Customer Story<br>Discovery <span class="accent">Pipeline.</span>
+        </h1>
+
+        <p class="hero-desc reveal" style="--d:3">
+          A weekly automation that monitors the n8n builder community for posts describing real business outcomes, scores each one, logs high-potential candidates to a tracker, and sends a digest — so customer marketing never starts from a blank page.
+        </p>
+
+        <div class="hero-stats reveal" style="--d:5">
+          <span class="stat-pill highlight"><span class="dot"></span>7 nodes</span>
+          <span class="stat-pill"><span class="dot"></span>Discourse API</span>
+          <span class="stat-pill"><span class="dot"></span>Keyword scoring</span>
+          <span class="stat-pill"><span class="dot"></span>Google Sheets</span>
+          <span class="stat-pill"><span class="dot"></span>Weekly digest</span>
+        </div>
+
+        <div class="hero-links reveal" style="--d:7">
+          <a href="#sec2" class="ch-link secondary" id="seeWorkflow">▮ see the workflow</a>
+          <a href="https://n8n.io" target="_blank" rel="noopener" class="ch-link n8n-link">built with n8n ↗</a>
+          <a href="https://simrancshah.github.io/portfolio.html" class="ch-link secondary">← all projects</a>
+        </div>
+
+        <div class="ch-foot">
+          <span class="left"><span class="dot"></span>workflow automation · customer marketing · n8n</span>
+          <span class="right"><a href="https://simrancshah.github.io/">simrancshah.github.io</a></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── THE PROBLEM ── -->
+    <section class="section" id="sec1">
+      <div class="ch-viewport">
+        <span class="br-br"></span>
+        <span class="ch-label">▮ THE PROBLEM</span>
+        <span class="ch-id">WHY THIS EXISTS</span>
+
+        <div class="section-label reveal" style="--d:0">
+          ▮ context
+          <span class="fill"></span>
+          <span class="meta">customer marketing · n8n</span>
+        </div>
+
+        <div class="problem-grid">
+          <div class="problem-col reveal" style="--d:1">
+            <h3>The raw material exists.</h3>
+            <p>
+              The n8n community has <span class="hl">650,000+ active builders</span> sharing workflows, describing automations they've shipped, and explaining problems they've solved. That's an unusually rich reservoir of authentic customer proof — the kind of material most B2B companies spend months trying to surface through formal case study programmes.
+            </p>
+            <p>
+              But community posts don't become customer stories automatically. Without a system, <span class="warn">discovery is manual and reactive</span>: someone stumbles across a post, forwards it in Slack, and it goes nowhere. High-value candidates get missed. The pipeline stays empty.
+            </p>
+            <div class="signal-box">
+              <div class="label">▮ the gap</div>
+              <p>Customer marketing is only as good as its sourcing layer. Build the sourcing layer first, and everything else — case studies, testimonials, references — follows from it.</p>
+            </div>
+          </div>
+
+          <div class="stats-col reveal" style="--d:3">
+            <div class="stat-card">
+              <div class="num">650<span class="unit">K+</span></div>
+              <div class="label">active builders in the n8n community</div>
+            </div>
+            <div class="stat-card">
+              <div class="num">~30</div>
+              <div class="label">new Show &amp; Tell posts per week</div>
+            </div>
+            <div class="stat-card">
+              <div class="num">10</div>
+              <div class="label">high-potential candidates per run (est.)</div>
+            </div>
+            <div class="signal-box" style="margin-top: 0;">
+              <div class="label">▮ the opportunity</div>
+              <p>A <span class="good">repeatable, automated sourcing pipeline</span> turns a scattered manual task into a structured weekly process — exactly what a customer marketing function needs to scale.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="ch-foot">
+          <span class="left"><span class="dot"></span>problem framing</span>
+          <span class="right"><a href="#sec2">workflow →</a></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── THE WORKFLOW ── -->
+    <section class="section" id="sec2">
+      <div class="ch-viewport">
+        <span class="br-br"></span>
+        <span class="ch-label">▮ THE WORKFLOW</span>
+        <span class="ch-id">7 NODES · LIVE</span>
+
+        <div class="section-label reveal" style="--d:0">
+          ▮ canvas
+          <span class="fill"></span>
+          <span class="meta">hover any node · n8n · community.n8n.io</span>
+        </div>
+
+        <div class="wf-canvas reveal" style="--d:2">
+          <span class="wf-canvas-label">n8n Story Candidates — workflow canvas</span>
+
+          <!-- Row 1 -->
+          <div class="wf-row">
+
+            <!-- Node 1: HTTP Request (get categories) -->
+            <div class="wf-node" data-node="1">
+              <div class="wf-icon">🌐</div>
+              <div class="wf-name">HTTP Request</div>
+              <div class="wf-sub">GET categories</div>
+              <div class="wf-check">✓</div>
+            </div>
+
+            <div class="wf-arrow">
+              <div class="wf-count">1 item</div>
+              <div class="wf-arrow-line">
+                <span class="pulse-dot" style="animation-delay: 0s;"></span>
+              </div>
+            </div>
+
+            <!-- Node 2: HTTP Request (get posts) -->
+            <div class="wf-node" data-node="2">
+              <div class="wf-icon">🌐</div>
+              <div class="wf-name">HTTP Request</div>
+              <div class="wf-sub">GET posts</div>
+              <div class="wf-check">✓</div>
+            </div>
+
+            <div class="wf-arrow">
+              <div class="wf-count">1 item</div>
+              <div class="wf-arrow-line">
+                <span class="pulse-dot" style="animation-delay: 0.4s;"></span>
+              </div>
+            </div>
+
+            <!-- Node 3: Code -->
+            <div class="wf-node" data-node="3">
+              <div class="wf-icon">{}</div>
+              <div class="wf-name">Code in JS</div>
+              <div class="wf-sub">extract + score</div>
+              <div class="wf-check">✓</div>
+            </div>
+
+            <div class="wf-arrow">
+              <div class="wf-count">30 items</div>
+              <div class="wf-arrow-line">
+                <span class="pulse-dot" style="animation-delay: 0.8s;"></span>
+              </div>
+            </div>
+
+            <!-- Node 4: If -->
+            <div class="wf-node if-node" data-node="4">
+              <div class="wf-icon branch">⇌</div>
+              <div class="wf-name">If</div>
+              <div class="wf-sub">score ≥ 4</div>
+              <div class="wf-check">✓</div>
+            </div>
+
+            <div class="wf-arrow">
+              <div class="wf-count" style="color: var(--sage)">10 true</div>
+              <div class="wf-arrow-line" style="background: linear-gradient(to right, rgba(158,191,138,0.4), rgba(158,191,138,0.7));">
+                <span class="pulse-dot green" style="animation-delay: 1.2s;"></span>
+              </div>
+            </div>
+
+            <!-- Node 5: Google Sheets -->
+            <div class="wf-node sheets-node" data-node="5">
+              <div class="wf-icon sheets">📊</div>
+              <div class="wf-name">Append Row</div>
+              <div class="wf-sub">Story Candidates</div>
+              <div class="wf-check green">✓</div>
+            </div>
+
+          </div>
+
+          <!-- Vertical connector: Sheets (center x=594px) → Aggregate -->
+          <!-- x=594 = node1(100)+arrow(36)+node2(100)+arrow(36)+node3(100)+arrow(36)+node4(100)+arrow(36)+node5_half(50) -->
+          <div style="position:relative; height: 32px;">
+            <!-- False branch label under If node (center ~458px) -->
+            <span style="position:absolute; left:432px; top:5px; font-family:'JetBrains Mono',monospace; font-size:7.5px; color:var(--coral); letter-spacing:0.05em;">20 false ↓</span>
+            <!-- Vertical line + pulse centered under Sheets -->
+            <div style="position:absolute; left:593px; top:0; width:1.5px; height:100%; background:rgba(93,232,200,0.45); overflow:hidden;">
+              <span class="pulse-dot-vert"></span>
+            </div>
+            <!-- Count label -->
+            <span style="position:absolute; left:600px; top:5px; font-family:'JetBrains Mono',monospace; font-size:7.5px; color:var(--dim); letter-spacing:0.05em;">10 items ↓</span>
+            <!-- Arrowhead pointing down -->
+            <div style="position:absolute; left:586px; bottom:-1px; border-left:5px solid transparent; border-right:5px solid transparent; border-top:7px solid rgba(93,232,200,0.6);"></div>
+          </div>
+
+          <!-- Row 2: Aggregate sits directly below Sheets (spacer = 594 - 50 - 20 = 524px) -->
+          <div class="wf-row" style="padding-left: 20px;">
+            <div style="width: 524px; flex-shrink:0;"></div>
+
+            <!-- Node 6: Aggregate -->
+            <div class="wf-node" data-node="6">
+              <div class="wf-icon">⫸</div>
+              <div class="wf-name">Aggregate</div>
+              <div class="wf-sub">collect all</div>
+              <div class="wf-check">✓</div>
+            </div>
+
+            <div class="wf-arrow">
+              <div class="wf-count">1 item</div>
+              <div class="wf-arrow-line">
+                <span class="pulse-dot" style="animation-delay: 2.0s;"></span>
+              </div>
+            </div>
+
+            <!-- Node 7: Gmail -->
+            <div class="wf-node gmail-node" data-node="7">
+              <div class="wf-icon gmail">✉</div>
+              <div class="wf-name">Send Message</div>
+              <div class="wf-sub">weekly digest</div>
+              <div class="wf-check green">✓</div>
+            </div>
+
+          </div>
+
+          <!-- Canvas footer -->
+          <div style="margin-top: 20px; padding-top: 12px; border-top: 1px dashed rgba(127,201,179,0.15); display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:9.5px; color:var(--dim);">n8n Story Candidates &nbsp;·&nbsp; 7 nodes &nbsp;·&nbsp; executed successfully</span>
+            <span class="n8n-badge">n8n workflow</span>
+          </div>
+        </div>
+
+        <div class="ch-foot">
+          <span class="left"><span class="dot"></span>workflow diagram · hover nodes for detail</span>
+          <span class="right"><a href="#sec3">the thinking →</a></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── THE THINKING ── -->
+    <section class="section" id="sec3">
+      <div class="ch-viewport">
+        <span class="br-br"></span>
+        <span class="ch-label">▮ THE THINKING</span>
+        <span class="ch-id">WHY THIS WORKFLOW</span>
+
+        <div class="section-label reveal" style="--d:0">
+          ▮ rationale
+          <span class="fill"></span>
+          <span class="meta">customer marketing · n8n</span>
+        </div>
+
+        <div class="thinking-body">
+          <p class="reveal" style="--d:1">
+            Customer marketing only works if the <span class="hl">sourcing layer is reliable</span>. You can build the best case study template in the world — it doesn't matter if there's no repeatable way to find candidates.
+          </p>
+          <p class="reveal" style="--d:3">
+            n8n is unusual because its customers are <span class="sage">builders who already write about what they build</span>. The community forum is a live feed of exactly the kind of proof a customer marketing function needs. The job is to route that signal into a system.
+          </p>
+          <p class="reveal" style="--d:5">
+            This workflow does one thing: <span class="pink">it turns a manual, reactive search into a weekly structured process</span>. Every Monday, high-potential posts land in a tracker. The customer marketing team starts the week with candidates, not a blank page.
+          </p>
+          <div class="thinking-meta reveal" style="--d:7">
+            Built with n8n · Discourse API · JavaScript · Google Sheets · Gmail<br/>
+            Workflow title: n8n Story Candidates &nbsp;·&nbsp; 7 nodes &nbsp;·&nbsp; runs weekly
+          </div>
+          <div class="thinking-links reveal" style="--d:9">
+            <a href="https://simrancshah.github.io/portfolio.html" class="ch-link secondary">← all projects</a>
+            <a href="https://simrancshah.github.io/" class="ch-link secondary">home</a>
+            <a href="https://simrancshah.github.io/contact.html" class="ch-link primary">▮ get in touch</a>
+          </div>
+        </div>
+
+        <div class="ch-foot">
+          <span class="left"><span class="dot"></span>end of transmission · simran shah · berlin · 2026</span>
+          <span class="right"><a href="https://linkedin.com/in/simrancs1998" target="_blank" rel="noopener">LinkedIn ↗</a></span>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /page-wrap -->
+
+  <script>
+    // ── Clock ──
+    function updateClock() {
+      const d = new Date();
+      document.getElementById('hh').textContent = String(d.getHours()).padStart(2,'0');
+      document.getElementById('mm').textContent = String(d.getMinutes()).padStart(2,'0');
+      const ds = d.toLocaleDateString('en-GB',{weekday:'short',day:'2-digit',month:'short',year:'numeric'}).toUpperCase();
+      document.getElementById('dateLine').textContent = ds + ' · CET';
+    }
+    updateClock();
+    setInterval(updateClock, 20000);
+
+    // ── Scroll progress ──
+    const progressEl = document.getElementById('scrollProgress');
+    window.addEventListener('scroll', () => {
+      const max = document.body.scrollHeight - window.innerHeight;
+      const pct = max > 0 ? (window.scrollY / max) * 100 : 0;
+      progressEl.style.width = pct + '%';
+    }, { passive: true });
+
+    // ── Intersection observer for reveal animations ──
+    const sections = document.querySelectorAll('.section');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && entry.intersectionRatio > 0.15) {
+          entry.target.classList.add('in-view');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: [0.15, 0.3] });
+
+    setTimeout(() => {
+      sections[0].classList.add('in-view');
+      sections.forEach((s, i) => { if (i > 0) io.observe(s); });
+    }, 300);
+
+    // ── Smooth anchor scroll ──
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        const target = document.querySelector(a.getAttribute('href'));
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    });
+
+    // ── Node tooltip data ──
+    const nodeData = {
+      1: {
+        num: 'NODE 01',
+        name: 'HTTP Request',
+        type: 'Discourse API · GET categories',
+        typeClass: '',
+        desc: 'Calls <span class="code">community.n8n.io/c/show-and-tell.json</span> to retrieve the Show &amp; Tell category metadata. Returns the category ID needed for the posts call.',
+        output: '1 item — category object',
+        tipClass: ''
+      },
+      2: {
+        num: 'NODE 02',
+        name: 'HTTP Request',
+        type: 'Discourse API · GET posts',
+        typeClass: '',
+        desc: 'Calls the category\'s topic list endpoint and retrieves the latest posts. No API key needed — Discourse forums expose public read access via <span class="code">.json</span> routes.',
+        output: '1 item — topic_list object',
+        tipClass: ''
+      },
+      3: {
+        num: 'NODE 03',
+        name: 'Code in JavaScript',
+        type: 'Extract · score · filter by date',
+        typeClass: '',
+        desc: 'Unpacks <span class="code">topic_list.topics</span> into individual items. Scores each post by scanning the title for outcome signals: revenue, automation, saved, built, replaced, hours, workflow. Drops posts older than 7 days.',
+        output: '30 items — scored posts',
+        tipClass: ''
+      },
+      4: {
+        num: 'NODE 04',
+        name: 'If',
+        type: 'Filter · score ≥ 4',
+        typeClass: 'branch',
+        desc: 'Branches on the score. Posts scoring 4 or 5 go to the true branch — describing specific, real-world business outcomes worth tracking. Lower scores are dropped silently.',
+        output: '10 true · 20 false',
+        tipClass: 'if-tip'
+      },
+      5: {
+        num: 'NODE 05',
+        name: 'Append Row in Sheet',
+        type: 'Google Sheets · Story Candidates',
+        typeClass: 'sheets',
+        desc: 'Appends each high-scoring post to the <span class="code">n8n Story Candidates</span> sheet. Columns: Title, URL, Score, Reason, Date Added. Becomes the running backlog for customer marketing outreach.',
+        output: '10 rows appended',
+        tipClass: 'sheets-tip'
+      },
+      6: {
+        num: 'NODE 06',
+        name: 'Aggregate',
+        type: 'Collect all items → single bundle',
+        typeClass: '',
+        desc: 'Waits for all 10 Sheets writes to complete, then bundles them into a single item so the Gmail node fires once — one digest, not ten separate emails.',
+        output: '1 item — all candidates',
+        tipClass: ''
+      },
+      7: {
+        num: 'NODE 07',
+        name: 'Send a Message',
+        type: 'Gmail · weekly digest',
+        typeClass: 'gmail',
+        desc: 'Sends a single summary email: how many candidates were found this week, and a direct link to the Story Candidates tracker. One notification, every Monday morning.',
+        output: '1 email sent',
+        tipClass: 'gmail-tip'
+      }
+    };
+
+    // ── Tooltip logic ──
+    const tooltip    = document.getElementById('wfTooltip');
+    const tipNum     = document.getElementById('tipNum');
+    const tipName    = document.getElementById('tipName');
+    const tipType    = document.getElementById('tipType');
+    const tipDesc    = document.getElementById('tipDesc');
+    const tipOutput  = document.getElementById('tipOutput');
+    const MARGIN     = 14; // px gap between node and tooltip
+
+    function positionTooltip(node) {
+      const r  = node.getBoundingClientRect();
+      const tw = tooltip.offsetWidth;
+      const th = tooltip.offsetHeight;
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+
+      // Below the node; fall back to above if it would clip the bottom
+      let top = r.bottom + MARGIN;
+      if (top + th > vh - 8) top = r.top - th - MARGIN;
+
+      // Horizontally centre on node, clamp to viewport edges
+      let left = r.left + (r.width / 2) - (tw / 2);
+      if (left < 8) left = 8;
+      if (left + tw > vw - 8) left = vw - tw - 8;
+
+      tooltip.style.top  = top  + 'px';
+      tooltip.style.left = left + 'px';
+    }
+
+    document.querySelectorAll('.wf-node[data-node]').forEach(node => {
+      node.addEventListener('mouseenter', () => {
+        const id   = parseInt(node.dataset.node);
+        const data = nodeData[id];
+        if (!data) return;
+
+        tipNum.textContent    = data.num;
+        tipName.textContent   = data.name;
+        tipType.innerHTML     = data.type;
+        tipType.className     = 'tip-type' + (data.typeClass ? ' ' + data.typeClass : '');
+        tipDesc.innerHTML     = data.desc;
+        tipOutput.textContent = data.output;
+
+        // Reset variant classes
+        tooltip.className = 'wf-tooltip';
+        if (data.tipClass) tooltip.classList.add(data.tipClass);
+
+        positionTooltip(node);
+        tooltip.classList.add('visible');
+        tooltip.setAttribute('aria-hidden', 'false');
+      });
+
+      node.addEventListener('mouseleave', () => {
+        tooltip.classList.remove('visible');
+        tooltip.setAttribute('aria-hidden', 'true');
+      });
+    });
+
+    // ── Page transition ──
+    (function(){
+      const overlay = document.getElementById('ptOverlay');
+      function isInternal(href){
+        if (!href) return false;
+        if (href.startsWith('http') || href.startsWith('//')) return false;
+        if (href.startsWith('mailto') || href.startsWith('tel')) return false;
+        if (href.endsWith('.pdf')) return false;
+        if (href === '#' || href.startsWith('#')) return false;
+        return true;
+      }
+      document.querySelectorAll('a').forEach(el => {
+        const href = el.getAttribute('href');
+        if (!isInternal(href)) return;
+        el.addEventListener('click', e => {
+          if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+          e.preventDefault();
+          overlay.style.transition = 'opacity 0.35s cubic-bezier(0.76,0,0.24,1)';
+          overlay.style.opacity = '1';
+          overlay.style.pointerEvents = 'all';
+          setTimeout(() => { window.location.href = href; }, 360);
+        });
+      });
+    })();
+  </script>
+
+</body>
+</html>
