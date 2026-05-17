@@ -528,6 +528,61 @@
       display: inline-block; margin-right: 8px;
     }
 
+    /* ── DOT NAV ── */
+    .ch-dots {
+      position: fixed; right: 18px; top: 50%;
+      transform: translateY(-50%);
+      z-index: 200;
+      display: flex; flex-direction: column; gap: 18px;
+    }
+    .ch-dots::before {
+      content: '';
+      position: absolute;
+      top: 4px; bottom: 4px; left: 50%;
+      width: 1px;
+      background: var(--line-soft);
+      transform: translateX(-50%);
+      z-index: -1;
+    }
+    .ch-dots::after {
+      content: '';
+      position: absolute;
+      top: 4px; left: 50%;
+      width: 1px;
+      height: calc(var(--progress, 0) * (100% - 8px));
+      background: linear-gradient(to bottom, var(--aqua), var(--blue));
+      transform: translateX(-50%);
+      transition: height 0.18s ease;
+      z-index: -1;
+      box-shadow: 0 0 6px var(--aqua);
+    }
+    .ch-dot {
+      position: relative;
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--dim);
+      transition: background 0.25s, box-shadow 0.25s, transform 0.25s;
+      cursor: pointer;
+      border: none; padding: 0; appearance: none;
+    }
+    .ch-dot::after {
+      content: attr(data-label);
+      position: absolute;
+      right: 18px; top: 50%;
+      transform: translateY(-50%) translateX(8px);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px; color: var(--text);
+      letter-spacing: 0.14em; text-transform: uppercase;
+      white-space: nowrap;
+      padding: 4px 10px;
+      background: rgba(13,22,20,0.92);
+      border: 1px solid var(--line);
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .ch-dot:hover::after { opacity: 1; transform: translateY(-50%) translateX(0); }
+    .ch-dot:hover { background: var(--blue); transform: scale(1.3); }
+    .ch-dot.active { background: var(--aqua); box-shadow: 0 0 10px var(--aqua); transform: scale(1.5); }
+
     /* ── RESPONSIVE ── */
     @media (max-width: 880px) {
       .hamburger { display: flex; }
@@ -557,12 +612,24 @@
       .hero-frame, .frame-section { margin-left: 14px; margin-right: 14px; padding: 28px 20px 24px; }
       .frame-label, .hero-label { left: 18px; }
       .frame-id, .hero-id { right: 18px; }
+      .ch-dots { display: none; }
     }
   </style>
 </head>
 <body>
 
   <div id="pageOverlay"></div>
+
+  <!-- Dot nav -->
+  <div class="ch-dots" id="chDots" role="navigation" aria-label="Section navigation">
+    <button class="ch-dot active" data-target="sec-hero"    data-label="transmission"   aria-label="Hero"></button>
+    <button class="ch-dot"        data-target="the-gap"     data-label="the signal"     aria-label="The gap"></button>
+    <button class="ch-dot"        data-target="the-pipeline" data-label="the pipeline"  aria-label="The pipeline"></button>
+    <button class="ch-dot"        data-target="content-types" data-label="the briefs"   aria-label="Content types"></button>
+    <button class="ch-dot"        data-target="ask-linear"  data-label="ask linear"     aria-label="Ask Linear"></button>
+    <button class="ch-dot"        data-target="the-brief"   data-label="the brief"      aria-label="The brief"></button>
+    <button class="ch-dot"        data-target="why"         data-label="open channel"   aria-label="Why this"></button>
+  </div>
   <div class="scanlines"></div>
   <div class="grain"></div>
   <div class="scroll-progress" id="scrollProgress"></div>
@@ -606,7 +673,7 @@
   <div class="page-wrap">
 
     <!-- HERO -->
-    <div class="hero-frame reveal" style="--d:0">
+    <div class="hero-frame reveal" id="sec-hero" style="--d:0">
       <span class="hero-label">▮ TRANSMISSION // SIMRAN × LINEAR</span>
       <span class="hero-id">FIELD REPORT · MAY 2026</span>
 
@@ -713,7 +780,7 @@
               <span class="dot dot-g"></span>
               <span class="app-frame-url">linear.app / Content Ops / Issues</span>
             </div>
-            <img src="linear%20app/image-1779011582331.png" alt="Linear Content Ops workspace — issues board grouped by label: Blog Post, Live Demo, Tweet Thread, Video Walkthrough">
+            <img src="linear-app/image-1779011582331.png" alt="Linear Content Ops workspace — issues board grouped by label: Blog Post, Live Demo, Tweet Thread, Video Walkthrough">
           </div>
         </div>
       </div>
@@ -834,7 +901,7 @@
             <span class="dot dot-g"></span>
             <span class="app-frame-url">Ask Linear — Plan Content Ops two-week sprint</span>
           </div>
-          <img src="linear%20app/image-1779011214428.png" alt="Ask Linear AI planning response — sequencing sub-issues with reasoning from Highest to Medium priority">
+          <img src="linear-app/image-1779011214428.png" alt="Ask Linear AI planning response — sequencing sub-issues with reasoning from Highest to Medium priority">
         </div>
       </div>
 
@@ -883,7 +950,7 @@
             <span class="dot dot-g"></span>
             <span class="app-frame-url">SIM-8 — Blog post: The Linear AI agent in practice</span>
           </div>
-          <img src="linear%20app/image-1779011247284.png" alt="SIM-8 issue showing full blog post brief — format, target audience, goal, angle, outline, SEO target, and production sub-issues">
+          <img src="linear-app/image-1779011247284.png" alt="SIM-8 issue showing full blog post brief — format, target audience, goal, angle, outline, SEO target, and production sub-issues">
         </div>
       </div>
 
@@ -989,11 +1056,40 @@
       });
     });
 
-    // ── Scroll progress bar ──
-    window.addEventListener('scroll', () => {
+    // ── Scroll progress bar + dot nav ──
+    const dotEls       = Array.from(document.querySelectorAll('.ch-dot'));
+    const chDotsEl     = document.getElementById('chDots');
+    const sectionIds   = dotEls.map(d => d.dataset.target);
+
+    function updateDots() {
+      const mid = window.scrollY + window.innerHeight / 2;
       const max = document.documentElement.scrollHeight - window.innerHeight;
       const pct = max > 0 ? window.scrollY / max : 0;
+
+      // Progress bar
       document.getElementById('scrollProgress').style.width = (pct * 100) + '%';
+
+      // Track line fill
+      chDotsEl.style.setProperty('--progress', pct);
+
+      // Active dot: whichever section's top is closest above midpoint
+      let activeIdx = 0;
+      sectionIds.forEach((id, i) => {
+        const el = document.getElementById(id);
+        if (el && el.getBoundingClientRect().top + window.scrollY <= mid) activeIdx = i;
+      });
+      dotEls.forEach((d, i) => d.classList.toggle('active', i === activeIdx));
+    }
+
+    window.addEventListener('scroll', updateDots, { passive: true });
+    updateDots();
+
+    // Dot click → smooth scroll to section
+    dotEls.forEach(dot => {
+      dot.addEventListener('click', () => {
+        const el = document.getElementById(dot.dataset.target);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      });
     });
 
     // ── Reveal on scroll ──
