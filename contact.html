@@ -1,506 +1,350 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-HL8TMPEN43"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-HL8TMPEN43');
-</script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>simran shah · contact</title>
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-HL8TMPEN43"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date()); gtag('config', 'G-HL8TMPEN43');
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     :root {
-      --deep:      #0a1210;
-      --deep-2:    #0e1916;
-      --panel-2:   rgba(10, 18, 16, 0.95);
-      --line:      rgba(127, 201, 179, 0.2);
-      --line-soft: rgba(127, 201, 179, 0.1);
-      --dim:       #9bbfb8;
-      --text:      #f0fdf8;
-      --white:     #ffffff;
-      --sage:      #9ebf8a;
-      --blue:      #7ecff0;
-      --aqua:      #5de8c8;
-      --coral:     #e8a090;
+      --text:        #EEF5F8;
+      --text-dim:    rgba(238,245,248,0.96);
+      --text-faint:  rgba(238,245,248,0.82);
+      --text-ultra:  rgba(238,245,248,0.78);
+      --blue:        #5BB8D4;
+      --blue-dim:    rgba(91,184,212,0.55);
+      --blue-glow:   rgba(91,184,212,0.18);
+      --blue-ultra:  rgba(91,184,212,0.08);
+      --edge:        rgba(91,184,212,0.22);
+      --edge-soft:   rgba(91,184,212,0.10);
+      --edge-bright: rgba(91,184,212,0.45);
+      --font-d: 'Fraunces', Georgia, serif;
+      --font-m: 'JetBrains Mono', 'Courier New', monospace;
+      --cx: 48px;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      height: 100vh;
-      background: var(--deep);
+      min-height: 100dvh;
       color: var(--text);
-      font-family: 'Inter', sans-serif;
-      font-size: 14.5px;
-      line-height: 1.7;
-      overflow: hidden;
-      display: flex; flex-direction: column;
+      font-family: var(--font-m);
+      overflow-x: hidden;
     }
 
-    /* Dot grid */
-    body::before {
-      content: '';
-      position: fixed; inset: 0;
-      background-image: radial-gradient(circle, rgba(93, 232, 200, 0.45) 1px, transparent 1px);
-      background-size: 36px 36px;
-      pointer-events: none; z-index: 0;
+    /* ── Background ── */
+    .scene-bg {
+      position: fixed; inset: 0; z-index: 0;
+      background: url('bg-mars.png') center 35% / cover no-repeat;
     }
-
-    .scanlines {
-      position: fixed; inset: 0;
-      background: repeating-linear-gradient(
-        to bottom, transparent, transparent 3px,
-        rgba(0,0,0,0.02) 3px, rgba(0,0,0,0.02) 4px
-      );
-      pointer-events: none; z-index: 50;
-    }
-    .grain {
-      position: fixed; inset: 0; opacity: 0.035; z-index: 51; pointer-events: none;
-      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence baseFrequency='0.85' numOctaves='2'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>");
+    .scene-vignette {
+      position: fixed; inset: 0; z-index: 1; pointer-events: none;
+      background: radial-gradient(ellipse at 50% 0%, transparent 40%, rgba(3,2,1,0.55) 100%);
     }
 
     /* ── Nav ── */
     nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      background: rgba(10, 18, 16, 0.4);
-      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-      border-bottom: 1px solid rgba(127, 201, 179, 0.1);
-      padding: 0 32px; height: 56px;
+      position: sticky; top: 0; width: 100%; z-index: 100;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+      background: rgba(4,3,2,0.58);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    }
+    .nav-inner {
+      max-width: 1200px; margin: 0 auto;
+      padding: 16px var(--cx);
       display: flex; align-items: center; justify-content: space-between;
     }
-    .nav-brand {
-      display: flex; align-items: center; gap: 10px;
-      font-family: 'Press Start 2P', monospace;
-      font-size: 0.5rem; color: var(--blue);
-      letter-spacing: 0.22em; text-transform: uppercase;
-    }
-    .live-dot {
-      width: 7px; height: 7px; border-radius: 50%;
-      background: var(--aqua); box-shadow: 0 0 10px var(--aqua);
-      animation: breathe 3s ease-in-out infinite;
-    }
-    @keyframes breathe { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.5;transform:scale(0.82);} }
-
-    .nav-clock {
-      display: flex; align-items: center; gap: 10px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px; color: var(--dim); letter-spacing: 0.14em;
-    }
-    .nav-clock-time { font-family: 'VT323', monospace; font-size: 1.25rem; line-height: 1; color: var(--aqua); }
-    .nav-clock-time .blink { animation: blink 1.2s steps(2) infinite; }
-    @keyframes blink { 50% { opacity: 0.2; } }
-    .nav-clock-sep { width: 1px; height: 14px; background: var(--line); }
-
-    .nav-links { display: flex; gap: 2px; list-style: none; align-items: center; }
-    .nav-links a {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 7px 14px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11.5px; letter-spacing: 0.08em;
-      color: var(--text); text-decoration: none; transition: color 0.2s;
-    }
-    .nav-links a::before { content: '>'; color: var(--dim); }
-    .nav-links a:hover, .nav-links a.active { color: var(--blue); }
-    .nav-links a:hover::before, .nav-links a.active::before { color: var(--blue); }
-
-    /* Dropdown nav items */
-    .nav-item { position: relative; }
-    .nav-item > .nav-trigger {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 7px 14px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11.5px; letter-spacing: 0.08em;
-      color: var(--text); text-decoration: none;
-      cursor: pointer; background: none; border: none;
-      transition: color 0.2s; white-space: nowrap;
-    }
-    .nav-item > .nav-trigger::before { content: '>'; color: var(--dim); margin-right: 2px; }
-    .nav-item > .nav-trigger::after  { content: '▾'; font-size: 9px; color: var(--dim); margin-left: 2px; transition: color 0.2s; }
-    .nav-item:hover > .nav-trigger,
-    .nav-item.open  > .nav-trigger   { color: var(--blue); }
-    .nav-item:hover > .nav-trigger::before,
-    .nav-item.open  > .nav-trigger::before,
-    .nav-item:hover > .nav-trigger::after,
-    .nav-item.open  > .nav-trigger::after { color: var(--blue); }
-
-    .nav-dropdown {
-      position: absolute; top: calc(100% + 4px); right: 0;
-      min-width: 180px;
-      background: rgba(10, 18, 16, 0.97);
-      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-      border: 1px solid var(--line);
-      padding: 6px 0;
-      opacity: 0; pointer-events: none;
-      transform: translateY(-6px);
-      transition: opacity 0.18s ease, transform 0.18s ease;
-      z-index: 200;
-    }
-    .nav-item:hover .nav-dropdown,
-    .nav-item.open  .nav-dropdown {
-      opacity: 1; pointer-events: auto; transform: translateY(0);
-    }
-    .nav-dropdown a {
-      display: flex; align-items: center; gap: 8px;
-      padding: 8px 16px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px; letter-spacing: 0.08em;
-      color: var(--dim); text-decoration: none;
-      transition: color 0.15s, background 0.15s;
-      white-space: nowrap;
-    }
-    .nav-dropdown a::before { content: '·'; color: var(--line); }
-    .nav-dropdown a:hover { color: var(--blue); background: rgba(127, 201, 179, 0.05); }
-    .nav-dropdown a:hover::before { color: var(--blue); }
-
-    .hamburger {
-      display: none; flex-direction: column; justify-content: center;
-      gap: 5px; cursor: pointer; background: transparent; border: none; padding: 8px; z-index: 300;
-    }
-    .hamburger span { display: block; width: 22px; height: 2px; background: var(--text); transition: all 0.3s; }
-    .hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);background:var(--blue);}
-    .hamburger.open span:nth-child(2){opacity:0;}
-    .hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);background:var(--blue);}
-
-    /* ── Layout ── */
-    main {
-      position: relative; z-index: 10;
-      flex: 1; display: flex;
-      align-items: center; justify-content: center;
-      padding: 76px 28px 28px;
-    }
-
-    .contact-wrap {
-      width: 100%;
-      max-width: 560px;
-      max-height: calc(100vh - 112px); /* 56px nav + 56px breathing room */
-      overflow: hidden;
-      display: flex; flex-direction: column;
-    }
-
-    .viewport {
+    .nav-left { display: flex; align-items: center; gap: 14px; }
+    .nav-sigil {
+      width: 20px; height: 20px; border-radius: 50%;
+      border: 1px solid var(--blue-dim);
       position: relative;
-      padding: 32px 40px 24px;
-      background: rgba(10, 18, 16, 0.55);
-      flex: 1; min-height: 0;
-      display: flex; flex-direction: column;
+      box-shadow: 0 0 10px var(--blue-glow);
     }
-    /* Top-left corner */
-    .viewport::before {
-      content: ''; position: absolute;
-      width: 22px; height: 22px;
-      top: -1px; left: -1px;
-      border-top: 1px solid var(--blue);
-      border-left: 1px solid var(--blue);
-    }
-    /* Bottom-right corner */
-    .viewport .bracket-br {
-      position: absolute;
-      width: 22px; height: 22px;
-      bottom: -1px; right: -1px;
-      border-bottom: 1px solid var(--blue);
-      border-right: 1px solid var(--blue);
-    }
-    .viewport::after, .viewport .bracket-bl { display: none; }
-
-    .viewport-label {
-      position: absolute; top: -9px; left: 32px;
-      background: #0a1210; padding: 0 10px;
-      font-family: 'Press Start 2P', monospace;
-      font-size: 0.4rem; color: var(--aqua); letter-spacing: 0.28em; z-index: 2;
-    }
-    .viewport-id {
-      position: absolute; top: -9px; right: 32px;
-      background: #0a1210; padding: 0 10px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px; color: var(--dim); letter-spacing: 0.18em; z-index: 2;
-    }
-
-    /* ── Contact content ── */
-    .contact-kicker {
-      font-family: 'Press Start 2P', monospace;
-      font-size: 0.38rem; color: var(--sage);
-      letter-spacing: 0.3em; text-transform: uppercase;
-      margin-bottom: 14px;
-      display: flex; align-items: center; gap: 12px;
-    }
-    .contact-kicker::before { content: ''; width: 24px; height: 1px; background: var(--sage); }
-
-    .contact-heading {
-      font-family: 'VT323', monospace;
-      font-size: clamp(2.4rem, 5.5vw, 3.2rem);
-      line-height: 1; color: var(--white); margin-bottom: 10px;
-    }
-    .contact-heading .accent { color: var(--aqua); }
-
-    .contact-sub {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 13px; color: var(--dim);
-      line-height: 1.7; margin-bottom: 24px;
-    }
-
-    .contact-divider { border: none; border-top: 1px dashed var(--line-soft); margin-bottom: 18px; }
-
-    .contact-row {
-      display: flex; align-items: baseline; gap: 16px;
-      padding: 12px 0;
-      border-bottom: 1px dashed var(--line-soft);
-    }
-    .contact-row:last-of-type { border-bottom: none; }
-
-    .contact-label {
-      font-family: 'Press Start 2P', monospace;
-      font-size: 0.34rem; color: var(--dim);
-      letter-spacing: 0.22em; text-transform: uppercase;
-      min-width: 90px; flex-shrink: 0;
-    }
-    .contact-value {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 13.5px; color: var(--text); line-height: 1.5;
-    }
-    .contact-value a {
-      color: var(--text); text-decoration: none;
-      border-bottom: 1px solid var(--line);
-      transition: color 0.2s, border-color 0.2s;
-    }
-    .contact-value a:hover { color: var(--blue); border-color: var(--blue); }
-
-    /* ── CTA links ── */
-    .contact-ctas {
-      display: flex; gap: 12px; flex-wrap: wrap;
-      margin-top: 24px;
-    }
-    .cta-link {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 9px 20px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 12px; letter-spacing: 0.08em;
-      text-decoration: none; transition: all 0.2s;
-    }
-    .cta-link.primary { background: var(--aqua); color: var(--deep); }
-    .cta-link.primary:hover { background: var(--blue); }
-    .cta-link.secondary { border: 1px solid var(--line); color: var(--text); }
-    .cta-link.secondary:hover { border-color: var(--blue); color: var(--blue); }
-
-    /* ── Viewport footer ── */
-    .viewport-foot {
-      margin-top: 22px; padding-top: 14px;
-      border-top: 1px dashed var(--line-soft);
-      display: flex; justify-content: space-between; align-items: center;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px; color: var(--dim); letter-spacing: 0.12em;
-    }
-    .viewport-foot .left { display: flex; align-items: center; gap: 10px; }
-    .viewport-foot .left .dot {
+    .nav-sigil::before {
+      content: '';
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
       width: 5px; height: 5px; border-radius: 50%;
-      background: var(--aqua); box-shadow: 0 0 5px var(--aqua);
-      animation: breathe 3s ease-in-out infinite;
+      background: var(--blue); box-shadow: 0 0 6px var(--blue);
     }
-    .viewport-foot .right { color: var(--sage); }
+    .nav-coord {
+      font-family: var(--font-m); font-size: 9px;
+      letter-spacing: 0.16em; color: var(--text-ultra);
+    }
+    .nav-links { display: flex; gap: 28px; list-style: none; }
+    .nav-links a {
+      font-family: var(--font-m); font-size: 10px;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--text-faint); text-decoration: none;
+      transition: color 0.22s;
+      text-shadow: 0 1px 8px rgba(0,0,0,0.9);
+    }
+    .nav-links a:hover { color: var(--text); }
 
-    /* ── Boot ── */
-    .boot {
-      position: fixed; inset: 0; background: var(--deep); z-index: 9999;
+    /* ── Main layout — vertically centered ── */
+    .page-wrap {
+      position: relative; z-index: 10;
+      min-height: calc(100dvh - 53px);
       display: flex; align-items: center; justify-content: center;
-      flex-direction: column; font-family: 'VT323', monospace;
-      animation: bootOut 0.4s ease 0.9s forwards;
+      padding: 64px var(--cx);
     }
-    @keyframes bootOut { to { opacity: 0; pointer-events: none; } }
-    .boot-lines { font-size: 17px; line-height: 1.7; color: var(--text); text-align: left; }
-    .boot-lines div { opacity: 0; animation: bootLine 0.15s forwards; }
-    .boot-lines div:nth-child(1) { animation-delay: 0.1s; color: var(--blue); }
-    .boot-lines div:nth-child(2) { animation-delay: 0.45s; color: var(--aqua); }
-    @keyframes bootLine { to { opacity: 1; } }
 
-    /* ── Mobile ── */
-    @media (max-width: 780px) {
-      body { height: auto; min-height: 100vh; overflow: auto; }
-      .hamburger { display: flex; }
-      .nav-clock { display: none; }
-      .nav-links {
-        display: none; flex-direction: column; gap: 0;
-        position: fixed; top: 56px; left: 0; right: 0;
-        background: var(--panel-2); backdrop-filter: blur(10px);
-        padding: 12px 24px 16px; border-bottom: 1px solid var(--line);
-      }
-      .nav-links.open { display: flex; }
-      .nav-links li { border-bottom: 1px dashed var(--line-soft); }
-      .nav-links li:last-child { border-bottom: none; }
-      .nav-links a { padding: 12px 6px; font-size: 13px; }
-      .viewport { padding: 30px 22px 24px; }
-      main { padding: 76px 14px 28px; }
-      .contact-row { flex-direction: column; gap: 4px; }
-      .contact-label { min-width: unset; }
-      .viewport-foot { flex-direction: column; gap: 8px; }
+    .contact-block {
+      width: 100%; max-width: 640px;
+      text-align: center;
+    }
+
+    /* Status badge */
+    .contact-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: var(--font-m); font-size: 8px;
+      letter-spacing: 0.30em; text-transform: uppercase;
+      color: var(--text-ultra);
+      border: 1px solid rgba(255,255,255,0.10);
+      padding: 6px 14px; margin-bottom: 24px;
+    }
+    .badge-dot {
+      width: 4px; height: 4px; border-radius: 50%;
+      background: var(--blue); box-shadow: 0 0 6px var(--blue);
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+    /* Eyebrow */
+    .contact-eyebrow {
+      font-family: var(--font-m); font-size: 9px;
+      letter-spacing: 0.32em; text-transform: uppercase;
+      color: var(--text-ultra);
+      display: flex; align-items: center; justify-content: center; gap: 16px;
+      margin-bottom: 28px;
+    }
+    .contact-eyebrow::before, .contact-eyebrow::after {
+      content: ''; width: 32px; height: 1px; background: var(--edge);
+    }
+
+    /* Headline */
+    .contact-headline {
+      font-family: var(--font-d);
+      font-size: clamp(56px, 7vw, 88px);
+      font-weight: 300; line-height: 1.0;
+      letter-spacing: -0.02em;
+      font-variation-settings: 'opsz' 72;
+      color: var(--text);
+      margin-bottom: 24px;
+    }
+    .contact-headline em { font-style: italic; }
+
+    /* Sub copy */
+    .contact-sub {
+      font-family: var(--font-m); font-size: 13px;
+      color: var(--text-faint); line-height: 2.0;
+      margin-bottom: 48px;
+    }
+
+    /* Contact rows */
+    .contact-rows {
+      display: flex; flex-direction: column;
+      border-top: 1px solid rgba(238,245,248,0.07);
+      margin-bottom: 40px;
+      text-align: left;
+    }
+    .contact-row {
+      display: flex; align-items: baseline; gap: 24px;
+      padding: 18px 0;
+      border-bottom: 1px solid rgba(238,245,248,0.07);
+    }
+    .contact-row-label {
+      font-family: var(--font-m); font-size: 8px;
+      letter-spacing: 0.24em; text-transform: uppercase;
+      color: var(--text-ultra); min-width: 80px; flex-shrink: 0;
+    }
+    .contact-row-val {
+      font-family: var(--font-m); font-size: 13px;
+      color: var(--text);
+    }
+    .contact-row-val a {
+      color: var(--text); text-decoration: none;
+      border-bottom: 1px solid rgba(238,245,248,0.18);
+      transition: border-color 0.22s;
+    }
+    .contact-row-val a:hover { border-color: var(--text); }
+
+    /* Actions */
+    .contact-actions {
+      display: flex; align-items: center; justify-content: center;
+      gap: 20px; flex-wrap: wrap;
+    }
+
+    /* Double-bezel primary button */
+    .btn-primary {
+      display: inline-flex; align-items: center;
+      padding: 2px; border-radius: 999px;
+      background: linear-gradient(135deg, rgba(91,184,212,0.65), rgba(120,200,230,0.40));
+      box-shadow: 0 0 28px rgba(91,184,212,0.18), 0 0 56px rgba(91,184,212,0.07);
+      text-decoration: none;
+      transition: box-shadow 0.32s cubic-bezier(0.32,0.72,0,1), transform 0.25s cubic-bezier(0.32,0.72,0,1);
+    }
+    .btn-primary:hover {
+      box-shadow: 0 0 40px rgba(91,184,212,0.30), 0 0 80px rgba(91,184,212,0.12);
+      transform: translateY(-2px);
+    }
+    .btn-primary-inner {
+      display: inline-flex; align-items: center; gap: 12px;
+      padding: 13px 28px; border-radius: 999px;
+      background: rgba(5,3,2,0.95);
+      font-family: var(--font-m); font-size: 11px;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--text);
+    }
+    .btn-icon {
+      width: 24px; height: 24px; border-radius: 50%;
+      background: rgba(91,184,212,0.12);
+      border: 1px solid var(--edge-bright);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; color: var(--blue);
+      transition: transform 0.25s cubic-bezier(0.32,0.72,0,1);
+    }
+    .btn-primary:hover .btn-icon { transform: translate(2px,-2px) scale(1.08); }
+
+    .btn-ghost {
+      font-family: var(--font-m); font-size: 11px;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--text-faint); text-decoration: none;
+      padding: 13px 0;
+      border-bottom: 1px solid var(--edge);
+      transition: color 0.22s, border-color 0.22s;
+    }
+    .btn-ghost:hover { color: var(--text); border-color: rgba(238,245,248,0.40); }
+
+    /* ── Responsive ── */
+    @media (max-width: 1024px) { :root { --cx: 32px; } .nav-coord { display: none; } }
+    @media (max-width: 768px) {
+      :root { --cx: 24px; }
+      .page-wrap { padding: 48px var(--cx); }
+      .contact-actions { flex-direction: column; align-items: center; }
+    }
+    @media (max-width: 480px) {
+      :root { --cx: 18px; }
+      .nav-links { display: none; }
+      .contact-row { flex-direction: column; gap: 6px; }
+      .contact-row-label { min-width: unset; }
     }
   </style>
 </head>
 <body>
 
-  <div class="boot">
-    <div class="boot-lines">
-      <div>▮ OPENING CHANNEL</div>
-      <div>frequency clear.</div>
-    </div>
-  </div>
+<div class="scene-bg"></div>
+<div class="scene-vignette"></div>
 
-  <div class="scanlines"></div>
-  <div class="grain"></div>
-
-  <nav>
-    <span class="nav-brand">
-      <span class="live-dot"></span>
-      Simran Shah · Station 42
-    </span>
-    <div class="nav-clock">
-      <span class="nav-clock-time"><span id="hh">00</span><span class="blink">:</span><span id="mm">00</span></span>
-      <span class="nav-clock-sep"></span>
-      <span id="dateLine">—</span>
-    </div>
-    <button class="hamburger" id="hamburger" aria-label="Toggle menu">
-      <span></span><span></span><span></span>
-    </button>
-    <ul class="nav-links" id="navLinks">
+<nav>
+  <div class="nav-inner">
+    <div class="nav-left"><div class="nav-sigil"></div></div>
+    <span class="nav-coord">52.52°N 13.40°E · Berlin, DE</span>
+    <ul class="nav-links">
       <li><a href="index.html">home</a></li>
-      <li class="nav-item" id="navWork">
-        <button class="nav-trigger" aria-haspopup="true" aria-expanded="false">work</button>
-        <div class="nav-dropdown" role="menu">
-          <a href="cv.html" role="menuitem">CV</a>
-          <a href="portfolio.html" role="menuitem">portfolio</a>
-        </div>
-      </li>
-      <li class="nav-item" id="navArchive">
-        <button class="nav-trigger" aria-haspopup="true" aria-expanded="false">archive</button>
-        <div class="nav-dropdown" role="menu">
-          <a href="books.html" role="menuitem">reading list</a>
-          <a href="movies.html" role="menuitem">viewing log</a>
-          <a href="dog.html" role="menuitem">companion</a>
-        </div>
-      </li>
-      <li><a href="contact.html" class="active">contact</a></li>
+      <li><a href="cv.html">work</a></li>
+      <li><a href="portfolio.html">portfolio</a></li>
+      <li><a href="contact.html">contact</a></li>
     </ul>
-  </nav>
+  </div>
+</nav>
 
-  <main>
-    <div class="contact-wrap">
-      <section class="viewport">
-        <span class="bracket-bl"></span>
-        <span class="bracket-br"></span>
-        <span class="viewport-label">▮ OPEN CHANNEL // MOD.03</span>
-        <span class="viewport-id">FREQ · 04/ALPHA</span>
+<div class="page-wrap">
+  <div class="contact-block">
 
-        <div class="contact-kicker">Get in touch</div>
-
-        <h1 class="contact-heading">
-          open <span class="accent">channel</span>.
-        </h1>
-
-        <p class="contact-sub">
-          always open to new opportunities, collaborations, or just a good conversation.
-        </p>
-
-        <hr class="contact-divider">
-
-        <div class="contact-row">
-          <span class="contact-label">Email</span>
-          <span class="contact-value">
-            <a href="mailto:simranshah1998@gmail.com">simranshah1998@gmail.com</a>
-          </span>
-        </div>
-
-        <div class="contact-row">
-          <span class="contact-label">LinkedIn</span>
-          <span class="contact-value">
-            <a href="https://linkedin.com/in/simrancs1998" target="_blank" rel="noopener noreferrer">linkedin.com/in/simrancs1998</a>
-          </span>
-        </div>
-
-        <div class="contact-row">
-          <span class="contact-label">Location</span>
-          <span class="contact-value">Berlin, Germany</span>
-        </div>
-
-        <div class="contact-ctas">
-          <a href="mailto:simranshah1998@gmail.com" class="cta-link primary">▮ send message</a>
-          <a href="Simran Shah - Resume.pdf" class="cta-link secondary" target="_blank" rel="noopener">Download CV</a>
-        </div>
-
-        <div class="viewport-foot">
-          <span class="left"><span class="dot"></span>signal nominal · monitored daily</span>
-          <span class="right">Berlin · CET</span>
-        </div>
-      </section>
+    <div class="contact-badge">
+      <span class="badge-dot"></span>
+      Transmission channel open
     </div>
-  </main>
 
-  <script>
-    // Hamburger
-    const hamburger = document.getElementById('hamburger');
-    const navLinks  = document.getElementById('navLinks');
-    hamburger.addEventListener('click', e => { e.stopPropagation(); hamburger.classList.toggle('open'); navLinks.classList.toggle('open'); });
-    document.addEventListener('click', e => { if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) { hamburger.classList.remove('open'); navLinks.classList.remove('open'); } });
+    <div class="contact-eyebrow">Initiate contact</div>
 
-    // Dropdown menus
-    document.querySelectorAll('.nav-item').forEach(item => {
-      const trigger = item.querySelector('.nav-trigger');
-      trigger.addEventListener('click', e => {
-        e.stopPropagation();
-        const isOpen = item.classList.contains('open');
-        document.querySelectorAll('.nav-item.open').forEach(i => { i.classList.remove('open'); i.querySelector('.nav-trigger').setAttribute('aria-expanded', 'false'); });
-        if (!isOpen) { item.classList.add('open'); trigger.setAttribute('aria-expanded', 'true'); }
-      });
-    });
-    document.addEventListener('click', () => {
-      document.querySelectorAll('.nav-item.open').forEach(i => { i.classList.remove('open'); i.querySelector('.nav-trigger').setAttribute('aria-expanded', 'false'); });
-    });
+    <h1 class="contact-headline">
+      Ready to<br><em>transmit.</em>
+    </h1>
 
-    // Clock
-    function updateClock() {
-      const d = new Date();
-      document.getElementById('hh').textContent = String(d.getHours()).padStart(2,'0');
-      document.getElementById('mm').textContent = String(d.getMinutes()).padStart(2,'0');
-      const ds = d.toLocaleDateString('en-GB',{weekday:'short',day:'2-digit',month:'short',year:'numeric'}).toUpperCase();
-      document.getElementById('dateLine').textContent = ds + ' · CET';
+    <p class="contact-sub">
+      If that sounds like the kind of person you're hiring, let's talk.<br>
+      Or if you want to discuss AI in German B2B markets, or have thoughts<br>
+      on my review of Avatar — reach out.
+    </p>
+
+    <div class="contact-rows">
+      <div class="contact-row">
+        <span class="contact-row-label">Email</span>
+        <span class="contact-row-val">
+          <a href="mailto:simranshah1998@gmail.com">simranshah1998@gmail.com</a>
+        </span>
+      </div>
+      <div class="contact-row">
+        <span class="contact-row-label">LinkedIn</span>
+        <span class="contact-row-val">
+          <a href="https://linkedin.com/in/simrancs1998" target="_blank" rel="noopener noreferrer">linkedin.com/in/simrancs1998</a>
+        </span>
+      </div>
+      <div class="contact-row">
+        <span class="contact-row-label">Location</span>
+        <span class="contact-row-val">Berlin, Germany · open to remote</span>
+      </div>
+    </div>
+
+    <div class="contact-actions">
+      <a href="mailto:simranshah1998@gmail.com" class="btn-primary">
+        <div class="btn-primary-inner">
+          simranshah1998@gmail.com
+          <div class="btn-icon">↗</div>
+        </div>
+      </a>
+      <a href="Simran Shah - Resume.pdf" class="btn-ghost" target="_blank" rel="noopener">Download CV</a>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  (function(){
+    var overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;z-index:99999;background:#050302;pointer-events:none;opacity:0;top:0;left:0;width:0;height:0;will-change:transform';
+    document.body.appendChild(overlay);
+    function isInternal(href){
+      if(!href) return false;
+      if(href.startsWith('http')||href.startsWith('//')) return false;
+      if(href.startsWith('mailto')||href.startsWith('tel')) return false;
+      if(href.endsWith('.pdf')||href.endsWith('.jpg')||href.endsWith('.png')||href.endsWith('.jpeg')) return false;
+      if(href==='#'||href.startsWith('#')) return false;
+      return true;
     }
-    updateClock(); setInterval(updateClock, 20000);
-
-    // Page transition
-    (function(){
-      var overlay = document.createElement('div');
-      overlay.style.cssText = 'position:fixed;z-index:99999;background:#0a1210;border-radius:10px;pointer-events:none;opacity:0;top:0;left:0;width:0;height:0;will-change:transform';
-      document.body.appendChild(overlay);
-      function isInternal(href) {
-        if (!href) return false;
-        if (href.startsWith('http') || href.startsWith('//')) return false;
-        if (href.startsWith('mailto') || href.startsWith('tel')) return false;
-        if (href.endsWith('.pdf') || href.endsWith('.jpg') || href.endsWith('.png')) return false;
-        if (href === '#' || href.startsWith('#')) return false;
-        return true;
-      }
-      function expand(el, href) {
-        var r = el.getBoundingClientRect();
-        overlay.style.transition = 'none'; overlay.style.opacity = '1';
-        overlay.style.borderRadius = '10px';
-        overlay.style.left = r.left+'px'; overlay.style.top = r.top+'px';
-        overlay.style.width = r.width+'px'; overlay.style.height = r.height+'px';
-        overlay.getBoundingClientRect();
-        var ease = 'cubic-bezier(0.76,0,0.24,1)', dur = '0.44s';
-        overlay.style.transition = 'left '+dur+' '+ease+',top '+dur+' '+ease+',width '+dur+' '+ease+',height '+dur+' '+ease+',border-radius '+dur+' '+ease;
-        overlay.style.left = '0px'; overlay.style.top = '0px';
-        overlay.style.width = window.innerWidth+'px'; overlay.style.height = window.innerHeight+'px';
-        overlay.style.borderRadius = '0px';
-        setTimeout(() => { window.location.href = href; }, 460);
-      }
-      document.querySelectorAll('nav a, .cta-link').forEach(el => {
-        var href = el.getAttribute('href');
-        if (!isInternal(href)) return;
-        el.addEventListener('click', e => { if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return; e.preventDefault(); expand(el, href); });
+    function expand(el, href){
+      var r = el.getBoundingClientRect();
+      overlay.style.transition = 'none'; overlay.style.opacity = '1';
+      overlay.style.borderRadius = '10px';
+      overlay.style.left = r.left+'px'; overlay.style.top = r.top+'px';
+      overlay.style.width = r.width+'px'; overlay.style.height = r.height+'px';
+      overlay.getBoundingClientRect();
+      var ease = 'cubic-bezier(0.76,0,0.24,1)', dur = '0.44s';
+      overlay.style.transition = 'left '+dur+' '+ease+',top '+dur+' '+ease+',width '+dur+' '+ease+',height '+dur+' '+ease+',border-radius '+dur+' '+ease;
+      overlay.style.left = '0'; overlay.style.top = '0';
+      overlay.style.width = window.innerWidth+'px'; overlay.style.height = window.innerHeight+'px';
+      overlay.style.borderRadius = '0';
+      setTimeout(function(){ window.location.href = href; }, 460);
+    }
+    document.querySelectorAll('a').forEach(function(el){
+      var href = el.getAttribute('href');
+      if(!isInternal(href)) return;
+      el.addEventListener('click', function(e){
+        if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey) return;
+        e.preventDefault(); expand(el, href);
       });
-    })();
-  </script>
+    });
+  })();
+</script>
 </body>
 </html>
