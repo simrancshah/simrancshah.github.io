@@ -224,6 +224,27 @@
     }
     .btn-ghost:hover { color: var(--text); border-color: rgba(238,245,248,0.40); }
 
+    /* ── Boot screen ── */
+    #boot-screen {
+      position: fixed; inset: 0; z-index: 99999;
+      background: #050302;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .boot-content { display: flex; flex-direction: column; gap: 10px; min-width: 240px; }
+    .boot-line {
+      font-family: var(--font-m); font-size: 10px;
+      letter-spacing: 0.28em; text-transform: uppercase;
+      opacity: 0; animation: boot-in 0.35s ease forwards;
+    }
+    .boot-line-1 { color: var(--text-ultra); animation-delay: 0.15s; }
+    .boot-line-2 { color: var(--blue);       animation-delay: 0.55s; }
+    .boot-cursor {
+      width: 7px; height: 1px; background: var(--blue); margin-top: 6px;
+      opacity: 0; animation: boot-in 0.2s ease 0.9s forwards, boot-blink 0.7s step-end 0.9s 3;
+    }
+    @keyframes boot-in   { to { opacity: 1; } }
+    @keyframes boot-blink { 50% { opacity: 0; } }
+
     /* ── Responsive ── */
     @media (max-width: 1024px) { :root { --cx: 32px; } .nav-coord { display: none; } }
     @media (max-width: 768px) {
@@ -241,6 +262,13 @@
 </head>
 <body>
 
+<div id="boot-screen">
+  <div class="boot-content">
+    <div class="boot-line boot-line-1">Opening channel</div>
+    <div class="boot-line boot-line-2">Frequency clear</div>
+    <div class="boot-cursor"></div>
+  </div>
+</div>
 <div class="scene-bg"></div>
 <div class="scene-vignette"></div>
 
@@ -308,6 +336,19 @@
 
   </div>
 </div>
+
+<script>
+  // ── Boot screen dismiss ──
+  (function(){
+    var boot = document.getElementById('boot-screen');
+    setTimeout(function(){
+      boot.style.transition = 'opacity 0.6s cubic-bezier(0.32,0.72,0,1)';
+      boot.style.opacity = '0';
+      boot.style.pointerEvents = 'none';
+      setTimeout(function(){ boot.style.display = 'none'; }, 650);
+    }, 1150);
+  })();
+</script>
 
 <script>
   (function(){
