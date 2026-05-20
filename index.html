@@ -1,1320 +1,959 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-HL8TMPEN43"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-HL8TMPEN43"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-HL8TMPEN43');
+  </script>
 
-  gtag('config', 'G-HL8TMPEN43');
-</script>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>simran shah</title>
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simran Shah</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+
   <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
     :root {
-      --deep:      #0a1210;
-      --deep-2:    #0e1916;
-      --panel-2:   rgba(10, 18, 16, 0.95);
-      --line:      rgba(127, 201, 179, 0.2);
-      --line-soft: rgba(127, 201, 179, 0.1);
-      --dim:       #9bbfb8;        /* lifted — secondary text now legible, not muddy */
-      --text:      #f0fdf8;        /* near-white with faint mint — pops on dark bg */
-      --white:     #ffffff;        /* pure white for headings */
-      --sage:      #9ebf8a;        /* soft sage green — kicker, status rotator */
-      --blue:      #7ecff0;        /* sky blue — highlights */
-      --aqua:      #5de8c8;        /* teal — UI accent */
-      --coral:     #e8a090;
+      /* ── Text — ice white ── */
+      --text:        #EEF5F8;
+      --text-dim:    rgba(238,245,248,0.96);
+      --text-faint:  rgba(238,245,248,0.82);
+      --text-ultra:  rgba(238,245,248,0.78);
+
+      /* ── Accent — cold steel blue ── */
+      --blue:        #5BB8D4;
+      --blue-dim:    rgba(91,184,212,0.55);
+      --blue-glow:   rgba(91,184,212,0.18);
+      --blue-ultra:  rgba(91,184,212,0.08);
+
+      /* ── Borders ── */
+      --edge:        rgba(91,184,212,0.22);
+      --edge-soft:   rgba(91,184,212,0.10);
+      --edge-bright: rgba(91,184,212,0.45);
+
+      /* ── Panels ── */
+      --panel:       rgba(6,4,3,0.25);
+      --panel-deep:  rgba(4,3,2,0.30);
+
+      /* ── Fonts ── */
+      --font-d: 'Fraunces', Georgia, serif;
+      --font-m: 'JetBrains Mono', 'Courier New', monospace;
+
+      /* ── Layout ── */
+      --cx: 48px;
     }
 
-    /* Dot grid — boosted opacity so it actually reads against the dark bg */
-    /* was 0.18 — invisible. 0.45 makes it clear without dominating */
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; }
-
-    body {
-      background: var(--deep);
+    html, body {
+      background: #08050300;
       color: var(--text);
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 14px;
-      line-height: 1.7;
-      overflow: hidden;
+      font-family: var(--font-m);
+      overflow-x: hidden;
     }
 
-    /* Dot grid background */
-    body::before {
-      content: '';
+    /* ════════════════════════════════════════
+       BACKGROUND
+    ════════════════════════════════════════ */
+    .scene-bg {
       position: fixed; inset: 0;
-      background-image: radial-gradient(circle, rgba(93, 232, 200, 0.45) 1px, transparent 1px);
-      background-size: 36px 36px;
-      pointer-events: none; z-index: 0;
+      background-image: url('bg-mars.png');
+      background-size: cover;
+      background-position: center 35%;
+      z-index: 0;
     }
 
-    .scanlines {
+    .scene-vignette {
       position: fixed; inset: 0;
-      background: repeating-linear-gradient(
-        to bottom, transparent, transparent 3px,
-        rgba(0,0,0,0.02) 3px, rgba(0,0,0,0.02) 4px
-      );
-      pointer-events: none; z-index: 50;
+      background:
+        radial-gradient(ellipse 110% 90% at 50% 50%,
+          transparent 50%,
+          rgba(3,2,1,0.28) 100%
+        );
+      z-index: 1;
     }
-    .grain {
-      position: fixed; inset: 0; opacity: 0.035; z-index: 51; pointer-events: none;
-      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence baseFrequency='0.85' numOctaves='2'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>");
-    }
-    /* Scanlines + grain */
 
-    /* ── Nav ── */
+    /* ════════════════════════════════════════
+       CONTENT
+    ════════════════════════════════════════ */
+    .content-wrap {
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 0 var(--cx);
+      position: relative;
+      z-index: 10;
+    }
+
+    /* ════════════════════════════════════════
+       NAV
+    ════════════════════════════════════════ */
     nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      background: rgba(13, 22, 20, 0.4);
-      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-      border-bottom: 1px solid rgba(138, 181, 209, 0.1);
-      padding: 0 32px; height: 56px;
+      position: sticky;
+      top: 0;
+      width: 100%;
+      z-index: 100;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+      background: rgba(4,3,2,0.58);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 16px var(--cx);
       display: flex; align-items: center; justify-content: space-between;
     }
-    .nav-brand {
-      display: flex; align-items: center; gap: 10px;
-      font-family: 'Press Start 2P', monospace;
-      font-size: 0.5rem; color: var(--blue);
-      letter-spacing: 0.22em; text-transform: uppercase;
+    .nav-left { display: flex; align-items: center; gap: 14px; }
+    .nav-sigil {
+      width: 20px; height: 20px; border-radius: 50%;
+      border: 1px solid var(--blue-dim);
+      position: relative;
+      box-shadow: 0 0 10px var(--blue-glow);
     }
-    .live-dot {
-      width: 7px; height: 7px; border-radius: 50%;
-      background: var(--aqua); box-shadow: 0 0 10px var(--aqua);
-      animation: breathe 3s ease-in-out infinite;
+    .nav-sigil::before {
+      content: '';
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--blue);
+      box-shadow: 0 0 6px var(--blue);
     }
-    @keyframes breathe {
-      0%,100%{opacity:1;transform:scale(1);}
-      50%{opacity:0.5;transform:scale(0.82);}
+    .nav-coord {
+      font-family: var(--font-m);
+      font-size: 9px; letter-spacing: 0.16em;
+      color: var(--text-ultra);
     }
-    .nav-links { display: flex; gap: 2px; list-style: none; align-items: center; }
+    .nav-links { display: flex; gap: 28px; list-style: none; }
     .nav-links a {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 7px 14px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11.5px; letter-spacing: 0.08em;
-      color: var(--text); text-decoration: none; transition: color 0.2s;
+      font-family: var(--font-m);
+      font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--text-faint); text-decoration: none;
+      transition: color 0.22s;
+      text-shadow: 0 1px 8px rgba(0,0,0,0.9);
     }
-    .nav-links a::before { content: '>'; color: var(--dim); }
-    .nav-links a:hover { color: var(--blue); }
-    .nav-links a:hover::before { color: var(--blue); }
+    .nav-links a:hover { color: var(--text); }
 
-    /* Dropdown nav items */
-    .nav-item { position: relative; }
-    .nav-item > .nav-trigger {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 7px 14px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11.5px; letter-spacing: 0.08em;
-      color: var(--text); text-decoration: none;
-      cursor: pointer; background: none; border: none;
-      transition: color 0.2s; white-space: nowrap;
-    }
-    .nav-item > .nav-trigger::before { content: '>'; color: var(--dim); margin-right: 2px; }
-    .nav-item > .nav-trigger::after  { content: '▾'; font-size: 9px; color: var(--dim); margin-left: 2px; transition: color 0.2s; }
-    .nav-item:hover > .nav-trigger,
-    .nav-item.open  > .nav-trigger   { color: var(--blue); }
-    .nav-item:hover > .nav-trigger::before,
-    .nav-item.open  > .nav-trigger::before,
-    .nav-item:hover > .nav-trigger::after,
-    .nav-item.open  > .nav-trigger::after { color: var(--blue); }
-
-    .nav-dropdown {
-      position: absolute; top: calc(100% + 4px); right: 0;
-      min-width: 180px;
-      background: rgba(10, 18, 16, 0.97);
-      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-      border: 1px solid var(--line);
-      padding: 6px 0;
-      opacity: 0; pointer-events: none;
-      transform: translateY(-6px);
-      transition: opacity 0.18s ease, transform 0.18s ease;
-      z-index: 200;
-    }
-    .nav-item:hover .nav-dropdown,
-    .nav-item.open  .nav-dropdown {
-      opacity: 1; pointer-events: auto; transform: translateY(0);
-    }
-    .nav-dropdown a {
-      display: flex; align-items: center; gap: 8px;
-      padding: 8px 16px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px; letter-spacing: 0.08em;
-      color: var(--dim); text-decoration: none;
-      transition: color 0.15s, background 0.15s;
-      white-space: nowrap;
-    }
-    .nav-dropdown a::before { content: '·'; color: var(--line); }
-    .nav-dropdown a:hover { color: var(--blue); background: rgba(127, 201, 179, 0.05); }
-    .nav-dropdown a:hover::before { color: var(--blue); }
-    .nav-dropdown-sep {
-      height: 1px; background: var(--line-soft); margin: 4px 0;
+    /* ════════════════════════════════════════
+       HERO
+    ════════════════════════════════════════ */
+    .hero {
+      min-height: calc(100dvh - 70px);
+      display: flex; flex-direction: column; justify-content: flex-start;
+      padding: 40px 0 36px;
     }
 
-    .hamburger {
-      display: none; flex-direction: column; justify-content: center;
-      gap: 5px; cursor: pointer; background: transparent; border: none; padding: 8px; z-index: 300;
-    }
-    .hamburger span { display: block; width: 22px; height: 2px; background: var(--text); transition: all 0.3s; }
-    .hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);background:var(--blue);}
-    .hamburger.open span:nth-child(2){opacity:0;}
-    .hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);background:var(--blue);}
+    @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
 
-    /* ── Channel scroll container ── */
-    .channels {
-      position: fixed;
-      top: 56px; /* nav only — ticker removed */
-      left: 0; right: 0; bottom: 0;
-      overflow-y: scroll;
-      scroll-snap-type: y proximity;
-      scroll-behavior: smooth;
-      -webkit-overflow-scrolling: touch;
-      z-index: 10;
-      scrollbar-width: none;
-    }
-    .channels::-webkit-scrollbar { display: none; }
+    .hero-inner { max-width: 640px; }
 
-    /* ── Individual channel ── */
-    .channel {
-      scroll-snap-align: start;
-      height: calc(100vh - 56px);
-      min-height: calc(100vh - 56px);
-      overflow: visible;
-      display: flex;
-      flex-direction: column;
-      padding: 0 28px;
-      justify-content: center;
-      position: relative;
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-family: var(--font-m);
+      font-size: 10px; letter-spacing: 0.24em; text-transform: uppercase;
+      color: rgba(238,245,248,0.80);
+      margin-bottom: 14px;
+      text-shadow: 0 1px 12px rgba(0,0,0,0.8);
+    }
+    .hero-eyebrow::before { content: '▸'; font-size: 8px; }
+
+    .hero-headline {
+      font-family: var(--font-d);
+      font-size: clamp(72px, 8vw, 108px);
+      font-weight: 300;
+      line-height: 0.96;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      margin-bottom: 24px;
+      text-shadow: 0 2px 40px rgba(0,0,0,0.6), 0 0 80px rgba(0,0,0,0.4);
+    }
+    .hero-headline em {
+      font-style: italic;
+      color: var(--text);
+      text-shadow: 0 2px 40px rgba(0,0,0,0.6);
     }
 
-    /* Channel viewport frame */
-    .ch-viewport {
-      height: 90%;
-      position: relative;
-      padding: 28px 36px 22px;
-      background: rgba(13,22,20,0.55);
-      display: flex; flex-direction: column;
-      /* No full border — two opposing corners give the frame without the cage */
-    }
-    /* Top-left corner only */
-    .ch-viewport::before {
-      content: ''; position: absolute;
-      width: 22px; height: 22px;
-      top: -1px; left: -1px;
-      border-top: 1px solid var(--blue);
-      border-left: 1px solid var(--blue);
-    }
-    /* Bottom-right corner only */
-    .ch-viewport .br-br {
-      position: absolute;
-      width: 22px; height: 22px;
-      bottom: -1px; right: -1px;
-      border-bottom: 1px solid var(--blue);
-      border-right: 1px solid var(--blue);
-    }
-    /* Hide the other two corners */
-    .ch-viewport::after,
-    .ch-viewport .br-bl { display: none; }
-
-    .ch-label {
-      position: absolute; top: -9px; left: 32px;
-      background: #0a1210; padding: 0 10px;
-      font-family: 'Press Start 2P', monospace;
-      font-size: 0.4rem; color: var(--aqua); letter-spacing: 0.28em;
-      z-index: 2;
-    }
-    .ch-id {
-      position: absolute; top: -9px; right: 32px;
-      background: #0a1210; padding: 0 10px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px; color: var(--dim); letter-spacing: 0.18em;
-      z-index: 2;
+    .hero-lede {
+      font-family: var(--font-m);
+      font-size: 13px; line-height: 1.85;
+      color: var(--text-dim);
+      max-width: 500px;
+      margin-bottom: 36px;
+      border-left: 1px solid var(--blue-dim);
+      padding-left: 20px;
+      text-shadow: 0 1px 12px rgba(0,0,0,0.9);
     }
 
-    .ch-content { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
-
-    /* ── Tune-in animation ── */
-    @keyframes tuneIn {
-      from { opacity:0.15; transform:scaleX(0.97) translateY(8px); filter:brightness(1.5) blur(1px); }
-      to   { opacity:1;    transform:scaleX(1)    translateY(0);   filter:brightness(1)   blur(0); }
+    .hero-foot {
+      margin-top: auto;
+      display: flex; align-items: center; gap: 24px;
+      padding-top: 28px;
+      border-top: 1px solid rgba(255,255,255,0.10);
+      font-family: var(--font-m);
+      font-size: 9px; letter-spacing: 0.20em; text-transform: uppercase;
+      color: var(--text-faint);
     }
-    .channel.tuning .ch-viewport {
-      animation: tuneIn 0.38s cubic-bezier(0.22,1,0.36,1) forwards;
-    }
+    .hero-foot-sep { width: 1px; height: 18px; background: rgba(255,255,255,0.12); }
+    .hero-foot .live { color: var(--text); }
 
-    /* ── Directional panel slides — removed, keeping standard reveal ── */
+    /* ════════════════════════════════════════
+       SECTION DIVIDER
+    ════════════════════════════════════════ */
+    .hr { border: none; border-top: 1px solid rgba(255,255,255,0.08); margin: 0; }
 
-
-    /* ── Channel entrance reveals (IO-driven, fire once) ──
-       Pieces inside each channel start hidden + slightly displaced.
-       When channel enters view, .in-view triggers the cascade.
-       Stagger comes from --d (delay multiplier) + nth-child fallbacks. */
-    .reveal {
-      opacity: 0;
-      transform: translateY(14px);
-      transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
-                  transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
-      transition-delay: calc(var(--d, 0) * 80ms);
-      will-change: opacity, transform;
-    }
-    .reveal-x { transform: translateX(-18px); }
-    .reveal-scale { transform: scale(0.96); }
-    .reveal-blur { filter: blur(6px); transition-property: opacity, transform, filter; }
-    .channel.in-view .reveal { opacity: 1; transform: translate(0, 0) scale(1); filter: blur(0); }
-
-    /* Generic stagger via nth-child — applies to most channel inner content */
-    .channel.in-view .stagger > * { animation: revealUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) both; }
-    .channel.in-view .stagger > *:nth-child(1) { animation-delay: 0.05s; }
-    .channel.in-view .stagger > *:nth-child(2) { animation-delay: 0.13s; }
-    .channel.in-view .stagger > *:nth-child(3) { animation-delay: 0.21s; }
-    .channel.in-view .stagger > *:nth-child(4) { animation-delay: 0.29s; }
-    .channel.in-view .stagger > *:nth-child(5) { animation-delay: 0.37s; }
-    .channel.in-view .stagger > *:nth-child(6) { animation-delay: 0.45s; }
-    .stagger > * { opacity: 0; }
-    @keyframes revealUp {
-      from { opacity: 0; transform: translateY(16px); }
-      to   { opacity: 1; transform: translateY(0); }
+    /* ════════════════════════════════════════
+       BRIEF + IDENTITY PANEL
+    ════════════════════════════════════════ */
+    .brief-section {
+      padding: 96px 0;
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 80px;
+      align-items: start;
     }
 
-    /* Hero title character-by-character reveal */
-    .greet-title .ch {
-      display: inline-block;
-      opacity: 0;
-      transform: translateY(20px) rotate(-4deg);
-      transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-      transition-delay: calc(var(--i, 0) * 35ms + 200ms);
+    .section-tag {
+      display: flex; align-items: center; gap: 12px;
+      font-family: var(--font-m);
+      font-size: 9px; letter-spacing: 0.30em; text-transform: uppercase;
+      color: var(--text-ultra);
+      margin-bottom: 28px;
     }
-    .channel.in-view .greet-title .ch { opacity: 1; transform: translateY(0) rotate(0); }
-
-    /* Module card 3D tilt setup */
-    .module-card {
-      transform-style: preserve-3d;
-      transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
-                  border-color 0.2s, background 0.2s, box-shadow 0.4s;
-    }
-    .module-card:hover { box-shadow: 0 12px 40px -12px rgba(138, 181, 209, 0.2); }
-
-    /* ── Nav clock (moved from hero) ── */
-    .nav-clock {
-      display: flex; align-items: center; gap: 10px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px; color: var(--dim); letter-spacing: 0.14em;
-    }
-    .nav-clock-time {
-      font-family: 'VT323', monospace;
-      font-size: 1.25rem; line-height: 1;
-      color: var(--aqua);
-    }
-    .nav-clock-time .blink { animation: blink 1.2s steps(2) infinite; }
-    .nav-clock-sep { width: 1px; height: 14px; background: var(--line); }
-
-    /* ── Top scroll progress bar ── */
-    .scroll-progress {
-      position: fixed; top: 0; left: 0;
-      height: 2px; width: 0%;
-      background: linear-gradient(to right, var(--aqua), var(--blue));
-      z-index: 200;
-      transition: width 0.12s ease-out;
-      box-shadow: 0 0 10px var(--aqua);
+    .section-tag::after {
+      content: ''; flex: 1; height: 1px;
+      background: var(--edge); max-width: 64px;
     }
 
-    /* ── Hero status rotator ── */
-    .greet-status {
-      display: inline-flex; align-items: center; gap: 8px;
-      margin-top: 10px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px; color: var(--sage);
-      letter-spacing: 0.14em; text-transform: uppercase;
-      min-height: 16px;
+    .brief-headline {
+      font-family: var(--font-d);
+      font-size: 46px; font-weight: 300; line-height: 1.16;
+      letter-spacing: -0.01em;
+      color: var(--text);
+      margin-bottom: 24px;
     }
-    .greet-status::before {
-      content: ''; width: 5px; height: 5px;
-      background: var(--sage); border-radius: 50%;
-      box-shadow: 0 0 6px var(--sage);
-      animation: breathe 2s ease-in-out infinite;
-    }
-    .greet-status .rotate-text {
-      display: inline-block;
-      animation: statusFade 4s ease-in-out infinite;
-    }
-    @keyframes statusFade {
-      0%, 22%   { opacity: 1; transform: translateY(0); }
-      28%, 30%  { opacity: 0; transform: translateY(-6px); }
-      35%, 100% { opacity: 1; transform: translateY(0); }
+    .brief-headline em { font-style: italic; color: var(--text); }
+
+    .brief-body {
+      font-family: var(--font-m);
+      font-size: 13px; line-height: 2.1;
+      color: var(--text-dim);
+      margin-bottom: 40px; max-width: 440px;
     }
 
-    /* Reduced motion: respect the user's preference */
-    @media (prefers-reduced-motion: reduce) {
-      .reveal, .stagger > *, .greet-title .ch {
-        opacity: 1 !important; transform: none !important; filter: none !important;
-        transition: none !important; animation: none !important;
-      }
-      .greet-status .rotate-text { animation: none !important; }
-    }
-
-    /* Static flash */
-    .static-flash {
-      position: fixed; inset: 0; z-index: 9998;
-      pointer-events: none; opacity: 0;
-      background: repeating-linear-gradient(
-        0deg, rgba(255,255,255,0.04) 0px, rgba(255,255,255,0.04) 1px,
-        transparent 1px, transparent 4px
+    /* Identity card — double-bezel */
+    .id-card-outer {
+      padding: 1.5px; border-radius: 18px;
+      background: linear-gradient(145deg,
+        rgba(91,184,212,0.35),
+        rgba(150,200,230,0.15),
+        rgba(60,140,180,0.25)
       );
-      mix-blend-mode: overlay;
+      box-shadow: 0 0 40px rgba(91,184,212,0.08), 0 28px 60px rgba(0,0,0,0.70);
     }
-    .static-flash.on { opacity: 1; }
-
-    /* ── Dot nav (side) — channel tuner ── */
-    .ch-dots {
-      position: fixed; right: 18px; top: 50%;
-      transform: translateY(-50%);
-      z-index: 200;
-      display: flex; flex-direction: column; gap: 18px;
+    .id-card-inner {
+      border-radius: 16.5px;
+      background: var(--panel-deep);
+      padding: 30px;
+      position: relative; overflow: hidden;
     }
-    .ch-dots::before {
-      /* Vertical track line behind the dots */
+    .id-card-inner::before {
       content: '';
-      position: absolute;
-      top: 4px; bottom: 4px; left: 50%;
-      width: 1px;
-      background: var(--line-soft);
-      transform: translateX(-50%);
-      z-index: -1;
-    }
-    .ch-dots::after {
-      /* Filled portion of the track, sized via --progress var */
-      content: '';
-      position: absolute;
-      top: 4px; left: 50%;
-      width: 1px;
-      height: calc(var(--progress, 0) * (100% - 8px));
-      background: linear-gradient(to bottom, var(--aqua), var(--blue));
-      transform: translateX(-50%);
-      transition: height 0.18s ease;
-      z-index: -1;
-      box-shadow: 0 0 6px var(--aqua);
-    }
-    .ch-dot {
-      position: relative;
-      width: 7px; height: 7px; border-radius: 50%;
-      background: var(--dim);
-      transition: background 0.25s, box-shadow 0.25s, transform 0.25s;
-      cursor: pointer;
-      border: none; padding: 0; appearance: none;
-    }
-    .ch-dot::after {
-      /* Channel label that appears on hover */
-      content: attr(data-label);
-      position: absolute;
-      right: 18px; top: 50%;
-      transform: translateY(-50%) translateX(8px);
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 10px; color: var(--text);
-      letter-spacing: 0.14em; text-transform: uppercase;
-      white-space: nowrap;
-      padding: 4px 10px;
-      background: rgba(13, 22, 20, 0.92);
-      border: 1px solid var(--line);
-      opacity: 0; pointer-events: none;
-      transition: opacity 0.2s, transform 0.2s;
-    }
-    .ch-dot:hover::after {
-      opacity: 1; transform: translateY(-50%) translateX(0);
-    }
-    .ch-dot:hover { background: var(--blue); transform: scale(1.3); }
-    .ch-dot.active {
-      background: var(--aqua); box-shadow: 0 0 10px var(--aqua);
-      transform: scale(1.5);
+      position: absolute; top: -50px; right: -50px;
+      width: 180px; height: 180px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(91,184,212,0.07) 0%, transparent 70%);
+      pointer-events: none;
     }
 
-    /* ── Shared section utilities ── */
-    .section-label {
-      font-family: 'Press Start 2P', monospace;
-      font-size: 0.4rem; color: var(--blue);
-      letter-spacing: 0.3em; margin-bottom: 16px;
-      display: flex; align-items: center; gap: 14px;
-    }
-    .section-label .fill { flex:1; height:1px; background: linear-gradient(to right, var(--line), transparent); }
-    .section-label .meta { font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--dim); letter-spacing:0.15em; }
+    .hc { position: absolute; width: 12px; height: 12px; }
+    .hc.tl { top: 11px; left: 11px; border-top: 1px solid var(--edge-bright); border-left: 1px solid var(--edge-bright); }
+    .hc.tr { top: 11px; right: 11px; border-top: 1px solid var(--edge-bright); border-right: 1px solid var(--edge-bright); }
+    .hc.bl { bottom: 11px; left: 11px; border-bottom: 1px solid var(--edge-bright); border-left: 1px solid var(--edge-bright); }
+    .hc.br { bottom: 11px; right: 11px; border-bottom: 1px solid var(--edge-bright); border-right: 1px solid var(--edge-bright); }
 
-    .ch-foot {
-      margin-top: 10px; padding-top: 10px;
-      border-top: 1px dashed var(--line-soft);
-      display: flex; justify-content: space-between;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px; color: var(--dim); letter-spacing: 0.12em;
-      flex-shrink: 0;
+    .card-ref {
+      font-family: var(--font-m); font-size: 8px;
+      letter-spacing: 0.26em; text-transform: uppercase;
+      color: var(--text-ultra); margin-bottom: 18px;
     }
-    .ch-foot .left { display:flex; align-items:center; gap:10px; }
-    .ch-foot .dot { width:5px; height:5px; border-radius:50%; background:var(--aqua); box-shadow:0 0 5px var(--aqua); animation:breathe 3s ease-in-out infinite; }
-    .ch-foot .right a { color:var(--text); text-decoration:none; margin-left:18px; transition:color 0.2s; }
-    .ch-foot .right a:hover { color:var(--blue); }
+    .card-name { font-family: var(--font-d); font-size: 30px; font-weight: 300; margin-bottom: 4px; color: var(--text); }
+    .card-role {
+      font-family: var(--font-m); font-size: 10px;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--text-faint); margin-bottom: 22px;
+    }
+    .card-sep { height: 1px; background: linear-gradient(to right, var(--edge-bright), transparent); margin-bottom: 22px; }
+    .card-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 22px; }
+    .stat-num {
+      font-family: var(--font-d); font-size: 34px; font-weight: 300;
+      color: var(--blue); line-height: 1; margin-bottom: 4px;
+      text-shadow: 0 0 20px var(--blue-glow);
+    }
+    .stat-label {
+      font-family: var(--font-m); font-size: 8px;
+      letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-faint);
+    }
+    .card-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .ctag {
+      padding: 4px 10px; border-radius: 999px;
+      border: 1px solid var(--edge);
+      font-family: var(--font-m); font-size: 8px;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--text-faint); background: var(--blue-ultra);
+    }
 
-    /* ─────────────────────────────────
-       CH.00 — HERO
-    ───────────────────────────────── */
-    .dash-head {
-      display: grid; grid-template-columns: 1fr auto;
-      gap: 40px; align-items: end;
-      margin-bottom: 28px; padding-bottom: 22px;
-      border-bottom: 1px dashed var(--line-soft);
+    /* ════════════════════════════════════════
+       WORK — EXPERIENCE + SPOTLIGHT
+    ════════════════════════════════════════ */
+    .work-section {
+      padding: 0 0 96px;
     }
-    .greet-kicker {
-      font-family: 'Press Start 2P', monospace;
-      font-size: 0.38rem; color: var(--sage);
-      letter-spacing: 0.3em; text-transform: uppercase;
-      margin-bottom: 16px; display: flex; align-items: center; gap: 12px;
-    }
-    .greet-kicker::before { content:''; width:24px; height:1px; background:var(--sage); }
-    .greet-title {
-      font-family: 'VT323', monospace;
-      font-size: clamp(2.2rem, 4.5vw, 3.8rem);
-      line-height: 1; color: var(--white); margin-bottom: 10px;
-    }
-    .greet-title .accent { color: var(--blue); }
-    .greet-sub { font-size: 13px; color: var(--dim); letter-spacing: 0.03em; }
-    .greet-sub .hl { color: var(--aqua); }
-    .hero-lede { font-size: 13px; color: var(--dim); line-height: 1.8; max-width: 580px; }
-    .scroll-hint {
-      display: flex; align-items: center; gap: 10px;
-      font-family: 'Press Start 2P', monospace;
-      font-size: 0.3rem; color: var(--dim); letter-spacing: 0.2em;
-      margin-top: auto; padding-top: 16px;
-      animation: hintPulse 2.5s ease-in-out infinite;
-    }
-    .scroll-hint::after { content: '▼'; color: var(--aqua); font-size: 0.5rem; }
-    @keyframes hintPulse { 0%,100%{opacity:0.4;} 50%{opacity:1;} }
 
-    /* ─────────────────────────────────
-       CH.01 — EXPERIENCE + PORTFOLIO
-    ───────────────────────────────── */
-    .exp-port-grid {
+    .work-header {
+      display: flex; align-items: baseline; justify-content: space-between;
+      margin-bottom: 40px;
+    }
+    .work-title { font-family: var(--font-d); font-size: 50px; font-weight: 300; color: var(--text); }
+    .work-title em { font-style: italic; color: var(--text); }
+    .work-count { font-family: var(--font-m); font-size: 9px; letter-spacing: 0.20em; color: var(--text); }
+
+    /* two-col grid: experience left, spotlight right */
+    .work-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 0;
-      flex: 1;
-      min-height: 0;
+      gap: 32px;
+      align-items: start;
     }
-    .exp-panel {
-      display: flex; flex-direction: column; gap: 10px;
-      overflow: hidden;
-      padding-right: 32px;
-    }
-    .port-panel {
-      display: flex; flex-direction: column; gap: 10px;
-      overflow: hidden;
-      padding-left: 32px;
-      border-left: 1px solid var(--line-soft);
-    }
-    .panel-head {
-      display: flex; justify-content: space-between; align-items: baseline;
-      padding-bottom: 8px; border-bottom: 1px solid var(--line-soft);
-      flex-shrink: 0;
-    }
-    .panel-head h3 {
-      font-family: 'VT323', monospace;
-      font-size: 1.5rem; color: var(--white); line-height: 1;
-    }
-    .panel-head a {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px; color: var(--aqua); text-decoration: none; letter-spacing: 0.06em;
-    }
-    .panel-head a:hover { text-decoration: underline; }
 
-    /* CV entries — spacing only, no borders */
-    .cv-entries { display: flex; flex-direction: column; overflow: hidden; }
+    /* ── LEFT: Experience panel ─────────────── */
+    .work-panel {
+      display: flex; flex-direction: column; gap: 0;
+    }
+    .work-panel-label {
+      font-family: var(--font-m); font-size: 9px;
+      letter-spacing: 0.28em; text-transform: uppercase;
+      color: var(--text); margin-bottom: 28px;
+    }
+
+    .cv-entries { display: flex; flex-direction: column; gap: 0; }
+
     .cv-entry {
-      display: grid; grid-template-columns: 100px 1fr;
-      gap: 12px; padding: 10px 0;
+      display: grid;
+      grid-template-columns: 90px 1fr;
+      gap: 0 20px;
+      padding: 22px 0;
+      border-top: 1px solid rgba(238,245,248,0.07);
+      position: relative;
     }
-    .cv-entry:last-child { padding-bottom: 0; }
-    .cv-period { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--dim); letter-spacing:0.06em; padding-top:2px; }
-    .cv-role { font-size: 13.5px; font-weight: 500; color: var(--text); margin-bottom: 2px; font-family:'Inter',sans-serif; }
-    .cv-org { font-size: 12px; color: var(--dim); font-family:'JetBrains Mono',monospace; }
+    .cv-entry:last-child { border-bottom: 1px solid rgba(238,245,248,0.07); }
 
-    /* Portfolio spotlight */
+    .cv-period {
+      font-family: var(--font-m); font-size: 9px;
+      letter-spacing: 0.14em; color: var(--text);
+      padding-top: 2px; line-height: 1.7;
+    }
+
+    .cv-body {}
+
+    .cv-role {
+      font-family: var(--font-d); font-size: 20px;
+      font-weight: 300; line-height: 1.18;
+      font-variation-settings: 'opsz' 20;
+      color: var(--text); margin-bottom: 4px;
+    }
+    .cv-role em { font-style: italic; }
+
+    .cv-org {
+      font-family: var(--font-m); font-size: 10px;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--text); margin-bottom: 10px;
+    }
+
+    .cv-note {
+      font-family: var(--font-m); font-size: 12px;
+      line-height: 1.85; color: var(--text);
+    }
+
+    /* current indicator */
+    .cv-now {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: var(--font-m); font-size: 8px;
+      letter-spacing: 0.20em; text-transform: uppercase;
+      color: var(--text); margin-top: 8px;
+    }
+    .cv-now-dot {
+      width: 4px; height: 4px; border-radius: 50%;
+      background: var(--text); box-shadow: 0 0 5px rgba(238,245,248,0.5);
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+
+    /* ── RIGHT: Spotlight card ──────────────── */
+    .spotlight-wrap {
+      display: flex; flex-direction: column;
+    }
+    .spotlight-label {
+      font-family: var(--font-m); font-size: 9px;
+      letter-spacing: 0.28em; text-transform: uppercase;
+      color: var(--text); margin-bottom: 28px;
+    }
+
     .spotlight {
-      flex: 1;
-      background: rgba(19,29,28,0.6);
-      border: 1px solid var(--line-soft);
-      padding: 14px 18px;
-      display: flex; flex-direction: column; gap: 8px;
-      min-height: 0;
+      border-radius: 16px;
+      background: rgba(8,6,4,0.30);
+      border: 1px solid rgba(238,245,248,0.08);
+      padding: 34px 32px 28px;
+      position: relative; overflow: hidden;
+      transition: border-color 0.32s, box-shadow 0.32s;
+      /* fade state managed by JS */
+      opacity: 1;
+      transition: opacity 0.38s cubic-bezier(0.32,0.72,0,1),
+                  border-color 0.32s, box-shadow 0.32s;
     }
-    .spot-tag {
-      font-family: 'Press Start 2P', monospace;
-      font-size: 0.3rem; color: var(--dim);
-      letter-spacing: 0.2em; text-transform: uppercase;
-      display: flex; align-items: center; gap: 8px;
+    .spotlight:hover {
+      border-color: var(--edge-bright);
+      box-shadow: 0 0 32px var(--blue-glow);
     }
-    .spot-tag::before { content:''; width:5px; height:5px; border-radius:50%; background:var(--aqua); flex-shrink:0; }
+    /* ambient glow in top-right corner */
+    .spotlight::after {
+      content: ''; position: absolute; top: -30px; right: -30px;
+      width: 160px; height: 160px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(91,184,212,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .spotlight.fading { opacity: 0; }
+
+    .spot-ref {
+      font-family: var(--font-m); font-size: 9px;
+      letter-spacing: 0.24em; text-transform: uppercase;
+      color: var(--text); margin-bottom: 24px;
+    }
+
     .spot-title {
-      font-family: 'VT323', monospace;
-      font-size: 1.55rem; color: var(--white); line-height: 1.15;
+      font-family: var(--font-d); font-size: 28px;
+      font-weight: 300; line-height: 1.18;
+      font-variation-settings: 'opsz' 28;
+      color: var(--text); margin-bottom: 8px;
     }
-    .spot-desc { font-size: 12.5px; color: var(--dim); line-height: 1.65; flex: 1; overflow: hidden; }
+    .spot-title em { font-style: italic; }
+
+    .spot-type {
+      font-family: var(--font-m); font-size: 10px;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--text); margin-bottom: 18px;
+    }
+
+    .spot-desc {
+      font-family: var(--font-m); font-size: 13px;
+      line-height: 1.92; color: var(--text);
+      margin-bottom: 28px;
+    }
+
     .spot-foot {
-      display: flex; justify-content: space-between; align-items: center;
-      padding-top: 12px; border-top: 1px solid var(--line-soft);
+      display: flex; align-items: center;
+      justify-content: space-between; gap: 16px;
+    }
+
+    .spot-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .spot-pill {
+      padding: 4px 10px; border-radius: 999px;
+      border: 1px solid rgba(238,245,248,0.20);
+      font-family: var(--font-m); font-size: 9px;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--text); background: rgba(238,245,248,0.05);
+    }
+
+    .spot-nav {
+      display: flex; align-items: center; gap: 10px;
       flex-shrink: 0;
     }
-    .spot-tags { display: flex; gap: 6px; flex-wrap: wrap; }
-    .spot-tag-pill {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 10px; color: var(--dim);
-      padding: 2px 8px;
-      border: 1px solid var(--line-soft);
-      letter-spacing: 0.04em;
-    }
-    .spot-nav { display: flex; gap: 6px; }
     .spot-btn {
-      width: 28px; height: 28px;
-      border: 1px solid var(--line-strong, #334039);
-      background: transparent; color: var(--dim);
-      cursor: pointer; font-size: 12px;
+      width: 32px; height: 32px; border-radius: 50%;
+      border: 1px solid rgba(238,245,248,0.25);
+      background: none; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
-      transition: all 0.2s;
+      font-size: 13px; color: var(--text);
+      transition: border-color 0.22s, color 0.22s, transform 0.26s cubic-bezier(0.32,0.72,0,1);
     }
-    .spot-btn:hover { border-color: var(--aqua); color: var(--aqua); }
-
-    /* ─────────────────────────────────
-       CH.02 — MODULES
-    ───────────────────────────────── */
-    .modules { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; }
-    .module-card {
-      display: block; padding: 16px 18px 14px;
-      border: 1px solid var(--line);
-      background: rgba(19,29,28,0.55);
-      text-decoration: none; color: var(--text);
-      position: relative; transition: all 0.2s;
+    .spot-btn:hover {
+      border-color: var(--text); color: var(--text);
+      transform: scale(1.08);
     }
-    .module-card:hover { border-color:var(--blue); background:rgba(138,181,209,0.05); transform:translateY(-2px); }
-    .m-code { font-family:'Press Start 2P',monospace; font-size:0.32rem; color:var(--dim); letter-spacing:0.22em; margin-bottom:8px; }
-    .m-name { font-family:'VT323',monospace; font-size:1.5rem; line-height:1.05; color:var(--white); margin-bottom:10px; transition:color 0.2s; }
-    .module-card:hover .m-name { color:var(--blue); }
-    .m-foot { display:flex; justify-content:space-between; align-items:center; font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--dim); letter-spacing:0.12em; text-transform:uppercase; }
-    .status.live { color:var(--aqua); }
-    .status.live::before { content:'● '; }
-
-    /* ─────────────────────────────────
-       CH.03 — BRIEF
-    ───────────────────────────────── */
-    .brief-body {
-      flex: 1; display: flex; flex-direction: column;
-      justify-content: safe center;
-      max-width: 720px;
-    }
-    .brief-body p {
-      font-family: 'VT323', monospace;
-      font-size: clamp(1.1rem, 1.7vw, 1.55rem);
-      line-height: 1.35; color: var(--text); margin-bottom: 12px;
-    }
-    .brief-body p .hl   { color: var(--aqua); }
-    .brief-body p .sage { color: var(--sage); }
-    .brief-meta {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11.5px; color: var(--dim); letter-spacing: 0.1em; line-height: 1.65;
-      border-left: 2px solid var(--line-soft); padding-left: 16px; margin-top: 6px;
+    .spot-counter {
+      font-family: var(--font-m); font-size: 9px;
+      letter-spacing: 0.18em; color: var(--text);
+      min-width: 28px; text-align: center;
     }
 
-    /* ─────────────────────────────────
-       CH.05 — OPEN CHANNEL
-    ───────────────────────────────── */
-    .open-ch {
-      flex: 1; display: flex; flex-direction: column; justify-content: center;
-      max-width: 680px;
+    /* ════════════════════════════════════════
+       CONTACT
+    ════════════════════════════════════════ */
+    .contact-section {
+      padding: 96px 0 80px;
+      text-align: center;
+      position: relative;
     }
-    .open-ch h2 {
-      font-family: 'VT323', monospace;
-      font-size: clamp(2rem, 4vw, 3rem);
-      color: var(--white); margin-bottom: 14px; line-height: 1;
-    }
-    .open-ch h2 .accent { color: var(--aqua); }
-    .open-ch p { font-size: 13.5px; color: var(--dim); line-height: 1.75; margin-bottom: 28px; max-width: 520px; }
-    .open-ch-links { display: flex; gap: 14px; flex-wrap: wrap; }
-    .ch-link {
+
+    .contact-inner { position: relative; z-index: 1; }
+
+    .contact-badge {
       display: inline-flex; align-items: center; gap: 8px;
-      padding: 9px 20px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 12px; letter-spacing: 0.08em;
-      text-decoration: none; transition: all 0.2s;
+      font-family: var(--font-m); font-size: 8px;
+      letter-spacing: 0.30em; text-transform: uppercase;
+      color: var(--text-ultra);
+      border: 1px solid rgba(255,255,255,0.10);
+      padding: 6px 14px; margin-bottom: 20px;
     }
-    .ch-link.primary { background: var(--aqua); color: var(--deep); }
-    .ch-link.primary:hover { background: var(--sage); }
-    .ch-link.secondary { border: 1px solid var(--line); color: var(--text); }
-    .ch-link.secondary:hover { border-color: var(--blue); color: var(--blue); }
+    .badge-dot {
+      width: 4px; height: 4px; border-radius: 50%;
+      background: var(--blue); box-shadow: 0 0 6px var(--blue);
+      animation: pulse 1.6s ease-in-out infinite;
+    }
 
-    /* Boot */
-    .boot {
-      position: fixed; inset: 0; background: var(--deep); z-index: 9999;
+    .contact-eyebrow {
+      font-family: var(--font-m); font-size: 9px;
+      letter-spacing: 0.32em; text-transform: uppercase;
+      color: var(--text-ultra);
+      display: flex; align-items: center; justify-content: center; gap: 16px;
+      margin-bottom: 28px;
+    }
+    .contact-eyebrow::before, .contact-eyebrow::after {
+      content: ''; width: 32px; height: 1px; background: var(--edge);
+    }
+
+    .contact-headline {
+      font-family: var(--font-d);
+      font-size: clamp(56px, 6vw, 80px); font-weight: 300; line-height: 1.04;
+      color: var(--text);
+      margin-bottom: 24px;
+    }
+    .contact-headline em { font-style: italic; color: var(--text); }
+
+    .contact-sub {
+      font-family: var(--font-m); font-size: 13px;
+      color: var(--text-dim); line-height: 2.1;
+      margin-bottom: 48px; max-width: 500px;
+      margin-left: auto; margin-right: auto;
+    }
+
+    .contact-actions { display: flex; align-items: center; justify-content: center; gap: 20px; }
+
+    /* Double-bezel primary button */
+    .btn-primary {
+      display: inline-flex; align-items: center;
+      padding: 2px; border-radius: 999px;
+      background: linear-gradient(135deg, rgba(91,184,212,0.65), rgba(120,200,230,0.40));
+      box-shadow: 0 0 28px rgba(91,184,212,0.18), 0 0 56px rgba(91,184,212,0.07);
+      text-decoration: none;
+      transition: box-shadow 0.32s cubic-bezier(0.32,0.72,0,1), transform 0.25s cubic-bezier(0.32,0.72,0,1);
+    }
+    .btn-primary:hover {
+      box-shadow: 0 0 40px rgba(91,184,212,0.30), 0 0 80px rgba(91,184,212,0.12);
+      transform: translateY(-2px);
+    }
+    .btn-primary-inner {
+      display: inline-flex; align-items: center; gap: 12px;
+      padding: 13px 28px; border-radius: 999px;
+      background: rgba(5,3,2,0.95);
+      font-family: var(--font-m); font-size: 11px;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--text);
+    }
+    .btn-icon {
+      width: 24px; height: 24px; border-radius: 50%;
+      background: rgba(91,184,212,0.12);
+      border: 1px solid var(--edge-bright);
       display: flex; align-items: center; justify-content: center;
-      flex-direction: column; font-family: 'VT323', monospace;
-      animation: bootOut 0.5s ease 1.8s forwards;
+      font-size: 11px; color: var(--blue);
+      transition: transform 0.25s cubic-bezier(0.32,0.72,0,1);
     }
-    @keyframes bootOut { to{opacity:0;pointer-events:none;} }
-    .boot-lines { font-size: 18px; line-height: 1.8; color: var(--text); text-align: left; }
-    .boot-lines div { opacity:0; animation:bootLine 0.15s forwards; }
-    .boot-lines div:nth-child(1){animation-delay:0.2s;color:var(--blue);}
-    .boot-lines div:nth-child(2){animation-delay:0.6s;}
-    .boot-lines div:nth-child(3){animation-delay:1.0s;}
-    .boot-lines div:nth-child(4){animation-delay:1.4s;color:var(--aqua);}
-    @keyframes bootLine { to{opacity:1;} }
+    .btn-primary:hover .btn-icon { transform: translate(2px,-2px) scale(1.08); }
 
-    /* Mobile */
-    @media (max-width: 880px) {
-      .hamburger { display: flex; }
-      .nav-links {
-        display: none; flex-direction: column; gap: 0;
-        position: fixed; top: 56px; left: 0; right: 0;
-        background: var(--panel-2); backdrop-filter: blur(10px);
-        padding: 12px 24px 16px; border-bottom: 1px solid var(--line);
-      }
-      .nav-links.open { display: flex; }
-      .nav-links li { border-bottom: 1px dashed var(--line-soft); }
-      .nav-links li:last-child { border-bottom: none; }
-      .nav-links a { padding: 12px 6px; font-size: 13px; }
-      .nav-clock { display: none; }
-      /* Mobile dropdowns: flat list, no float */
-      .nav-item { position: static; }
-      .nav-item > .nav-trigger { padding: 12px 6px; font-size: 13px; width: 100%; text-align: left; color: var(--text); }
-      .nav-dropdown {
-        position: static; opacity: 1; pointer-events: auto;
-        transform: none; border: none; background: transparent;
-        backdrop-filter: none; padding: 0 0 0 16px;
-        display: none;
-      }
-      .nav-item.open .nav-dropdown { display: block; }
-      .nav-dropdown a { padding: 8px 6px; font-size: 12px; }
-      .ch-viewport { padding: 24px 18px 20px; height: 92%; }
-      .channel { padding: 0 14px; }
-      .dash-head { grid-template-columns: 1fr; }
-      .exp-port-grid { grid-template-columns: 1fr; }
-      .exp-panel { padding-right: 0; border-right: none; }
-      .port-panel { padding-left: 0; border-left: none; border-top: 1px solid var(--line-soft); padding-top: 20px; }
-      .modules { grid-template-columns: 1fr; }
-      .ch-dots { display: none; }
-      .ch-label { left: 20px; font-size: 0.34rem; }
-      .ch-id { right: 20px; font-size: 10px; }
+    .btn-ghost {
+      font-family: var(--font-m); font-size: 11px;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--text-dim); text-decoration: none;
+      padding: 13px 0;
+      border-bottom: 1px solid var(--edge);
+      transition: color 0.22s, border-color 0.22s;
+    }
+    .btn-ghost:hover { color: var(--blue); border-color: var(--blue-dim); }
+
+    /* ════════════════════════════════════════
+       RESPONSIVE
+    ════════════════════════════════════════ */
+    @media (max-width: 1024px) {
+      :root { --cx: 32px; }
+      .nav-coord { display: none; }
+      .brief-section { grid-template-columns: 1fr; gap: 48px; }
+      .brief-headline { font-size: 38px; }
+      .work-grid { grid-template-columns: 1fr; gap: 56px; }
+      .contact-headline { font-size: clamp(44px, 5vw, 64px); }
+    }
+
+    @media (max-width: 768px) {
+      :root { --cx: 24px; }
+      .nav-inner { flex-wrap: wrap; gap: 12px; }
+      .nav-links { gap: 18px; }
+      .hero { padding: 44px 0 36px; }
+      .hero-headline { font-size: clamp(52px, 11vw, 80px); }
+      .work-grid { grid-template-columns: 1fr; gap: 48px; }
+      .cv-entry { grid-template-columns: 72px 1fr; gap: 0 16px; }
+      .contact-actions { flex-direction: column; align-items: center; gap: 16px; }
+      .btn-ghost { padding: 10px 0; }
+    }
+
+    @media (max-width: 480px) {
+      :root { --cx: 18px; }
+      .nav-links { display: none; }
+      .hero { padding: 36px 0 32px; }
+      .hero-headline { font-size: clamp(44px, 13vw, 64px); }
+      .hero-lede { font-size: 12px; }
+      .hero-foot { flex-wrap: wrap; gap: 10px; }
+      .hero-foot-sep { display: none; }
+      .brief-section { padding: 64px 0; gap: 40px; }
+      .brief-headline { font-size: 30px; }
+      .brief-body { font-size: 12px; }
+      .work-section { padding: 0 0 64px; }
+      .work-title { font-size: 36px; }
+      .work-grid { grid-template-columns: 1fr; gap: 40px; }
+      .cv-entry { grid-template-columns: 1fr; gap: 8px; }
+      .cv-entry::before { display: none; }
+      .spotlight { padding: 24px 20px 20px; }
+      .spot-title { font-size: 22px; }
+      .spot-foot { flex-direction: column; align-items: flex-start; gap: 14px; }
+      .contact-section { padding: 64px 0 56px; }
+      .contact-headline { font-size: clamp(36px, 10vw, 52px); }
+      .contact-sub { font-size: 12px; }
+      .btn-primary-inner { font-size: 9px; padding: 12px 20px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Boot -->
-  <div class="boot">
-    <div class="boot-lines">
-      <div>▮ STATION 42 · FIELD POST</div>
-      <div>warming the instruments...</div>
-      <div>opening the shutters...</div>
-      <div>welcome back, observer.</div>
+<!-- Mars background -->
+<div class="scene-bg"></div>
+<div class="scene-vignette"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <div class="nav-left">
+      <div class="nav-sigil"></div>
     </div>
-  </div>
-
-  <!-- Static flash overlay -->
-  <div class="static-flash" id="staticFlash"></div>
-
-  <!-- Top scroll progress bar -->
-  <div class="scroll-progress" id="scrollProgress"></div>
-
-  <!-- Background -->
-  <div class="scanlines"></div>
-  <div class="grain"></div>
-
-  <!-- Dot nav — buttons for accessibility, with channel labels on hover -->
-  <div class="ch-dots" id="chDots" role="navigation" aria-label="Channel navigation">
-    <button class="ch-dot active" data-ch="0" data-label="00 · field post"   aria-label="Channel 0: Field post"></button>
-    <button class="ch-dot"        data-ch="1" data-label="01 · the work"     aria-label="Channel 1: Experience + Portfolio"></button>
-    <button class="ch-dot"        data-ch="2" data-label="02 · modules"      aria-label="Channel 2: Modules"></button>
-    <button class="ch-dot"        data-ch="3" data-label="03 · brief"        aria-label="Channel 3: Brief"></button>
-    <button class="ch-dot"        data-ch="4" data-label="04 · open channel" aria-label="Channel 4: Open channel"></button>
-  </div>
-
-  <!-- Nav -->
-  <nav>
-    <span class="nav-brand">
-      <span class="live-dot"></span>
-      Simran Shah · Station 42
-    </span>
-    <div class="nav-clock">
-      <span class="nav-clock-time"><span id="hh">00</span><span class="blink">:</span><span id="mm">00</span></span>
-      <span class="nav-clock-sep"></span>
-      <span id="dateLine">—</span>
-    </div>
-    <button class="hamburger" id="hamburger" aria-label="Toggle menu">
-      <span></span><span></span><span></span>
-    </button>
-    <ul class="nav-links" id="navLinks">
-      <li><a href="index.html" class="active">home</a></li>
-      <li class="nav-item" id="navWork">
-        <button class="nav-trigger" aria-haspopup="true" aria-expanded="false">work</button>
-        <div class="nav-dropdown" role="menu">
-          <a href="cv.html" role="menuitem">CV</a>
-          <a href="portfolio.html" role="menuitem">portfolio</a>
-        </div>
-      </li>
-      <li class="nav-item" id="navArchive">
-        <button class="nav-trigger" aria-haspopup="true" aria-expanded="false">archive</button>
-        <div class="nav-dropdown" role="menu">
-          <a href="books.html" role="menuitem">reading list</a>
-          <a href="movies.html" role="menuitem">viewing log</a>
-          <a href="dog.html" role="menuitem">companion</a>
-        </div>
-      </li>
+    <span class="nav-coord">52.52°N 13.40°E · Berlin, DE</span>
+    <ul class="nav-links">
+      <li><a href="index.html">home</a></li>
+      <li><a href="cv.html">work</a></li>
+      <li><a href="portfolio.html">portfolio</a></li>
       <li><a href="contact.html">contact</a></li>
     </ul>
-  </nav>
+  </div>
+</nav>
 
-  <!-- Channel scroll container -->
-  <div class="channels" id="channels">
+<!-- CONTENT -->
+<div class="content-wrap">
 
-    <!-- CH.00 · FIELD POST // MAIN VIEW -->
-    <div class="channel" id="ch0">
-      <div class="ch-viewport">
-        <span class="br-bl"></span><span class="br-br"></span>
-        <span class="ch-label">▮ FIELD POST // MAIN VIEW</span>
-        <span class="ch-id">CH.00 · 0xSH-1998</span>
-        <div class="ch-content">
-          <header class="dash-head">
-            <div>
-              <div class="greet-kicker reveal" style="--d:0">Signal received from Berlin</div>
-              <h1 class="greet-title" id="greetTitle"><span id="greeting">good evening</span><span class="accent">.</span></h1>
-              <p class="greet-sub reveal" style="--d:7">
-                <span class="hl">5 channels live</span> &nbsp;·&nbsp;
-                scroll to discover &nbsp;·&nbsp; ambient conditions nominal
-              </p>
-              <div class="greet-status reveal" style="--d:9">
-                <span class="rotate-text" id="statusRotate">tuning the instruments</span>
-              </div>
-            </div>
-          </header>
-          <p class="hero-lede reveal" style="--d:11">
-            Strategic Marketing, 4 years in the B2B Software Solutions world, at a Microsoft Channel Partner. MA Strategic Marketing Management at ISM Berlin. I have an intuitive and comprehensive proficiency in artificial intelligence technologies that is backed by real intelligence for when AI falls short. 
-          </p>
-        </div>
-        <div class="ch-foot">
-          <span class="left"><span class="dot"></span>link secure · signal nominal</span>
-          <span class="right">
-            <a href="https://linkedin.com/in/simrancs1998" target="_blank" rel="noopener">LinkedIn</a>
-            <a href="mailto:simranshah1998@gmail.com">Email</a>
-          </span>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-eyebrow">Signal acquired · Berlin, DE</div>
+
+      <h1 class="hero-headline">
+        Simran <em>Shah.</em>
+      </h1>
+
+      <p class="hero-lede">
+        Strategic Marketing, 4 years in the B2B Software Solutions world,
+        at a Microsoft Channel Partner. MA Strategic Marketing Management
+        at ISM Berlin. I have an intuitive and comprehensive proficiency
+        in artificial intelligence technologies that is backed by real
+        intelligence for when AI falls short.
+      </p>
+    </div>
+
+    <div class="hero-foot">
+      <span class="live">● Open to roles</span>
+      <div class="hero-foot-sep"></div>
+      <span>4 yrs B2B</span>
+      <div class="hero-foot-sep"></div>
+      <span>MA ISM Berlin · 2026</span>
+      <div class="hero-foot-sep"></div>
+      <span>Strategy · CRM · B2B · Research</span>
+    </div>
+  </section>
+
+  <hr class="hr">
+
+  <!-- BRIEF + IDENTITY PANEL -->
+  <section class="brief-section">
+    <div>
+      <div class="section-tag">Brief</div>
+      <h2 class="brief-headline">
+        The interesting work happens where<br>
+        <em>research</em> meets practice.
+      </h2>
+      <p class="brief-body">
+        I write decks people actually read, run campaigns that move pipeline, and translate between technical teams and the rest of the world. Four years in B2B. Recently finished an MA at ISM Berlin — my thesis built a framework for how German firms actually decide to adopt AI marketing tools.
+      </p>
+    </div>
+
+    <div>
+      <div class="id-card-outer">
+        <div class="id-card-inner">
+          <div class="hc tl"></div><div class="hc tr"></div>
+          <div class="hc bl"></div><div class="hc br"></div>
+          <div class="card-ref">IDENT / SS·2026·001</div>
+          <div class="card-name">Simran Shah</div>
+          <div class="card-role">Marketing & Strategy · B2B</div>
+          <div class="card-sep"></div>
+          <div class="card-stats">
+            <div><div class="stat-num">4</div><div class="stat-label">Years B2B</div></div>
+            <div><div class="stat-num">5</div><div class="stat-label">Projects</div></div>
+          </div>
+          <div class="card-tags">
+            <span class="ctag">B2B</span>
+            <span class="ctag">CRM</span>
+            <span class="ctag">AI</span>
+            <span class="ctag">Research</span>
+            <span class="ctag">Strategy</span>
+          </div>
         </div>
       </div>
     </div>
+  </section>
 
-    <!-- CH.01 · EXPERIENCE + PORTFOLIO -->
-    <div class="channel" id="ch1">
-      <div class="ch-viewport">
-        <span class="br-bl"></span><span class="br-br"></span>
-        <span class="ch-label">▮ EXPERIENCE + PORTFOLIO // CH.01</span>
-        <span class="ch-id">WORK RECORD</span>
-        <div class="ch-content">
-          <div class="section-label reveal" style="--d:0; margin-bottom:8px;">
-            ▮ the work
-            <span class="fill"></span>
-            <span class="meta">4 years B2B</span>
-          </div>
-          <div class="exp-port-grid">
-            <!-- Experience -->
-            <div class="exp-panel reveal" style="--d:2">
-              <div class="panel-head">
-                <h3>Experience</h3>
-                <a href="cv.html">Full CV →</a>
-              </div>
-              <div class="cv-entries stagger">
-                <div class="cv-entry">
-                  <span class="cv-period">2024 – 2026</span>
-                  <div>
-                    <div class="cv-role">MA Strategic Marketing Management</div>
-                    <div class="cv-org">International School of Marketing, Berlin · Grade 1.91 · Thesis: AI adoption in German B2B</div>
-                  </div>
-                </div>
-                <div class="cv-entry">
-                  <span class="cv-period">2024 – 2024</span>
-                  <div>
-                    <div class="cv-role">International Business</div>
-                    <div class="cv-org">ISM Pre-Master Program · Berlin</div>
-                  </div>
-                </div>
-                <div class="cv-entry">
-                  <span class="cv-period">2020 – 2024</span>
-                  <div>
-                    <div class="cv-role">Marketing &amp; Product Manager — Cloud Sales</div>
-                    <div class="cv-org">Xpress Computers · Mumbai · Microsoft Certified Partner</div>
-                  </div>
-                </div>
-                <div class="cv-entry">
-                  <span class="cv-period">Skills</span>
-                  <div>
-                    <div class="cv-org" style="line-height:1.7;">B2B strategy · CRM · Market research · Qualitative research · AI marketing · Campaign management</div>
-                  </div>
-                </div>
-              </div>
+  <!-- WORK: EXPERIENCE + PORTFOLIO SPOTLIGHT -->
+  <section class="work-section">
+    <div class="work-header">
+      <h2 class="work-title">Selected <em>work</em></h2>
+      <span class="work-count">05 / transmissions logged</span>
+    </div>
+
+    <div class="work-grid">
+
+      <!-- LEFT: Experience timeline -->
+      <div class="work-panel">
+        <div class="work-panel-label">Experience</div>
+        <div class="cv-entries">
+
+          <div class="cv-entry">
+            <div class="cv-period">2024<br>— 2026</div>
+            <div class="cv-body">
+              <div class="cv-role">MA Strategic Marketing<br><em>Management</em></div>
+              <div class="cv-org">ISM Berlin · International School of Management</div>
+              <div class="cv-note">Thesis: AI adoption frameworks in German B2B marketing. 12 expert interviews, Grounded Theory methodology, NIAF framework.</div>
             </div>
-            <!-- Portfolio spotlight -->
-            <div class="port-panel reveal" style="--d:4">
-              <div class="panel-head">
-                <h3>Portfolio</h3>
-                <a href="portfolio.html">All 5 →</a>
-              </div>
-              <div class="spotlight">
-                <div class="spot-tag" id="spotTag">Featured · MA Thesis</div>
-                <div class="spot-title" id="spotTitle">AI marketing in privacy-conscious B2B</div>
-                <div class="spot-desc" id="spotDesc">Twelve expert interviews. Five-layer adoption filter. One new framework: the Negotiated Institutional Adoption Framework (NIAF). How German firms really decide on AI marketing tools.</div>
-                <div class="spot-foot">
-                  <div class="spot-tags" id="spotTags">
-                    <span class="spot-tag-pill">Qualitative research</span>
-                    <span class="spot-tag-pill">B2B · Germany</span>
-                    <span class="spot-tag-pill">MA Thesis · 2026</span>
-                  </div>
-                  <div class="spot-nav">
-                    <button class="spot-btn" id="spotPrev">←</button>
-                    <button class="spot-btn" id="spotNext">→</button>
-                  </div>
-                </div>
-              </div>
+          </div>
+
+          <div class="cv-entry">
+            <div class="cv-period">2024</div>
+            <div class="cv-body">
+              <div class="cv-role">Pre-Master<br><em>Programme</em></div>
+              <div class="cv-org">ISM Berlin · Bridge Year</div>
+              <div class="cv-note">Foundation modules in research methods, academic writing, and strategic management ahead of the MA intake.</div>
+            </div>
+          </div>
+
+          <div class="cv-entry">
+            <div class="cv-period">2020<br>— 2024</div>
+            <div class="cv-body">
+              <div class="cv-role">Marketing &amp; Strategy<br><em>Lead</em></div>
+              <div class="cv-org">Xpress Computers Ltd · Microsoft Channel Partner</div>
+              <div class="cv-note">4 years of B2B marketing across CRM, demand gen, and channel strategy. Full ownership of campaigns, decks, and go-to-market motions in the SME software space.</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- RIGHT: Portfolio spotlight -->
+      <div class="spotlight-wrap">
+        <div class="spotlight-label">Portfolio · <span id="spotCounter">01 / 05</span></div>
+
+        <div class="spotlight" id="spotlight">
+          <div class="spot-ref" id="spotRef">LOG·001 / MA·THESIS</div>
+          <div class="spot-title" id="spotTitle">AI marketing in<br><em>privacy-conscious B2B</em></div>
+          <div class="spot-type" id="spotType">Qualitative Research · B2B · Germany · MA Thesis 2026</div>
+          <p class="spot-desc" id="spotDesc">Twelve expert interviews. Five-layer adoption filter. One new framework: the Negotiated Institutional Adoption Framework (NIAF). How German firms really decide on AI marketing tools.</p>
+          <div class="spot-foot">
+            <div class="spot-tags" id="spotTags">
+              <span class="spot-pill">Research</span>
+              <span class="spot-pill">B2B</span>
+              <span class="spot-pill">AI</span>
+              <span class="spot-pill">Strategy</span>
+            </div>
+            <div class="spot-nav">
+              <button class="spot-btn" id="spotPrev" aria-label="Previous project">←</button>
+              <button class="spot-btn" id="spotNext" aria-label="Next project">→</button>
             </div>
           </div>
         </div>
-        <div class="ch-foot">
-          <span class="left"><span class="dot"></span>CH.01 · work record</span>
-          <span class="right">
-            <a href="cv.html">CV →</a>
-            <a href="portfolio.html">Portfolio →</a>
-          </span>
-        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="contact-section">
+    <div class="contact-inner">
+      <div class="contact-badge">
+        <span class="badge-dot"></span>
+        Transmission channel open
+      </div>
+      <div class="contact-eyebrow">Initiate contact</div>
+      <h2 class="contact-headline">
+        Ready to<br><em>transmit.</em>
+      </h2>
+      <p class="contact-sub">
+        If that sounds like the kind of person you're hiring, let's talk.<br>
+        Or if you want to discuss AI in German B2B markets, or have thoughts<br>
+        on my review of Avatar — reach out.
+      </p>
+      <div class="contact-actions">
+        <a href="mailto:simranshah1998@gmail.com" class="btn-primary">
+          <div class="btn-primary-inner">
+            simranshah1998@gmail.com
+            <div class="btn-icon">↗</div>
+          </div>
+        </a>
+        <a href="https://linkedin.com/in/simrancs1998" class="btn-ghost" target="_blank" rel="noopener">LinkedIn ↗</a>
       </div>
     </div>
+  </section>
 
-    <!-- CH.02 · MODULES -->
-    <div class="channel" id="ch2">
-      <div class="ch-viewport">
-        <span class="br-bl"></span><span class="br-br"></span>
-        <span class="ch-label">▮ MODULES // CH.02</span>
-        <span class="ch-id">6 MODULES · ALL LIVE</span>
-        <div class="ch-content">
-          <div class="section-label reveal" style="--d:0; margin-bottom:8px;">
-            ▮ module index
-            <span class="fill"></span>
-            <span class="meta">select to enter</span>
-          </div>
-          <div class="modules stagger">
-            <a href="cv.html" class="module-card">
-              <div class="m-code">MOD.01</div>
-              <div class="m-name">CV</div>
-              <div class="m-foot"><span>work history · thesis</span><span class="status live">live</span></div>
-            </a>
-            <a href="portfolio.html" class="module-card">
-              <div class="m-code">MOD.02</div>
-              <div class="m-name">portfolio</div>
-              <div class="m-foot"><span>case studies · projects</span><span class="status live">live</span></div>
-            </a>
-            <a href="contact.html" class="module-card">
-              <div class="m-code">MOD.03</div>
-              <div class="m-name">contact</div>
-              <div class="m-foot"><span>open channel</span><span class="status live">live</span></div>
-            </a>
-            <a href="dog.html" class="module-card">
-              <div class="m-code">MOD.04</div>
-              <div class="m-name">companion</div>
-              <div class="m-foot"><span>dog · photo archive</span><span class="status live">live</span></div>
-            </a>
-            <a href="movies.html" class="module-card">
-              <div class="m-code">MOD.05</div>
-              <div class="m-name">viewing log</div>
-              <div class="m-foot"><span>films · notes</span><span class="status live">live</span></div>
-            </a>
-            <a href="books.html" class="module-card">
-              <div class="m-code">MOD.06</div>
-              <div class="m-name">reading list</div>
-              <div class="m-foot"><span>books · notes</span><span class="status live">live</span></div>
-            </a>
-          </div>
-        </div>
-        <div class="ch-foot">
-          <span class="left"><span class="dot"></span>CH.02 · module index</span>
-          <span class="right"><a href="contact.html">open channel →</a></span>
-        </div>
-      </div>
-    </div>
+</div><!-- /content-wrap -->
 
-    <!-- CH.03 · BRIEF -->
-    <div class="channel" id="ch3">
-      <div class="ch-viewport">
-        <span class="br-bl"></span><span class="br-br"></span>
-        <span class="ch-label">▮ BRIEF // CH.03</span>
-        <span class="ch-id">OBSERVER · SIMRAN SHAH</span>
-        <div class="ch-content">
-          <div class="brief-body">
-            <p>I write <span class="hl">decks people actually read</span>, run campaigns that move pipeline, and translate between technical teams and the rest of the world.</p>
-            <p>The interesting work happens where <span class="sage">research meets practice</span>.</p>
-            <p>Four years in B2B. Recently finished a MA at ISM Berlin. My thesis built a framework for how German firms actually decide to adopt <span class="hl">AI marketing tools</span>.</p>
-            <div class="brief-meta">
-              Based in Berlin, DE &nbsp;·&nbsp; MA Strategic Marketing Management &nbsp;·&nbsp; ISM Berlin 2026<br/>
-              Open to roles &nbsp;·&nbsp; Strategy · CRM · B2B · Research
-            </div>
-          </div>
-        </div>
-        <div class="ch-foot">
-          <span class="left"><span class="dot"></span>CH.03 · transmitter profile</span>
-          <span class="right">
-            <a href="cv.html">CV →</a>
-            <a href="portfolio.html">Portfolio →</a>
-          </span>
-        </div>
-      </div>
-    </div>
-
-    <!-- CH.04 · OPEN CHANNEL -->
-    <div class="channel" id="ch4">
-      <div class="ch-viewport">
-        <span class="br-bl"></span><span class="br-br"></span>
-        <span class="ch-label">▮ OPEN CHANNEL // CH.04</span>
-        <span class="ch-id">TRANSMISSION READY</span>
-        <div class="ch-content">
-          <div class="open-ch">
-            <h2 class="reveal" style="--d:0">Ready to <span class="accent">transmit.</span></h2>
-            <p class="reveal" style="--d:2">
-              If that sounds like the kind of person you're hiring, let's talk.<br/>
-              Or if you want to discuss AI in German B2B markets, or have thoughts on my review of Avatar — reach out!.
-            </p>
-            <div class="open-ch-links stagger">
-              <a href="mailto:simranshah1998@gmail.com" class="ch-link primary">▮ open channel</a>
-              <a href="https://linkedin.com/in/simrancs1998" class="ch-link secondary" target="_blank" rel="noopener">LinkedIn ↗</a>
-              <a href="cv.pdf" class="ch-link secondary" target="_blank" rel="noopener">Download CV</a>
-            </div>
-          </div>
-        </div>
-        <div class="ch-foot">
-          <span class="left"><span class="dot"></span>CH.04 · end of transmission</span>
-          <span class="right">© Simran Shah · 2026 · Berlin</span>
-        </div>
-      </div>
-    </div>
-
-  </div><!-- /channels -->
-
-  <script>
-    // ── Hamburger ──
-    const hamburger  = document.getElementById('hamburger');
-    const navLinksEl = document.getElementById('navLinks');
-    hamburger.addEventListener('click', e => {
-      e.stopPropagation();
-      hamburger.classList.toggle('open');
-      navLinksEl.classList.toggle('open');
-    });
-    document.addEventListener('click', e => {
-      if (!hamburger.contains(e.target) && !navLinksEl.contains(e.target)) {
-        hamburger.classList.remove('open');
-        navLinksEl.classList.remove('open');
+<script>
+  // ── Portfolio spotlight rotator ──
+  (function(){
+    var projects = [
+      {
+        ref:  'LOG·001 / MA·THESIS',
+        title:'AI marketing in<br><em>privacy-conscious B2B</em>',
+        type: 'Qualitative Research · B2B · Germany · MA Thesis 2026',
+        desc: 'Twelve expert interviews. Five-layer adoption filter. One new framework: the Negotiated Institutional Adoption Framework (NIAF). How German firms really decide on AI marketing tools.',
+        tags: ['Research','B2B','AI','Strategy']
+      },
+      {
+        ref:  'LOG·002 / L\'ORÉAL·BRANDSTORM',
+        title:'[ intentionally blank ]<br><em>— Maison Margiela</em>',
+        type: 'Product Design · Sustainability · L\'Oréal Luxe',
+        desc: 'Modular fragrance composition system. Permanent matte-black aluminium tower, Bluetooth rod, NFC half-blocks. 80–90% packaging reduction over conventional fragrance.',
+        tags: ['Product Design','Sustainability','Luxury','Innovation']
+      },
+      {
+        ref:  'LOG·003 / CONSULTING',
+        title:'B2B Enterprise Technology<br><em>— DACH</em>',
+        type: 'Consulting · DACH Market · B2B Strategy',
+        desc: 'Full go-to-market and employer branding strategy for a German B2B enterprise tech firm. €52K budget, ATL/BTL channel mix, satellite employee belonging framework.',
+        tags: ['GTM','Consulting','DACH','Branding']
+      },
+      {
+        ref:  'LOG·004 / CRM·TEARDOWN',
+        title:'Spotify CRM<br><em>Teardown</em>',
+        type: 'CRM Strategy · Personalisation · Academic',
+        desc: 'Hyper-personalisation via collaborative and content-based filtering, Graph Neural Networks for audiobook recommendations. Why Spotify Wrapped is user-facing CRM.',
+        tags: ['CRM','Personalisation','Strategy','Research']
+      },
+      {
+        ref:  'LOG·005 / XPRESS',
+        title:'B2B Software Marketing<br><em>— 4 Years</em>',
+        type: 'Marketing Strategy · CRM · Microsoft Partner',
+        desc: 'Campaign ownership, demand generation, and channel strategy inside a Microsoft Partner ecosystem. Full accountability for pipeline, decks, and go-to-market motions across the SME software space.',
+        tags: ['B2B','CRM','Demand Gen','Microsoft']
       }
-    });
-
-    // ── Dropdown menus (work + archive) ──
-    document.querySelectorAll('.nav-item').forEach(item => {
-      const trigger = item.querySelector('.nav-trigger');
-      // Toggle on click/tap (works on touch devices too)
-      trigger.addEventListener('click', e => {
-        e.stopPropagation();
-        const isOpen = item.classList.contains('open');
-        // Close all others first
-        document.querySelectorAll('.nav-item.open').forEach(i => {
-          i.classList.remove('open');
-          i.querySelector('.nav-trigger').setAttribute('aria-expanded', 'false');
-        });
-        if (!isOpen) {
-          item.classList.add('open');
-          trigger.setAttribute('aria-expanded', 'true');
-        }
-      });
-    });
-    // Close dropdowns on outside click
-    document.addEventListener('click', () => {
-      document.querySelectorAll('.nav-item.open').forEach(i => {
-        i.classList.remove('open');
-        i.querySelector('.nav-trigger').setAttribute('aria-expanded', 'false');
-      });
-    });
-
-
-    // ── Clock (now in nav) ──
-    function updateClock() {
-      const d = new Date();
-      document.getElementById('hh').textContent = String(d.getHours()).padStart(2,'0');
-      document.getElementById('mm').textContent = String(d.getMinutes()).padStart(2,'0');
-      const ds = d.toLocaleDateString('en-GB',{weekday:'short',day:'2-digit',month:'short',year:'numeric'}).toUpperCase();
-      document.getElementById('dateLine').textContent = ds + ' · CET';
-    }
-    updateClock(); setInterval(updateClock, 20000);
-
-    // ── Greeting ──
-    (function(){
-      const h = new Date().getHours();
-      let g = 'good evening';
-      if (h<5) g='still up';
-      else if (h<12) g='good morning';
-      else if (h<18) g='good afternoon';
-      else if (h<22) g='good evening';
-      else g='late signal';
-      document.getElementById('greeting').textContent = g;
-    })();
-
-    // ── Channel system ──
-    const channelsEl  = document.getElementById('channels');
-    const channelEls  = Array.from(document.querySelectorAll('.channel'));
-    const dotEls      = Array.from(document.querySelectorAll('.ch-dot'));
-    const dotsContainer = document.getElementById('chDots');
-    const staticFlash = document.getElementById('staticFlash');
-    const progressEl  = document.getElementById('scrollProgress');
-    const TOTAL       = channelEls.length;
-    let   activeCh    = 0;
-    let   isSwitching = false;
-
-    // ── Split hero title into characters for stagger reveal ──
-    (function splitGreetingTitle() {
-      const greetingSpan = document.getElementById('greeting');
-      if (!greetingSpan) return;
-      const text = greetingSpan.textContent;
-      greetingSpan.innerHTML = '';
-      [...text].forEach((char, i) => {
-        const s = document.createElement('span');
-        s.className = 'ch';
-        s.style.setProperty('--i', i);
-        s.textContent = char === ' ' ? '\u00A0' : char;
-        greetingSpan.appendChild(s);
-      });
-      // The accent dot too
-      const accent = document.querySelector('.greet-title .accent');
-      if (accent) {
-        accent.classList.add('ch');
-        accent.style.setProperty('--i', text.length);
-      }
-    })();
-
-    // ── IntersectionObserver: reveal channels when they enter view ──
-    // Fires once per channel (no re-trigger on scroll back), so it's not noisy.
-    const revealIO = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting && entry.intersectionRatio > 0.3) {
-          entry.target.classList.add('in-view');
-          revealIO.unobserve(entry.target);
-        }
-      });
-    }, {
-      root: channelsEl,
-      threshold: [0.3, 0.5]
-    });
-
-    // Defer observation until after the boot overlay has cleared (~2s)
-    // — otherwise CH.00's entrance animations play behind the boot screen
-    // and the user never sees them.
-    setTimeout(() => {
-      // CH.00 is already in view, so fire it directly...
-      channelEls[0].classList.add('in-view');
-      // ...then let IO handle the rest as user scrolls
-      channelEls.slice(1).forEach(ch => revealIO.observe(ch));
-    }, 1900);
-
-    // ── Status rotator (under hero greeting) ──
-    (function() {
-      const el = document.getElementById('statusRotate');
-      if (!el) return;
-      const phrases = [
-        'tuning the instruments',
-        'observing from berlin',
-        'transmitting on all channels',
-        'open to roles · strategy / CRM / B2B',
-        'ambient conditions nominal'
-      ];
-      let i = 0;
-      setInterval(() => {
-        i = (i + 1) % phrases.length;
-        // Sync swap with the opacity-0 keyframe (around 28-30% of 4s = ~1.2s in)
-        setTimeout(() => { el.textContent = phrases[i]; }, 1150);
-      }, 4000);
-    })();
-
-    function getChannelTop(idx) {
-      if (!channelEls[idx]) return 0;
-      // getBoundingClientRect is more reliable than offsetTop — accounts for
-      // any parent transforms or subpixel rounding that offsetTop misses
-      const containerTop = channelsEl.getBoundingClientRect().top;
-      const channelTop   = channelEls[idx].getBoundingClientRect().top;
-      return channelsEl.scrollTop + (channelTop - containerTop);
-    }
-
-    function flashStatic(cb) {
-      staticFlash.style.opacity = '1';
-      staticFlash.style.transition = 'none';
-      setTimeout(() => {
-        staticFlash.style.opacity = '0';
-        staticFlash.style.transition = 'opacity 0.1s';
-        if (cb) cb();
-      }, 60);
-    }
-
-    function updateDots(idx) {
-      dotEls.forEach((d,i) => d.classList.toggle('active', i === idx));
-    }
-
-    function triggerTuneIn(idx) {
-      const ch = channelEls[idx];
-      if (!ch) return;
-      ch.classList.remove('tuning');
-      void ch.offsetWidth;
-      ch.classList.add('tuning');
-      setTimeout(() => ch.classList.remove('tuning'), 400);
-    }
-
-    // Dot click → scroll to that channel (pulse fires immediately as click feedback)
-    dotEls.forEach(dot => {
-      dot.addEventListener('click', () => {
-        const idx = parseInt(dot.dataset.ch);
-        if (idx === activeCh) return;
-        flashStatic(() => triggerTuneIn(idx));
-        updateDots(idx);
-        activeCh = idx;
-        channelsEl.scrollTo({ top: getChannelTop(idx), behavior: 'smooth' });
-      });
-    });
-
-    // Arrow key navigation (also gets pulse — it's intentional nav)
-    document.addEventListener('keydown', e => {
-      if (e.key === 'ArrowDown' || e.key === 'PageDown') {
-        e.preventDefault();
-        const next = Math.min(activeCh + 1, TOTAL - 1);
-        if (next === activeCh) return;
-        flashStatic(() => triggerTuneIn(next));
-        updateDots(next);
-        activeCh = next;
-        channelsEl.scrollTo({ top: getChannelTop(next), behavior: 'smooth' });
-      }
-      if (e.key === 'ArrowUp' || e.key === 'PageUp') {
-        e.preventDefault();
-        const prev = Math.max(activeCh - 1, 0);
-        if (prev === activeCh) return;
-        flashStatic(() => triggerTuneIn(prev));
-        updateDots(prev);
-        activeCh = prev;
-        channelsEl.scrollTo({ top: getChannelTop(prev), behavior: 'smooth' });
-      }
-    });
-
-    // Detect channel after scroll settles — STATE ONLY, no animation pulse.
-    // Wheel/trackpad scrolling is its own visual feedback; pulsing the viewport
-    // on top of that reads as noise. Pulse stays reserved for click/keyboard nav above.
-    let scrollTimer = null;
-    channelsEl.addEventListener('scroll', () => {
-      // Live progress updates (no debounce — needs to feel responsive)
-      const maxScroll = channelsEl.scrollHeight - channelsEl.clientHeight;
-      const progress = maxScroll > 0 ? channelsEl.scrollTop / maxScroll : 0;
-      progressEl.style.width = (progress * 100) + '%';
-      dotsContainer.style.setProperty('--progress', progress);
-
-      clearTimeout(scrollTimer);
-      scrollTimer = setTimeout(() => {
-        // Find which channel is most centred in the viewport
-        const scrollMid = channelsEl.scrollTop + channelsEl.clientHeight / 2;
-        let closest = 0;
-        let closestDist = Infinity;
-        channelEls.forEach((ch, i) => {
-          const chMid = ch.offsetTop + ch.offsetHeight / 2;
-          const dist = Math.abs(scrollMid - chMid);
-          if (dist < closestDist) { closestDist = dist; closest = i; }
-        });
-        if (closest !== activeCh) {
-          updateDots(closest);
-          activeCh = closest;
-        }
-      }, 120);
-    });
-
-    // ── Module card magnetic 3D tilt ──
-    // Subtle perspective tilt that follows the cursor. Returns to flat on leave.
-    document.querySelectorAll('.module-card').forEach(card => {
-      card.addEventListener('mousemove', (e) => {
-        const r = card.getBoundingClientRect();
-        const cx = r.left + r.width / 2;
-        const cy = r.top + r.height / 2;
-        const dx = (e.clientX - cx) / (r.width / 2);  // -1 to 1
-        const dy = (e.clientY - cy) / (r.height / 2); // -1 to 1
-        const max = 6; // degrees of tilt — keep subtle
-        card.style.transform =
-          `perspective(800px) rotateY(${dx * max}deg) rotateX(${-dy * max}deg) translateY(-2px)`;
-      });
-      card.addEventListener('mouseleave', () => {
-        card.style.transform = '';
-      });
-    });
-
-    // ── Portfolio spotlight rotator ──
-    const spots = [
-      { tag:'Featured · MA Thesis', title:'AI marketing in privacy-conscious B2B', desc:'Twelve expert interviews. Five-layer adoption filter. One new framework: the Negotiated Institutional Adoption Framework (NIAF). How German firms really decide on AI marketing tools.', tags:['Qualitative research','B2B · Germany','MA Thesis · 2026'] },
-      { tag:'Competition · L\'Oréal Brandstorm', title:'[ intentionally blank ] — Maison Margiela', desc:'A modular fragrance composition system. Permanent matte-black aluminium tower, Bluetooth rod, NFC half-blocks, archive app. Delivers 80–90% packaging reduction over conventional fragrance.', tags:['Product design','Sustainability','L\'Oréal Luxe'] },
-      { tag:'Consulting · Academic', title:'B2B Enterprise Technology — DACH', desc:'Full go-to-market and employer branding strategy for a German B2B enterprise tech firm. €52K budget, ATL/BTL channel mix, satellite employee belonging framework.', tags:['Consulting','DACH market','B2B strategy'] },
-      { tag:'Teardown · Academic', title:'Spotify CRM Teardown', desc:'Hyper-personalisation via collaborative and content-based filtering, Graph Neural Networks for audiobook recommendations. Why Spotify Wrapped is user-facing CRM.', tags:['CRM strategy','Personalisation','Spotify'] },
-      { tag:'Case Study · Work', title:'The deal we didn\'t close', desc:'CEO wanted Zoom and Google Drive. Technical team couldn\'t land it. Assigned to me. Explained in plain language that his Microsoft Enterprise licence already covered everything.', tags:['B2B','Microsoft','Client management'] }
     ];
-    let spotIdx = 0;
 
-    function renderSpot(idx) {
-      const card = document.querySelector('.spotlight');
-      card.style.opacity = '0';
-      setTimeout(() => {
-        const s = spots[idx];
-        document.getElementById('spotTag').textContent   = s.tag;
-        document.getElementById('spotTitle').textContent = s.title;
-        document.getElementById('spotDesc').textContent  = s.desc;
-        document.getElementById('spotTags').innerHTML    = s.tags.map(t=>`<span class="spot-tag-pill">${t}</span>`).join('');
-        card.style.opacity = '1';
-      }, 180);
+    var current = 0;
+    var card    = document.getElementById('spotlight');
+    var elRef   = document.getElementById('spotRef');
+    var elTitle = document.getElementById('spotTitle');
+    var elType  = document.getElementById('spotType');
+    var elDesc  = document.getElementById('spotDesc');
+    var elTags  = document.getElementById('spotTags');
+    var elCount = document.getElementById('spotCounter');
+    var btnPrev = document.getElementById('spotPrev');
+    var btnNext = document.getElementById('spotNext');
+
+    function pad(n){ return n < 10 ? '0'+n : ''+n; }
+
+    function render(idx){
+      var p = projects[idx];
+      elRef.textContent   = p.ref;
+      elTitle.innerHTML   = p.title;
+      elType.textContent  = p.type;
+      elDesc.textContent  = p.desc;
+      elCount.textContent = pad(idx+1)+' / '+pad(projects.length);
+      elTags.innerHTML = p.tags.map(function(t){
+        return '<span class="spot-pill">'+t+'</span>';
+      }).join('');
     }
 
-    document.querySelector('.spotlight').style.transition = 'opacity 0.18s ease';
-    document.getElementById('spotNext').addEventListener('click',()=>{ spotIdx=(spotIdx+1)%spots.length; renderSpot(spotIdx); });
-    document.getElementById('spotPrev').addEventListener('click',()=>{ spotIdx=(spotIdx-1+spots.length)%spots.length; renderSpot(spotIdx); });
+    function goTo(idx){
+      card.classList.add('fading');
+      setTimeout(function(){
+        current = (idx + projects.length) % projects.length;
+        render(current);
+        card.classList.remove('fading');
+      }, 190);
+    }
 
-    // ── Page transition ──
-    (function(){
-      var overlay=document.createElement('div');
-      overlay.style.cssText='position:fixed;z-index:99999;background:#0a1210;border-radius:10px;pointer-events:none;opacity:0;top:0;left:0;width:0;height:0;will-change:transform';
-      document.body.appendChild(overlay);
-      function isInternal(href){
-        if(!href)return false;
-        if(href.startsWith('http')||href.startsWith('//'))return false;
-        if(href.startsWith('mailto')||href.startsWith('tel'))return false;
-        if(href.endsWith('.pdf')||href.endsWith('.jpg')||href.endsWith('.png'))return false;
-        if(href==='#'||href.startsWith('#'))return false;
-        return true;
-      }
-      function expand(el,href){
-        var r=el.getBoundingClientRect();
-        overlay.style.transition='none';overlay.style.opacity='1';
-        overlay.style.borderRadius='10px';
-        overlay.style.left=r.left+'px';overlay.style.top=r.top+'px';
-        overlay.style.width=r.width+'px';overlay.style.height=r.height+'px';
-        overlay.getBoundingClientRect();
-        var ease='cubic-bezier(0.76,0,0.24,1)',dur='0.44s';
-        overlay.style.transition='left '+dur+' '+ease+',top '+dur+' '+ease+',width '+dur+' '+ease+',height '+dur+' '+ease+',border-radius '+dur+' '+ease;
-        overlay.style.left='0px';overlay.style.top='0px';
-        overlay.style.width=window.innerWidth+'px';overlay.style.height=window.innerHeight+'px';
-        overlay.style.borderRadius='0px';
-        setTimeout(()=>{window.location.href=href;},460);
-      }
-      document.querySelectorAll('.module-card,a.widget,nav a,.nav-links a,.ch-link,.ch-foot .right a').forEach(el=>{
-        var href=el.getAttribute('href');
-        if(!isInternal(href))return;
-        el.addEventListener('click',e=>{
-          if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;
-          e.preventDefault();expand(el,href);
-        });
+    btnPrev.addEventListener('click', function(){ goTo(current - 1); });
+    btnNext.addEventListener('click', function(){ goTo(current + 1); });
+
+    // keyboard arrow support
+    document.addEventListener('keydown', function(e){
+      if(e.key === 'ArrowLeft')  goTo(current - 1);
+      if(e.key === 'ArrowRight') goTo(current + 1);
+    });
+
+    render(0);
+  })();
+</script>
+
+<script>
+  // ── Page transition ──
+  (function(){
+    var overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;z-index:99999;background:#050302;pointer-events:none;opacity:0;top:0;left:0;width:0;height:0;will-change:transform';
+    document.body.appendChild(overlay);
+    function isInternal(href){
+      if(!href) return false;
+      if(href.startsWith('http')||href.startsWith('//')) return false;
+      if(href.startsWith('mailto')||href.startsWith('tel')) return false;
+      if(href.endsWith('.pdf')||href.endsWith('.jpg')||href.endsWith('.png')) return false;
+      if(href==='#'||href.startsWith('#')) return false;
+      return true;
+    }
+    function expand(el, href){
+      var r = el.getBoundingClientRect();
+      overlay.style.transition = 'none'; overlay.style.opacity = '1';
+      overlay.style.borderRadius = '10px';
+      overlay.style.left = r.left+'px'; overlay.style.top = r.top+'px';
+      overlay.style.width = r.width+'px'; overlay.style.height = r.height+'px';
+      overlay.getBoundingClientRect();
+      var ease = 'cubic-bezier(0.76,0,0.24,1)', dur = '0.44s';
+      overlay.style.transition = 'left '+dur+' '+ease+',top '+dur+' '+ease+',width '+dur+' '+ease+',height '+dur+' '+ease+',border-radius '+dur+' '+ease;
+      overlay.style.left = '0'; overlay.style.top = '0';
+      overlay.style.width = window.innerWidth+'px'; overlay.style.height = window.innerHeight+'px';
+      overlay.style.borderRadius = '0';
+      setTimeout(function(){ window.location.href = href; }, 460);
+    }
+    document.querySelectorAll('a').forEach(function(el){
+      var href = el.getAttribute('href');
+      if(!isInternal(href)) return;
+      el.addEventListener('click', function(e){
+        if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey) return;
+        e.preventDefault(); expand(el, href);
       });
-    })();
+    });
+  })();
+</script>
 
-  </script>
 </body>
 </html>
