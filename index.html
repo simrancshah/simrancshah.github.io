@@ -216,6 +216,9 @@
       gap: 80px;
       align-items: start;
     }
+    .brief-section > div:last-child {
+      padding-top: 42px;
+    }
 
     .section-tag {
       display: flex; align-items: center; gap: 12px;
@@ -394,6 +397,7 @@
     /* ── RIGHT: Spotlight card ──────────────── */
     .spotlight-wrap {
       display: flex; flex-direction: column;
+      padding-top: 42px;
     }
     .spotlight-label {
       font-family: var(--font-m); font-size: 9px;
@@ -722,12 +726,10 @@
     <div>
       <div class="section-tag">Brief</div>
       <h2 class="brief-headline">
-        The interesting work happens where<br>
-        <em>research</em> meets practice.
-      </h2>
+        From insight to implementation.    
+  </h2>
       <p class="brief-body">
-        I write decks people actually read, run campaigns that move pipeline, and translate between technical teams and the rest of the world. Four years in B2B. Recently finished an MA at ISM Berlin — my thesis built a framework for how German firms actually decide to adopt AI marketing tools.
-      </p>
+        I write decks people actually read, run campaigns that move pipeline, and translate between technical teams and the rest of the world. Tech should be accessible to everyone, and I can and have proven my ability to communicate with a hyper-online engineer and the average businessperson who works outside of the bubble. I've found, both professionally and personally, that highly skilled technical experts struggle severely when trying to communicate with everyone else. My ability to communicate is backed by real understanding of how they work.       </p>
     </div>
 
     <div>
@@ -741,7 +743,7 @@
           <div class="card-sep"></div>
           <div class="card-stats">
             <div><div class="stat-num">4</div><div class="stat-label">Years B2B</div></div>
-            <div><div class="stat-num">5</div><div class="stat-label">Projects</div></div>
+            <div><div class="stat-num">5</div><div class="stat-label">Highlighted Projects</div></div>
           </div>
           <div class="card-tags">
             <span class="ctag">B2B</span>
@@ -840,8 +842,7 @@
       </h2>
       <p class="contact-sub">
         If that sounds like the kind of person you're hiring, let's talk.<br>
-        Or if you want to discuss AI in German B2B markets, or have thoughts<br>
-        on my review of Avatar — reach out.
+        Or if you want to discuss AI in German B2B markets — reach out!
       </p>
       <div class="contact-actions">
         <a href="mailto:simranshah1998@gmail.com" class="btn-primary">
@@ -882,33 +883,33 @@
         tags: ['Research','B2B','AI','Strategy']
       },
       {
-        ref:  'LOG·002 / L\'ORÉAL·BRANDSTORM',
+        ref:  'LOG·002 / XPRESS',
+        title:'B2B Software Marketing<br><em>— 4 Years</em>',
+        type: 'Marketing Strategy · CRM · Microsoft Partner',
+        desc: 'Campaign ownership, demand generation, and channel strategy inside a Microsoft Partner ecosystem. Full accountability for pipeline, decks, and go-to-market motions across the SME software space.',
+        tags: ['B2B','CRM','Demand Gen','Microsoft']
+      },
+      {
+        ref:  'LOG·003 / L\'ORÉAL·BRANDSTORM',
         title:'[ intentionally blank ]<br><em>— Maison Margiela</em>',
         type: 'Product Design · Sustainability · L\'Oréal Luxe',
         desc: 'Modular fragrance composition system. Permanent matte-black aluminium tower, Bluetooth rod, NFC half-blocks. 80–90% packaging reduction over conventional fragrance.',
         tags: ['Product Design','Sustainability','Luxury','Innovation']
       },
       {
-        ref:  'LOG·003 / CONSULTING',
+        ref:  'LOG·004 / CONSULTING',
         title:'B2B Enterprise Technology<br><em>— DACH</em>',
         type: 'Consulting · DACH Market · B2B Strategy',
         desc: 'Full go-to-market and employer branding strategy for a German B2B enterprise tech firm. €52K budget, ATL/BTL channel mix, satellite employee belonging framework.',
         tags: ['GTM','Consulting','DACH','Branding']
       },
       {
-        ref:  'LOG·004 / CRM·TEARDOWN',
+        ref:  'LOG·005 / CRM·TEARDOWN',
         title:'Spotify CRM<br><em>Teardown</em>',
         type: 'CRM Strategy · Personalisation · Academic',
         desc: 'Hyper-personalisation via collaborative and content-based filtering, Graph Neural Networks for audiobook recommendations. Why Spotify Wrapped is user-facing CRM.',
         tags: ['CRM','Personalisation','Strategy','Research']
       },
-      {
-        ref:  'LOG·005 / XPRESS',
-        title:'B2B Software Marketing<br><em>— 4 Years</em>',
-        type: 'Marketing Strategy · CRM · Microsoft Partner',
-        desc: 'Campaign ownership, demand generation, and channel strategy inside a Microsoft Partner ecosystem. Full accountability for pipeline, decks, and go-to-market motions across the SME software space.',
-        tags: ['B2B','CRM','Demand Gen','Microsoft']
-      }
     ];
 
     var current = 0;
