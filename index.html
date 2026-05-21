@@ -411,7 +411,7 @@
       border: 1px solid rgba(238,245,248,0.08);
       padding: 34px 32px 28px;
       position: relative; overflow: hidden;
-      transition: border-color 0.32s, box-shadow 0.32s;
+      display: flex; flex-direction: column;
       /* fade state managed by JS */
       opacity: 1;
       transition: opacity 0.38s cubic-bezier(0.32,0.72,0,1),
@@ -459,6 +459,7 @@
     .spot-foot {
       display: flex; align-items: center;
       justify-content: space-between; gap: 16px;
+      margin-top: auto;
     }
 
     .spot-tags { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -783,7 +784,7 @@
           <div class="cv-entry">
             <div class="cv-period">2024</div>
             <div class="cv-body">
-              <div class="cv-role">International Business</em></div>
+              <div class="cv-role">International Business</div>
               <div class="cv-org">ISM Berlin · Pre-Master Program</div>
               <div class="cv-note">Foundation modules in research methods, academic writing, and strategic management ahead of the MA intake.</div>
             </div>
@@ -955,6 +956,33 @@
     });
 
     render(0);
+
+    // Lock card to tallest slide — must run AFTER custom fonts are painted
+    var heightLocked = false;
+    function lockHeight(){
+      if(heightLocked) return;
+      heightLocked = true;
+      var saved = current;
+      card.style.transition = 'none';
+      card.style.minHeight = '';
+      var max = 0;
+      for(var i = 0; i < projects.length; i++){
+        render(i);
+        void card.offsetHeight; // force synchronous reflow
+        var h = card.getBoundingClientRect().height;
+        if(h > max) max = h;
+      }
+      card.style.minHeight = Math.ceil(max) + 'px';
+      render(saved);
+      requestAnimationFrame(function(){ card.style.transition = ''; });
+    }
+    // fonts.ready fires after all @font-face fonts are loaded & applied
+    if(document.fonts && document.fonts.ready){
+      document.fonts.ready.then(lockHeight);
+    }
+    // Hard fallback in case fonts.ready resolves before fonts paint
+    setTimeout(lockHeight, 800);
+
   })();
 </script>
 
